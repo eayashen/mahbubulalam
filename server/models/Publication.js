@@ -8,10 +8,9 @@ const userSchema = new mongoose.Schema({
   },
   published: {
     type: String,
-    required: true,
     trim: true,
   },
-  publications_type: {
+  category: {
     type: String,
     required: true,
     trim: true,
@@ -21,10 +20,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  url: {
+  authors: {
     type: String,
-    required: true,
     trim: true,
+  },
+  link: {
+    type: String,
+    trim: true,
+  },
+  keywords: {
+    type: [String],
+    default: [],
   },
 });
 

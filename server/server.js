@@ -3,14 +3,22 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
+const authRoutes = require("./routes/auth/auth-routes");
+const designationsRoutes = require("./routes/admin/designation-routes");
+const aboutRoutes = require("./routes/admin/about-routes");
+const awardRoutes = require("./routes/admin/award-routes");
+const fundingRoutes = require("./routes/admin/funding-routes");
+const researchRoutes = require("./routes/admin/research-routes");
+const publicationRoutes = require("./routes/admin/publication-routes");
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// mongoose
-//   .connect(process.env.MONGO_URI)
-//   .then(() => console.log("Connected to MongoDB"))
-//   .catch((err) => console.log(err));
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log(err));
 
 app.use(
   cors({
@@ -30,8 +38,15 @@ app.use(
 // Routes
 app.use(express.json());
 app.use("/api/alive", async (req, res) => {
-  res.json({ message: "Server is alive" });
+  res.json({ message: "Server is alive!" });
 });
+app.use("/api/auth", authRoutes);
+app.use("/api/designation", designationsRoutes);
+app.use("/api/about", aboutRoutes);
+app.use("/api/award", awardRoutes);
+app.use("/api/funding", fundingRoutes);
+app.use("/api/research", researchRoutes);
+app.use("/api/publication", publicationRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

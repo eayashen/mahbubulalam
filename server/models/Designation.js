@@ -8,12 +8,10 @@ const userSchema = new mongoose.Schema({
   },
   company: {
     type: String,
-    required: true,
     trim: true,
   },
   location: {
     type: String,
-    required: true,
     trim: true,
   },
 });

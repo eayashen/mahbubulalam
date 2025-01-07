@@ -4,15 +4,15 @@ const User = require("../../models/User");
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    const user = await User.findOne({ email });
+    const { name, username, password } = req.body;
+    const user = await User.findOne({ username });
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({
       name,
-      email,
+      username,
       password: hashedPassword,
     });
     await newUser.save();
@@ -25,9 +25,9 @@ const registerUser = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
     if (!user) {
       return res
         .status(404)
@@ -42,7 +42,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, email: user.email, name: user.name },
+      { id: user._id, username: user.username, name: user.name },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -55,7 +55,7 @@ const login = async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email,
+        username: user.username,
       },
     });
   } catch (error) {
@@ -67,11 +67,29 @@ const login = async (req, res) => {
   }
 };
 
+const authMiddleware = async (req, res, next) => {
+  try {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Authorization denied" });
+    }
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    if (!verified) {
+      return res.status(401).json({ message: "Token verification failed" });
+    }
+    req.user = verified;
+    next();
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 const resetPassword = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
     // Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
     if (!user) {
       return res.status(400).json({ success: false, error: "User not found" });
     }
@@ -92,4 +110,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, login, resetPassword };
+module.exports = { registerUser, login, resetPassword, authMiddleware };

@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
   year: {
     type: String,
-    required: true,
     trim: true,
   },
   title: {
@@ -18,17 +17,14 @@ const userSchema = new mongoose.Schema({
   },
   awarded_amount: {
     type: String,
-    required: true,
     trim: true,
   },
   time_period: {
     type: String,
-    required: true,
     trim: true,
   },
-  doner: {
+  donor: {
     type: String,
-    required: true,
     trim: true,
   },
 });

@@ -8,13 +8,13 @@ const userSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
     trim: true,
   },
   status: {
     type: String,
     required: true,
     trim: true,
+    default: "onGoing",
   },
 });
 

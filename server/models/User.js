@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     trim: true,
     maxLength: 32,
   },
-  email: {
+  username: {
     type: String,
     required: true,
     trim: true,
@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
   },
   pro_pic: String,
   cv: String,
+  banner: {
+    type: [String],
+    default: [],
+  }
 });
 
 module.exports = mongoose.model("User", userSchema);
