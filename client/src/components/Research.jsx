@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 
 const Research = () => {
-  const isLoggedIn = useSelector((state) => state.isLoggedIn.value);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const access_token = useSelector((state) => state.loginData.accessToken);
   const [selectedProject, setSelectedProject] = useState(null);
   const [data, setData] = useState();
@@ -166,7 +166,7 @@ const Research = () => {
       title,
       published,
       authors,
-      url
+      url,
     }));
     setIsPublicationEditing(true);
   };
@@ -190,7 +190,7 @@ const Research = () => {
                   authors: publicationEditing?.authors || "",
                   research_id: publicationEditing?.research_id,
                   id: publicationEditing?.id,
-                  url: publicationEditing?.url
+                  url: publicationEditing?.url,
                 },
                 null,
                 2
@@ -449,7 +449,7 @@ const Research = () => {
         <p className="text-xl font-bold bg-indigo-950 p-2 text-white w-fit">
           On Going
         </p>
-        {isLoggedIn && (
+        {isAuthenticated && (
           <button
             onClick={() => setIsResearchTitleEditing(true)}
             className="edit"
@@ -464,7 +464,7 @@ const Research = () => {
             <div className="my-4" key={d.id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <div className="flex gap-4">
                   <button
                     onClick={() =>
@@ -495,10 +495,17 @@ const Research = () => {
               {selectedProject === d.description &&
                 d.publications.map((p) => (
                   <div key={Math.random()} className="border-b mb-4">
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-teal-500">{p.title}</a>
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold hover:text-teal-500"
+                    >
+                      {p.title}
+                    </a>
                     <p>{p.published}</p>
                     <p>{p.authors}</p>
-                    {isLoggedIn && (
+                    {isAuthenticated && (
                       <div className="flex gap-4">
                         <button
                           onClick={() =>
@@ -533,7 +540,7 @@ const Research = () => {
             <div className="my-4" key={d.id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
-              {isLoggedIn && (
+              {isAuthenticated && (
                 <div className="flex gap-4">
                   <button
                     onClick={() => handleEdit(d.id, d.title, d.description)}
@@ -562,10 +569,17 @@ const Research = () => {
               {selectedProject === d.description &&
                 d.publications.map((p) => (
                   <div key={Math.random()} className="border-b mb-4">
-                    <a href={p.url} target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-teal-500">{p.title}</a>
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-semibold hover:text-teal-500"
+                    >
+                      {p.title}
+                    </a>
                     <p>{p.published}</p>
                     <p>{p.authors}</p>
-                    {isLoggedIn && (
+                    {isAuthenticated && (
                       <div className="flex gap-4">
                         <button
                           onClick={() =>

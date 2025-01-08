@@ -2,24 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import scholar from "../images/scholar.png";
 import { useSelector, useDispatch } from "react-redux";
-import { setValue } from "../redux/isLoggedIn";
-import { setToken } from "../redux/loginData";
-// import cv from "../CV of Mahbub-Ul Alam_31 Jan 2023.pdf";
+import { resetTokenAndCredentials } from "../redux/auth-slice";
+import AboutForm from "./AboutForm";
+import { getAbout, updateAbout } from "../redux/admin/about-slice";
+import FileUpload from "./FileUpload";
+
+const initialFormData = {
+  name: "",
+  motto: "",
+  bio: "",
+};
 
 const Navbar = () => {
-  const isLoggedIn = useSelector((state) => state.isLoggedIn.value);
   const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { about, isLoading } = useSelector((state) => state.about);
   const [showSubmenu, setShowSubmenu] = useState(false);
-  const [isSticky, setIsSticky] = useState(false);
-  const [PDFEditing, setPDFEditing] = useState(false);
-  const [CV, setCV] = useState(null);
-  const access_token = useSelector((state) => state.loginData.accessToken);
+  const [formData, setFormData] = useState(initialFormData);
+  const [cvInputOpen, setCvInputOpen] = useState(false);
   const Links = [
     { name: "About Me", link: "/" },
     { name: "Research", link: "/research" },
     {
       name: "Publications",
-      // link: "",
       submenu: [
         { name: "Journal Article", link: "/journal" },
         { name: "Working Paper", link: "/working-paper" },
@@ -30,173 +35,84 @@ const Navbar = () => {
     { name: "Contact", link: "/contact" },
   ];
   const [open, setOpen] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const location = useLocation();
-  const [about, setAbout] = useState();
-  const [isMottoEditing, setIsMottoEditing] = useState(false);
-  const [motto, setMotto] = useState();
 
-  const handleScroll = () => {
-    // console.log(window.scrollY)
-    if (window.scrollY === 0) {
-      setIsSticky(false);
-    } else {
-      setIsSticky(true);
-    }
+  const handleAboutUpdate = () => {
+    dispatch(updateAbout(formData)).then((res) => {
+      // if(res.payload?.success) {
+      dispatch(getAbout());
+    });
+    setShowForm(false);
   };
 
-  const test = () => {
-    console.log(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-    // fetchCV();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("http://13.232.229.42:8000/api/v1/about");
-      const jsonData = await response.json();
-      setAbout(jsonData[0]);
-    } catch (error) {
-      console.log("Error fetching data:", error);
-      // setLoading(false);
-    }
-  };
-
-  const fetchCV = async () => {
-    try {
-      const response = await fetch(
-        "http://13.232.229.42:8000/api/v1/cv/uploads/cv.pdf"
-      );
-
-      if (!response.ok) {
-        console.log("Error fetching data");
-      }
-
-      const pdfBlob = await response.blob();
-      const pdfUrl = URL.createObjectURL(pdfBlob);
-      setCV(pdfUrl);
-    } catch (error) {
-      console.log("Error fetching data:", error);
-      // setLoading(false);
-    }
-  };
-
-  const handleMotto = () => {
-    setMotto(about?.motto);
-    setIsMottoEditing(true);
-  };
-
-  const handleDownloadClick = () => {
-    // const url = `https://drive.google.com/file/d/15huhSUMEz8b8W_tjPe2f1ioG3H69NfdV/view?usp=drive_link`;
-    window.open(CV, "_blank");
-  };
-
-  const handleSaveClick = () => {
-    const updateData = async () => {
-      try {
-        const response = await fetch("http://13.232.229.42:8000/api/v1/about", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${access_token}`,
-          },
-          body: JSON.stringify(
-            {
-              id: 1,
-              name: about?.name,
-              motto: motto,
-              bio: about?.bio,
-            },
-            null,
-            2
-          ),
-        });
-
-        if (response.ok) {
-          fetchData();
-          console.log("Data updated successfully");
-        } else {
-          console.log("Error updating data");
-        }
-      } catch (error) {
-        console.log("Error updating data:", error);
-      }
-    };
-
-    updateData();
-    fetchData();
-    setIsMottoEditing(false);
-  };
-
-  const handleSaveCV = () => {
-    //api call
-    const apiUrl = "http://13.232.229.42:8000/api/v1/cv/uploads";
-
-    if (!CV) {
-      console.error("No pdf selected");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("file", CV, "cv.pdf");
-
-    const headers = {
-      Accept: "application/json",
-      // "Content-Type": "application/pdf",
-    };
-
-    const requestOptions = {
-      method: "POST",
-      headers,
-      body: formData,
-    };
-
-    fetch(apiUrl, requestOptions)
-      .then((response) => {
-        if (response.ok) {
-          // fetchCV();
-          console.log("PDF  uploaded successfully");
-        } else {
-          console.error("PDF  upload failed");
-        }
-      })
-      .catch((error) => {
-        console.error("Error while uploading PDF :", error);
-      });
-    setCV(null);
-    setPDFEditing(false);
+  const handleFormOpen = () => {
+    setShowForm(true);
+    const { name, motto, bio } = about;
+    setFormData({ name, motto, bio });
   };
 
   const handleLogOut = () => {
-    dispatch(setValue(false));
-    dispatch(setToken(null));
+    dispatch(resetTokenAndCredentials());
   };
+
+  useEffect(() => {
+    dispatch(getAbout());
+  }, []);
 
   return (
     <div className="w-full">
-      {PDFEditing && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
+      {showForm && (
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
-            <input type="file" onChange={(e) => setCV(e.target.files[0])} />
+            <p className="text-center text-lg font-semibold">
+              Update About Information
+            </p>
+            <div className="space-y-2">
+              <div className="flex items-center">
+                <p className="w-24">Name: </p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  value={formData?.name}
+                />
+              </div>
+              <div className="flex items-center">
+                <p className="w-24">Motto: </p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, motto: e.target.value })
+                  }
+                  value={formData?.motto}
+                />
+              </div>
+              <div className="flex items-center">
+                <p className="w-24">Bio: </p>
+                <textarea
+                  className="px-2 border rounded flex-1 "
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
+                  value={formData?.bio}
+                />
+              </div>
+            </div>
             <div className="flex justify-center gap-4">
-              <button
-                className="bg-blue-400 rounded px-4 py-1 text-white hover:bg-blue-500"
-                onClick={handleSaveCV}
-              >
+              <button className="save" onClick={handleAboutUpdate}>
                 Save
               </button>
               <button
-                className="bg-red-400 rounded px-4 py-1 text-white hover:bg-red-500"
-                onClick={() => setPDFEditing(false)}
+                className="cancel"
+                onClick={() => {
+                  setShowForm(false);
+                  setFormData(initialFormData);
+                }}
               >
                 Cancel
               </button>
@@ -204,9 +120,17 @@ const Navbar = () => {
           </div>
         </div>
       )}
+
+      {cvInputOpen && (
+        <FileUpload
+          setOpenModal={() => setCvInputOpen(!cvInputOpen)}
+          name={"cv"}
+          api={"upload-cv"}
+        />
+      )}
       <div className="flex items-center justify-between lg:mx-24 mx-4 mt-4">
         <h1 className="text-3xl font-bold pb-1">{about?.name}</h1>
-        {isLoggedIn && (
+        {isAuthenticated && (
           <button
             onClick={() => handleLogOut()}
             className="cancel font-semibold"
@@ -216,31 +140,16 @@ const Navbar = () => {
         )}
       </div>
 
-      {isMottoEditing ? (
-        <div className="md:mx-24 mx-4 flex">
-          <textarea
-            value={motto}
-            onChange={(e) => setMotto(e.target.value)}
-            className="flex-1 outline-none"
-          />
-          <div className="flex gap-4 h-fit">
-            <button className="save" onClick={handleSaveClick}>
-              Save
-            </button>
-            <button className="cancel" onClick={() => setIsMottoEditing(false)}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex">
-          <p className="lg:mx-24 mx-4">{about?.motto}</p>
-          {isLoggedIn && (
-            <button onClick={handleMotto} className="fas fa-edit"></button>
-          )}
-        </div>
-      )}
-      <div className="flex mt-4 left-0 md:px-0 bg-indigo-950 z-50 h-8 relative">
+      <div className="flex">
+        <p className="lg:mx-24 mx-4">
+          {about?.motto || "akfbsefrj ejhfvjehf jsveshf js"}
+        </p>
+        {isAuthenticated && (
+          <button className="fas fa-edit" onClick={handleFormOpen}></button>
+        )}
+      </div>
+
+      <div className="flex mt-4 left-0 md:px-0 bg-indigo-950 z-30 h-8 relative">
         <div
           onClick={() => setOpen(!open)}
           className="absolute top-1 mr-4 pl-4 cursor-pointer md:hidden text-teal-500"
@@ -307,13 +216,22 @@ const Navbar = () => {
             </div>
           ))}
           <div className="text-white font-semibold mt-1 pl-2 cursor-pointer flex">
-            <p className="hover:text-teal-400" onClick={handleDownloadClick}>
+            <p
+              className="hover:text-teal-400"
+              onClick={() => {
+                if (about?.cv) {
+                  window.open(about.cv, "_blank"); // Opens the CV in a new tab
+                } else {
+                  alert("CV is not available.");
+                }
+              }}
+            >
               CV
             </p>
-            {isLoggedIn && (
+            {isAuthenticated && (
               <button
-                onClick={() => setPDFEditing(true)}
                 className="fas fa-edit pl-3 text-white hover:text-teal-400 pb-1"
+                onClick={() => setCvInputOpen(true)}
               ></button>
             )}
           </div>

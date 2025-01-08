@@ -5,7 +5,7 @@ import { Triangle } from "react-loader-spinner";
 
 const Journal = () => {
   const location = useLocation();
-  const isLoggedIn = useSelector((state) => state.isLoggedIn.value);
+  const { isAuthenticated } = useSelector((state) => state.auth);
   const access_token = useSelector((state) => state.loginData.accessToken);
   const [journal, setJournal] = useState([]);
   const [isJournalEditing, setIsJournalEditing] = useState(false);
@@ -46,7 +46,7 @@ const Journal = () => {
       title,
       published,
       authors,
-      url
+      url,
     }));
     setIsJournalEditing(true);
   };
@@ -335,17 +335,24 @@ const Journal = () => {
           ? "Working Papers"
           : "Policy Briefs"}
       </p>
-      {isLoggedIn && (
+      {isAuthenticated && (
         <button className="edit" onClick={() => setAddPublication(true)}>
           + Add Publication
         </button>
       )}
       {journal?.map((item, index) => (
         <div key={index} className="my-4 border-b pb-2">
-          <a href={item.url} className="text-xl font-semibold hover:text-teal-500" target="_blank" rel="noopener noreferrer">{item.title}</a>
+          <a
+            href={item.url}
+            className="text-xl font-semibold hover:text-teal-500"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item.title}
+          </a>
           <p className="text-md">{item.published}</p>
           <p className="text-sm">{item.authors}</p>
-          {isLoggedIn && (
+          {isAuthenticated && (
             <div className="flex gap-4">
               <button
                 onClick={() =>
