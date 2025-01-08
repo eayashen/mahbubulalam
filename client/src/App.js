@@ -29,7 +29,7 @@ const App = () => {
           </Routes>
         </div>
         <footer className='text-center bg-indigo-950 text-white py-2'>
-          © 2023 <Link to='/login'>Mahbub-ul Alam</Link>. All rights reserved.
+          © 2023 <Link to='/login'>Mahbub Ul Alam</Link>. All rights reserved.
         </footer>
       </Router>
     </div>

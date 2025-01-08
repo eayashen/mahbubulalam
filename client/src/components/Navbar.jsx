@@ -142,7 +142,7 @@ const Navbar = () => {
 
       <div className="flex">
         <p className="lg:mx-24 mx-4">
-          {about?.motto || "akfbsefrj ejhfvjehf jsveshf js"}
+          {about?.motto || ""}
         </p>
         {isAuthenticated && (
           <button className="fas fa-edit" onClick={handleFormOpen}></button>
