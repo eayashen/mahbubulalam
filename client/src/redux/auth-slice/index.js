@@ -3,7 +3,7 @@ import axios from "axios";
 
 const initialState = {
   isLoading: false,
-  isAuthenticated: false,
+  isAuthenticated: true,
   user: null,
   token: null,
 };

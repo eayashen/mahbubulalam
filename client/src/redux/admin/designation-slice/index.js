@@ -11,7 +11,7 @@ export const getDesignation = createAsyncThunk(
   async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/designation/`
+        `${process.env.REACT_APP_SERVER_API_URL}/api/designation`
       );
       return response.data;
     } catch (error) {
@@ -22,10 +22,10 @@ export const getDesignation = createAsyncThunk(
 
 export const updateDesignation = createAsyncThunk(
   "designation/updateDesignation",
-  async (formData) => {
+  async ({ formData, id }) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/designation/${formData.id}`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/designation/${id}`,
         formData
       );
       return response.data;
@@ -40,7 +40,7 @@ export const addDesignation = createAsyncThunk(
   async (formData) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/designation/`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/designation`,
         formData
       );
       return response.data;

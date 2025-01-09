@@ -10,7 +10,7 @@ const handleProPicUpload = async (req, res) => {
     }
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const url = "data:" + req.file.mimetype + ";base64," + b64;
-    const result = await imageUploadUtil(url, "mahbubulalam");
+    const result = await imageUploadUtil(url, "mahbubulalam", "image");
 
     const updatedUser = await User.findOneAndUpdate(
       {}, // Assuming user ID is available in `req.user`
@@ -38,10 +38,11 @@ const handleCvUpload = async (req, res) => {
         .status(400)
         .json({ success: false, message: "No file uploaded" });
     }
+    console.log("Uploaded File MIME Type:", req.file.mimetype);
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const url = "data:" + req.file.mimetype + ";base64," + b64;
-    const result = await imageUploadUtil(url, "mahbubulalam");
-
+    const result = await imageUploadUtil(url, "mahbubulalam", "pdf");
+    console.log("Cloudinary Upload Result:", result);
     const updatedUser = await User.findOneAndUpdate(
       {}, // Assuming user ID is available in `req.user`
       { cv: result.secure_url },

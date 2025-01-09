@@ -17,17 +17,32 @@ import {
   uploadBanner,
   uploadProPic,
 } from "../redux/admin/about-slice";
+import {
+  getDesignation,
+  updateDesignation,
+  addDesignation,
+  deleteDesignation,
+} from "../redux/admin/designation-slice";
 import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
+
+const initialFormData = {
+  title: "",
+  company: "",
+  location: "",
+};
 
 const Home = () => {
   const dispatch = useDispatch();
   const { about, isLoading } = useSelector((state) => state.about);
-  const [designation, setDesignation] = useState();
+  const { designation } = useSelector((state) => state.designation);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const [formData, setFormData] = useState(initialFormData);
   const [awards, setAwards] = useState();
   const [editBio, setEditBio] = useState(null);
-  const { isAuthenticated } = useSelector((state) => state.auth);
-  const [loading, setLoading] = useState(false);
+  const [isDesignationEditing, setIsDesignationEditing] = useState(false);
+  const [designationId, setDesignationId] = useState(null);
+
   const [images, setImages] = useState([
     MAC0,
     MAC1,
@@ -52,17 +67,54 @@ const Home = () => {
 
   useEffect(() => {
     dispatch(getAbout());
+    dispatch(getDesignation());
   }, []);
 
   const [imageEditing, setImageEditing] = useState(false);
 
-  //--------------------------Bio editing functionality-------------------------------
-  const [isBioEditing, setIsBioEditing] = useState(false);
-  const [bio, setBio] = useState(null);
+  const handleSaveDesignation = () => {
+    if (formData.title === "") {
+      alert("Title fields are required");
+      return;
+    }
+    if (formData && designationId) {
+      dispatch(updateDesignation({ formData, id: designationId })).then(
+        (res) => {
+          if (res.payload?.success) {
+            dispatch(getDesignation());
+          }
+        }
+      );
+    } else {
+      dispatch(addDesignation(formData)).then((res) => {
+        console.log(res);
+        if (res.payload?.success) {
+          dispatch(getDesignation());
+        }
+      });
+    }
+    setIsDesignationEditing(false);
+    setFormData(initialFormData);
+    designationId && setDesignationId(null);
+  };
 
-  //---------------------------Image editing functionality---------------------------
+  const handleUpdate = (d) => {
+    setIsDesignationEditing(true);
+    setDesignationId(d._id);
+    setFormData({
+      title: d.title,
+      company: d.company,
+      location: d.location,
+    });
+  };
 
-  const handleCarouselImage = () => {};
+  const handleDeleteDesignation = (id) => {
+    dispatch(deleteDesignation(id)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getDesignation());
+      }
+    });
+  };
 
   //-------------------------Award editing functionality----------------------------
   const [isAwardEditing, setIsAwardEditing] = useState(false);
@@ -83,7 +135,7 @@ const Home = () => {
     setIsEditing(false);
   };
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
         <Triangle
@@ -101,57 +153,67 @@ const Home = () => {
   return (
     <div className="mt-4 lg:mx-24 mx-4">
       {imageEditing && (
-        <FileUpload setOpenModal={() => setImageEditing(false)} name="image" api="upload-pro-pic" />
+        <FileUpload
+          setOpenModal={() => setImageEditing(false)}
+          name="image"
+          api="upload-pro-pic"
+        />
       )}
 
-      {isBioEditing && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
+      {isDesignationEditing && (
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-              <div className="flex">
+              <p className="text-center text-lg font-semibold p-2">
+                Update Designation
+              </p>
+              <div className="flex items-center">
                 <p className="w-20">Title</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
-                  // onChange={(e) => setBio({ ...bio, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
                   placeholder="Title"
-                  value={bio?.name}
+                  value={formData?.title}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Company</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
-                  // onChange={(e) => setBio({ ...bio, company: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, company: e.target.value })
+                  }
                   placeholder="Company"
-                  value={bio?.company}
+                  value={formData?.company}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Locaton</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
-                  // onChange={(e) => setBio({ ...bio, location: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
                   placeholder="Locaton"
-                  value={bio?.location}
+                  value={formData?.location}
                 />
               </div>
             </div>
             <div className="flex justify-center gap-4">
-              <button
-                className="save"
-                // onClick={handleSaveBio}
-              >
+              <button className="save" onClick={handleSaveDesignation}>
                 Save
               </button>
               <button
                 className="cancel"
-                // onClick={() => {
-                //   setIsBioEditing(false);
-                //   setBio(null);
-                // }}
+                onClick={() => {
+                  setIsDesignationEditing(false);
+                  setFormData(initialFormData);
+                }}
               >
                 Cancel
               </button>
@@ -239,16 +301,16 @@ const Home = () => {
             <p className="font-bold text-xl">{about?.name}</p>
             {isAuthenticated && (
               <button
-                // onClick={() => setIsBioEditing(true)}
+                onClick={() => setIsDesignationEditing(true)}
                 className="save"
               >
                 + Add Designation
               </button>
             )}
             {designation?.map((d, index) => (
-              <div key={d.name}>
+              <div key={d.title}>
                 <div className="my-3">
-                  <p className="font-semibold">{d.name}</p>
+                  <p className="font-semibold">{d.title}</p>
                   <p>{d.company}</p>
                   <p>{d.location}</p>
                 </div>
@@ -256,18 +318,11 @@ const Home = () => {
                   <div className="flex justify-center gap-4">
                     <button
                       className="fas fa-edit text-green-500"
-                      // onClick={() =>
-                      //   handleBioUpdateButton(
-                      //     d.id,
-                      //     d.name,
-                      //     d.company,
-                      //     d.location
-                      //   )
-                      // }
+                      onClick={() => handleUpdate(d)}
                     ></button>
                     <button
                       className="fas fa-trash text-red-400"
-                      // onClick={() => handleBioDelete(d.id)}
+                      onClick={() => handleDeleteDesignation(d._id)}
                     ></button>
                   </div>
                 )}

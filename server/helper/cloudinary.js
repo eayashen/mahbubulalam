@@ -18,11 +18,25 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Image upload utility function
-async function imageUploadUtil(file, folder) {
+// async function imageUploadUtil(file, folder, type) {
+//   const result = await cloudinary.uploader.upload(file, {
+//     resource_type: type,
+//     folder, // Upload to a specific folder in Cloudinary
+//   });
+//   return result;
+// }
+
+async function imageUploadUtil(file, folder, fileType) {
   const result = await cloudinary.uploader.upload(file, {
     resource_type: "auto",
-    folder, // Upload to a specific folder in Cloudinary
+    folder,
+    format: "pdf",
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
   });
+  console.log(result);
+
   return result;
 }
 
