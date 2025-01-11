@@ -44,6 +44,7 @@ const Navbar = () => {
       dispatch(getAbout());
     });
     setShowForm(false);
+    setFormData(initialFormData);
   };
 
   const handleFormOpen = () => {
@@ -82,8 +83,8 @@ const Navbar = () => {
               </div>
               <div className="flex items-center">
                 <p className="w-24">Motto: </p>
-                <input
-                  className="px-2 border rounded flex-1"
+                <textarea
+                  className="px-2 border rounded flex-1 min-h-28"
                   type="text"
                   onChange={(e) =>
                     setFormData({ ...formData, motto: e.target.value })
@@ -91,7 +92,7 @@ const Navbar = () => {
                   value={formData?.motto}
                 />
               </div>
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <p className="w-24">Bio: </p>
                 <textarea
                   className="px-2 border rounded flex-1 "
@@ -101,7 +102,7 @@ const Navbar = () => {
                   }
                   value={formData?.bio}
                 />
-              </div>
+              </div> */}
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleAboutUpdate}>
@@ -141,7 +142,7 @@ const Navbar = () => {
       </div>
 
       <div className="flex">
-        <p className="lg:mx-24 mx-4">
+        <p className="lg:mx-24 mx-4 whitespace-pre-wrap">
           {about?.motto || ""}
         </p>
         {isAuthenticated && (

@@ -32,12 +32,19 @@ const initialFormData = {
   location: "",
 };
 
+const initialAboutFormData = {
+  name: "",
+  motto: "",
+  bio: "",
+};
+
 const Home = () => {
   const dispatch = useDispatch();
   const { about, isLoading } = useSelector((state) => state.about);
   const { designation } = useSelector((state) => state.designation);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState(initialFormData);
+  const [aboutFormData, setAboutFormData] = useState(initialAboutFormData);
   const [awards, setAwards] = useState();
   const [editBio, setEditBio] = useState(null);
   const [isDesignationEditing, setIsDesignationEditing] = useState(false);
@@ -123,16 +130,19 @@ const Home = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEditClick = () => {
-    setEditBio(about?.bio);
+    const { name, motto, bio } = about;
+    setAboutFormData({ name, motto, bio });
     setIsEditing(true);
   };
 
-  const handleChange = (event) => {
-    setEditBio(event.target.value);
-  };
-  const handleCancelClick = () => {
-    setEditBio(null);
+  const handleSaveBio = () => {
+    dispatch(updateAbout(aboutFormData)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getAbout());
+      }
+    });
     setIsEditing(false);
+    setAboutFormData(initialAboutFormData);
   };
 
   if (isLoading)
@@ -335,19 +345,22 @@ const Home = () => {
           {isEditing ? (
             <div className="w-full">
               <textarea
-                value={editBio}
-                onChange={handleChange}
-                className="text-justify mb-4 w-full h-96 outline-none"
+                value={aboutFormData?.bio}
+                onChange={(e) => setAboutFormData({ bio: e.target.value })}
+                className="text-justify mb-4 w-full h-96 p-2 outline-none whitespace-pre-wrap"
               />
               <button
-                className="border px-4 py-1 mb-4 rounded mr-4"
-                // onClick={handleSaveClick}
+                className="border px-4 py-1 mb-4 rounded mr-4 save"
+                onClick={handleSaveBio}
               >
                 Save
               </button>
               <button
-                className="border px-4 py-1 mb-4 rounded"
-                // onClick={handleCancelClick}
+                className="border px-4 py-1 mb-4 rounded cancel"
+                onClick={() => {
+                  setIsEditing(false);
+                  setAboutFormData(initialAboutFormData);
+                }}
               >
                 Cancel
               </button>
@@ -360,7 +373,7 @@ const Home = () => {
               {isAuthenticated && (
                 <button
                   className="save border px-4 py-1 mb-4 rounded"
-                  // onClick={handleEditClick}
+                  onClick={handleEditClick}
                 >
                   Edit
                 </button>

@@ -1,282 +1,142 @@
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
+import {
+  getResearch,
+  addResearch,
+  updateResearch,
+  deleteResearch,
+} from "../redux/admin/research-slice";
+import {
+  addPublication,
+  updatePublication,
+  deletePublication,
+} from "../redux/admin/publication-slice";
+
+const initialFormData = {
+  title: "",
+  description: "",
+  status: "",
+};
+
+const initialPublicationData = {
+  title: "",
+  published: "",
+  category: "",
+  research_id: "",
+  authors: "",
+  link: "",
+  keywords: [],
+};
 
 const Research = () => {
+  const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const access_token = useSelector((state) => state.loginData.accessToken);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [data, setData] = useState();
-  const [researchTitle, setResearchTitle] = useState();
-  const [isResearchTitleEditing, setIsResearchTitleEditing] = useState(false);
-  const [publicationEditing, setPublicationEditing] = useState();
+  const { research, isLoading } = useSelector((state) => state.research);
+  const [formData, setFormData] = useState(initialFormData);
+  const [publicationData, setPublicationData] = useState(
+    initialPublicationData
+  );
+  const [researchId, setResearchId] = useState(null);
+  const [isResearchEditing, setIsResearchEditing] = useState(false);
+  const [publicationId, setPublicationId] = useState(null);
   const [ispublicationEditing, setIsPublicationEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   useEffect(() => {
-    fetchData();
+    dispatch(getResearch());
   }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("http://13.232.229.42:8000/api/v1/research");
-      const jsonData = await response.json();
-      setData(jsonData);
-      setLoading(false);
-    } catch (error) {
-      console.log("Error fetching data:", error);
-      // setLoading(false);
-    }
-  };
-
-  const handleViewPublications = (description) => {
-    selectedProject === description
-      ? setSelectedProject(null)
-      : setSelectedProject(description);
-  };
-
   const handleEdit = (id, title, description, status) => {
-    setResearchTitle((prevData) => ({
+    setResearchId(id);
+    setFormData((prevData) => ({
       ...prevData,
-      id,
       title,
       description,
       status,
     }));
-    setIsResearchTitleEditing(true);
+    setIsResearchEditing(true);
   };
 
-  const handleSaveTitle = () => {
-    if (researchTitle && researchTitle.id !== undefined) {
-      const updateTitle = async () => {
-        try {
-          const response = await fetch(
-            "http://13.232.229.42:8000/api/v1/research",
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(
-                {
-                  title: researchTitle?.title || "",
-                  description: researchTitle?.description || "",
-                  id: researchTitle?.id,
-                  status: researchTitle?.status,
-                },
-                null,
-                2
-              ),
-            }
-          );
-
-          if (response.ok) {
-            fetchData();
-            setResearchTitle(null);
-            console.log("Data updated successfully");
-          } else {
-            console.log("Error updating data");
-          }
-        } catch (error) {
-          console.log("Error updating data:", error);
-        }
-      };
-      updateTitle();
-    } else {
-      const updateTitle = async () => {
-        try {
-          const response = await fetch(
-            "http://13.232.229.42:8000/api/v1/research",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(
-                {
-                  title: researchTitle?.title || "",
-                  description: researchTitle?.description || "",
-                  status: researchTitle?.status || "",
-                },
-                null,
-                2
-              ),
-            }
-          );
-
-          if (response.ok) {
-            fetchData();
-            setResearchTitle(null);
-            console.log("Data updated successfully");
-          } else {
-            console.log("Error updating data");
-          }
-        } catch (error) {
-          console.log("Error updating data:", error);
-        }
-      };
-      updateTitle();
+  const handleSaveResearch = () => {
+    if (!formData.title || !formData.status) {
+      alert("Title and Status are required fields");
+      return;
     }
-
-    setIsResearchTitleEditing(false);
-  };
-
-  const handleTitleDelete = (id) => {
-    const deleteResearch = async () => {
-      try {
-        const response = await fetch(
-          `https://port.abirmunna.me/api/v1/research?id=${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          fetchData();
-          console.log("Data deleted successfully");
-        } else {
-          console.log("Error updating data");
+    if (formData && researchId !== null) {
+      dispatch(updateResearch({ formData, id: researchId })).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getResearch());
         }
-      } catch (error) {
-        console.log("Error updating data:", error);
-      }
-    };
-    deleteResearch();
-    fetchData();
+      });
+    } else {
+      dispatch(addResearch(formData)).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getResearch());
+        }
+      });
+    }
+    setIsResearchEditing(false);
+    setResearchId(null);
+    setFormData(initialFormData);
   };
 
-  const handlePublicationsEdit = (
-    id,
-    research_id,
-    title,
-    published,
-    authors,
-    url
-  ) => {
-    setPublicationEditing((prevData) => ({
-      ...prevData,
-      id,
-      research_id,
-      title,
-      published,
-      authors,
-      url,
-    }));
+  const handleResearchDelete = (id) => {
+    dispatch(deleteResearch(id)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getResearch());
+      }
+    });
+    setResearchId(null);
+  };
+
+  const handlePublicationsEdit = (id) => {
+    setResearchId(id);
     setIsPublicationEditing(true);
   };
 
   const handleSavePublication = () => {
-    if (publicationEditing && publicationEditing?.research_id !== undefined) {
-      const updatePublication = async () => {
-        try {
-          const response = await fetch(
-            "http://13.232.229.42:8000/api/v1/publications",
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(
-                {
-                  title: publicationEditing?.title || "",
-                  published: publicationEditing?.published || "",
-                  authors: publicationEditing?.authors || "",
-                  research_id: publicationEditing?.research_id,
-                  id: publicationEditing?.id,
-                  url: publicationEditing?.url,
-                },
-                null,
-                2
-              ),
-            }
-          );
-          if (response.ok) {
-            fetchData();
-            setPublicationEditing(null);
-            console.log("Data updated successfully");
-          } else {
-            console.log("Error updating data");
-          }
-        } catch (error) {
-          console.log("Error updating data:", error);
-        }
-      };
-      updatePublication();
-    } else {
-      const updatePublication = async () => {
-        try {
-          const response = await fetch(
-            "http://13.232.229.42:8000/api/v1/publications",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-              },
-              body: JSON.stringify(
-                {
-                  title: publicationEditing?.title || "",
-                  published: publicationEditing?.published || "",
-                  authors: publicationEditing?.authors || "",
-                  research_id: publicationEditing?.id,
-                },
-                null,
-                2
-              ),
-            }
-          );
-
-          if (response.ok) {
-            fetchData();
-            setPublicationEditing(null);
-            console.log("Data updated successfully");
-          } else {
-            console.log("Error updating data");
-          }
-        } catch (error) {
-          console.log("Error updating data:", error);
-        }
-      };
-      updatePublication();
+    if (!publicationData?.title || !publicationData?.category) {
+      alert("Title and Category are required fields");
+      return;
     }
-
+    if (researchId === null) {
+      alert("Please select a research to add publication");
+      return;
+    }
+    if (researchId !== null && publicationId !== null) {
+      dispatch(
+        updatePublication({ formData: publicationData, id: publicationId })
+      ).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getResearch());
+        }
+      });
+    } else {
+      dispatch(
+        addPublication({ ...publicationData, research_id: researchId })
+      ).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getResearch());
+        }
+      });
+    }
     setIsPublicationEditing(false);
+    setPublicationData(initialPublicationData);
+    setResearchId(null);
+    setPublicationId(null);
   };
 
   const handlePublicationDelete = (id) => {
-    const deletePublication = async () => {
-      try {
-        const response = await fetch(
-          `http://13.232.229.42:8000/api/v1/publications?id=${id}`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${access_token}`,
-            },
-          }
-        );
-        if (response.ok) {
-          fetchData();
-          console.log("Data deleted successfully");
-        } else {
-          console.log("Error updating data");
-        }
-      } catch (error) {
-        console.log("Error updating data:", error);
+    dispatch(deletePublication(id)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getResearch());
       }
-    };
-    deletePublication();
+    });
+    setPublicationId(null);
   };
 
-  if (loading)
+  if (isLoading)
     return (
       <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
         <Triangle
@@ -293,67 +153,68 @@ const Research = () => {
 
   return (
     <div className="lg:mx-24 mx-4">
-      {isResearchTitleEditing && (
+      {isResearchEditing && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
           <div className="sm:w-[600px] w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Status</p>
                 <select
                   className="px-2 border rounded flex-1"
                   onChange={(e) =>
-                    setResearchTitle({
-                      ...researchTitle,
+                    setFormData({
+                      ...formData,
                       status: e.target.value,
                     })
                   }
-                  value={researchTitle?.status}
+                  value={formData?.status}
                 >
                   <option value="">Select status</option>
                   <option value="onGoing">On Going</option>
                   <option value="previousResearch">Previous Research</option>
                 </select>
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Title</p>
                 <textarea
                   className="px-2 border rounded flex-1 max-h-32 h-20"
                   type="text"
                   onChange={(e) =>
-                    setResearchTitle({
-                      ...researchTitle,
+                    setFormData({
+                      ...formData,
                       title: e.target.value,
                     })
                   }
                   placeholder="Title"
-                  value={researchTitle?.title}
+                  value={formData?.title}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Description</p>
                 <textarea
                   className="px-2 border rounded flex-1 max-h-60 h-40"
                   type="text"
                   onChange={(e) =>
-                    setResearchTitle({
-                      ...researchTitle,
+                    setFormData({
+                      ...formData,
                       description: e.target.value,
                     })
                   }
                   placeholder="Description"
-                  value={researchTitle?.description}
+                  value={formData?.description}
                 />
               </div>
             </div>
             <div className="flex justify-center gap-4">
-              <button className="save" onClick={handleSaveTitle}>
+              <button className="save" onClick={handleSaveResearch}>
                 Save
               </button>
               <button
                 className="cancel"
                 onClick={() => {
-                  setIsResearchTitleEditing(false);
-                  setResearchTitle(null);
+                  setIsResearchEditing(false);
+                  setResearchId(null);
+                  setFormData(initialFormData);
                 }}
               >
                 Cancel
@@ -362,70 +223,90 @@ const Research = () => {
           </div>
         </div>
       )}
+
       {ispublicationEditing && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Title</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setPublicationEditing({
-                      ...publicationEditing,
+                    setPublicationData({
+                      ...publicationData,
                       title: e.target.value,
                     })
                   }
                   placeholder="Title"
-                  value={publicationEditing?.title}
+                  value={publicationData?.title}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Published</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setPublicationEditing({
-                      ...publicationEditing,
+                    setPublicationData({
+                      ...publicationData,
                       published: e.target.value,
                     })
                   }
-                  placeholder="Published"
-                  value={publicationEditing?.published}
+                  placeholder="Site name"
+                  value={publicationData?.published}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
+                <p className="w-20">Type</p>
+                <select
+                  className="px-1 border rounded flex-1 h-10"
+                  onChange={(e) =>
+                    setPublicationData({
+                      ...publicationData,
+                      category: e.target.value,
+                    })
+                  }
+                  value={publicationData?.category || ""}
+                >
+                  <option value="">Select Type</option>
+                  <option value="journal">Journal</option>
+                  <option value="working-paper">Working Paper</option>
+                  <option value="policy">Policy</option>
+                </select>
+              </div>
+              <div className="flex items-center">
                 <p className="w-20">Authors</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setPublicationEditing({
-                      ...publicationEditing,
+                    setPublicationData({
+                      ...publicationData,
                       authors: e.target.value,
                     })
                   }
                   placeholder="Authors"
-                  value={publicationEditing?.authors}
+                  value={publicationData?.authors}
                 />
               </div>
-              <div className="flex">
+              <div className="flex items-center">
                 <p className="w-20">Link</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setPublicationEditing({
-                      ...publicationEditing,
-                      url: e.target.value,
+                    setPublicationData({
+                      ...publicationData,
+                      link: e.target.value,
                     })
                   }
                   placeholder="https://example.com"
-                  value={publicationEditing?.url}
+                  value={publicationData?.link}
                 />
               </div>
+              <div>keywords</div>
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSavePublication}>
@@ -435,7 +316,9 @@ const Research = () => {
                 className="cancel"
                 onClick={() => {
                   setIsPublicationEditing(false);
-                  setPublicationEditing(null);
+                  setPublicationData(null);
+                  setPublicationId(null);
+                  setResearchId(null);
                 }}
               >
                 Cancel
@@ -444,59 +327,57 @@ const Research = () => {
           </div>
         </div>
       )}
+
       <p className="text-2xl font-bold text-center my-4">Research</p>
       <div className="flex gap-4">
         <p className="text-xl font-bold bg-indigo-950 p-2 text-white w-fit">
           On Going
         </p>
         {isAuthenticated && (
-          <button
-            onClick={() => setIsResearchTitleEditing(true)}
-            className="edit"
-          >
+          <button onClick={() => setIsResearchEditing(true)} className="edit">
             + Add Research
           </button>
         )}
       </div>
-      {data?.map(
+      {research?.map(
         (d) =>
           d.status === "onGoing" && (
-            <div className="my-4" key={d.id}>
+            <div className="my-4" key={d._id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
                 <div className="flex gap-4">
                   <button
                     onClick={() =>
-                      handleEdit(d.id, d.title, d.description, d.status)
+                      handleEdit(d._id, d.title, d.description, d.status)
                     }
                     className="fas fa-edit"
                   ></button>
                   <button
-                    onClick={() => handleTitleDelete(d.id)}
+                    onClick={() => handleResearchDelete(d._id)}
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handlePublicationsEdit(d.id)}
+                    onClick={() => handlePublicationsEdit(d._id)}
                     className="edit"
                   >
                     + Add Publication
                   </button>
                 </div>
               )}
-              <button
-                onClick={() => handleViewPublications(d.description)}
-                className={`border px-2 rounded my-2 ${
-                  d.publications.length ? "" : "hidden"
-                }`}
-              >
-                View Publications
-              </button>
-              {selectedProject === d.description &&
-                d.publications.map((p) => (
-                  <div key={Math.random()} className="border-b mb-4">
+              {d?.publications?.length > 0 && (
+                <button
+                  onClick={() => setSelectedProjectId(d._id)}
+                  className="border px-2 rounded my-2"
+                >
+                  View Publications
+                </button>
+              )}
+              {selectedProjectId === d._id &&
+                d?.publications?.map((p) => (
+                  <div key={Math.random()} className="border-b p-2 mb-4">
                     <a
-                      href={p.url}
+                      href={p.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-semibold hover:text-teal-500"
@@ -508,20 +389,16 @@ const Research = () => {
                     {isAuthenticated && (
                       <div className="flex gap-4">
                         <button
-                          onClick={() =>
-                            handlePublicationsEdit(
-                              p.id,
-                              p.research_id,
-                              p.title,
-                              p.published,
-                              p.authors,
-                              p.url
-                            )
-                          }
+                          onClick={() => {
+                            setPublicationData(p);
+                            setPublicationId(p._id);
+                            setIsPublicationEditing(true);
+                            setResearchId(d._id);
+                          }}
                           className="fas fa-edit"
                         ></button>
                         <button
-                          onClick={() => handlePublicationDelete(d.id)}
+                          onClick={() => handlePublicationDelete(p._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>
@@ -534,43 +411,45 @@ const Research = () => {
       <p className="text-xl font-bold bg-indigo-950 p-2 text-white w-fit">
         Previous Research
       </p>
-      {data?.map(
+      {research?.map(
         (d) =>
           d.status === "previousResearch" && (
-            <div className="my-4" key={d.id}>
+            <div className="my-4" key={d._id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
                 <div className="flex gap-4">
                   <button
-                    onClick={() => handleEdit(d.id, d.title, d.description)}
+                    onClick={() =>
+                      handleEdit(d._id, d.title, d.description, d.status)
+                    }
                     className="fas fa-edit"
                   ></button>
                   <button
-                    onClick={() => handleTitleDelete(d.id)}
+                    onClick={() => handleResearchDelete(d._id)}
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handlePublicationsEdit(d.id)}
+                    onClick={() => handlePublicationsEdit(d._id)}
                     className="edit"
                   >
                     + Add Publication
                   </button>
                 </div>
               )}
-              <button
-                onClick={() => handleViewPublications(d.description)}
-                className={`border px-2 rounded my-2 ${
-                  d.publications.length ? "" : "hidden"
-                }`}
-              >
-                View Publications
-              </button>
-              {selectedProject === d.description &&
-                d.publications.map((p) => (
+              {d?.publications?.length > 0 && (
+                <button
+                  onClick={() => setSelectedProjectId(d._id)}
+                  className="border px-2 rounded my-2"
+                >
+                  View Publications
+                </button>
+              )}
+              {selectedProjectId === d._id &&
+                d?.publications?.map((p) => (
                   <div key={Math.random()} className="border-b mb-4">
                     <a
-                      href={p.url}
+                      href={p.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-semibold hover:text-teal-500"
@@ -582,20 +461,16 @@ const Research = () => {
                     {isAuthenticated && (
                       <div className="flex gap-4">
                         <button
-                          onClick={() =>
-                            handlePublicationsEdit(
-                              p.id,
-                              p.research_id,
-                              p.title,
-                              p.published,
-                              p.authors,
-                              p.url
-                            )
-                          }
+                          onClick={() => {
+                            setPublicationData(p);
+                            setPublicationId(p._id);
+                            setIsPublicationEditing(true);
+                            setResearchId(d._id);
+                          }}
                           className="fas fa-edit"
                         ></button>
                         <button
-                          onClick={() => handlePublicationDelete(d.id)}
+                          onClick={() => handlePublicationDelete(d._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>

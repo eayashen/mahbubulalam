@@ -1,8 +1,8 @@
 const Publication = require("../../models/Publication");
 
 const addPublication = async (req, res) => {
-  const { title, published, category, research_id, authors, link } = req.body;
-
+  const { title, published, category, research_id, authors, link, keywords } =
+    req.body;
   try {
     const newlyCreatedPublication = new Publication({
       title,
@@ -11,6 +11,7 @@ const addPublication = async (req, res) => {
       research_id,
       authors,
       link,
+      keywords,
     });
 
     await newlyCreatedPublication.save();
@@ -22,24 +23,13 @@ const addPublication = async (req, res) => {
   }
 };
 
-const fetchAllPublicationsByResearch = async (req, res) => {
-  const { research_id } = req.params;
-
-  try {
-    const listOfPublication = await Publication.find({ research_id });
-    res.status(200).json({ success: true, data: listOfPublication });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Something went wrong" });
-  }
-};
-
 const fetchAllPublicationsByCategory = async (req, res) => {
   const { category } = req.params;
 
   try {
-    const listOfPublication = await Publication.find({ category });
-    res.status(200).json({ success: true, data: listOfPublication });
+    const publications = await Publication.find({ category }).sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: publications });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
@@ -85,7 +75,6 @@ const deletePublication = async (req, res) => {
 
 module.exports = {
   addPublication,
-  fetchAllPublicationsByResearch,
   fetchAllPublicationsByCategory,
   editPublication,
   deletePublication,

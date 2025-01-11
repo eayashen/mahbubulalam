@@ -22,7 +22,31 @@ const addResearch = async (req, res) => {
 
 const fetchAllResearch = async (req, res) => {
   try {
-    const listOfResearch = await Research.find({});
+    const listOfResearch = await Research.aggregate([
+      {
+        $lookup: {
+          from: "publications",
+          let: { researchId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$research_id", { $toString: "$$researchId" }], // Convert ObjectId to String
+                },
+              },
+            },
+            {
+              $sort: { createdAt: -1 }, // Sort publications in reverse order by _id
+            },
+          ],
+          as: "publications",
+        },
+      },
+      {
+        $sort: { createdAt: -1 },
+      },
+    ]);
+
     res.status(200).json({ success: true, data: listOfResearch });
   } catch (error) {
     console.log(error);
@@ -53,7 +77,7 @@ const deleteResearch = async (req, res) => {
 
   try {
     await Research.findByIdAndDelete(id);
-    
+
     // also delete related publications
     await Publication.deleteMany({ research_id: id });
 
@@ -64,4 +88,9 @@ const deleteResearch = async (req, res) => {
   }
 };
 
-module.exports = { addResearch, fetchAllResearch, editResearch, deleteResearch };
+module.exports = {
+  addResearch,
+  fetchAllResearch,
+  editResearch,
+  deleteResearch,
+};

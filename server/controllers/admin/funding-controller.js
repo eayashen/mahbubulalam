@@ -25,7 +25,16 @@ const addFunding = async (req, res) => {
 //fetch all fundings
 const fetchAllFundings = async (req, res) => {
   try {
-    const listOfFunding = await Funding.find({});
+    const listOfFunding = await Funding.aggregate([
+      {
+        $addFields: {
+          yearAsNumber: { $toInt: "$year" }, // Convert `year` to an integer
+        },
+      },
+      {
+        $sort: { yearAsNumber: -1 }, // Sort by the converted field
+      },
+    ]);
     res.status(200).json({ success: true, data: listOfFunding });
   } catch (error) {
     console.log(error);

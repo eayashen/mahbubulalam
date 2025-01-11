@@ -40,7 +40,16 @@ const addAward = async (req, res) => {
 
 const getAwards = async (req, res) => {
   try {
-    const awards = await Awards.find();
+    const awards = await Awards.find({}).aggregate([
+      {
+        $addFields: {
+          yearAsNumber: { $toInt: "$year" }, // Convert `year` to an integer
+        },
+      },
+      {
+        $sort: { yearAsNumber: -1 }, // Sort by the converted field
+      },
+    ]);
     res.status(200).json({ awards });
   } catch (error) {
     console.error(error);
@@ -82,4 +91,10 @@ const deleteAward = async (req, res) => {
   }
 };
 
-module.exports = { addAward, getAwards, updateAward, deleteAward, handleImageUpload };
+module.exports = {
+  addAward,
+  getAwards,
+  updateAward,
+  deleteAward,
+  handleImageUpload,
+};
