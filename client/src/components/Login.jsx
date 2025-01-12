@@ -22,7 +22,9 @@ const Login = () => {
       return;
     }
     dispatch(login(formData)).then((res) => {
+      console.log(res.payload);
       if (res.payload?.success) {
+        console.log(res.payload);
         navigate("/");
       } else {
         setError(res.payload?.message || "Login failed");

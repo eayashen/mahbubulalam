@@ -9,7 +9,6 @@ const initialState = {
 export const getPublications = createAsyncThunk(
   "publications/getPublications",
   async (category, { rejectWithValue }) => {
-    console.log(category);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_API_URL}/api/publication/${category}`

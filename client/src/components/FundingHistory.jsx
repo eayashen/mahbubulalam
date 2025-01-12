@@ -142,7 +142,7 @@ const FundingHistory = () => {
               <div className="flex items-center">
                 <p className="w-24">Role</p>
                 <select
-                  className="px-2 border rounded flex-1"
+                  className="px-2 h-10 border rounded flex-1"
                   onChange={(e) =>
                     setFormData({ ...formData, role: e.target.value })
                   }

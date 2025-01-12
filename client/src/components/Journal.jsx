@@ -153,7 +153,7 @@ const Journal = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, authors: e.target.value })
                   }
-                  placeholder="Description"
+                  placeholder="Authors"
                   value={formData?.authors}
                 />
               </div>

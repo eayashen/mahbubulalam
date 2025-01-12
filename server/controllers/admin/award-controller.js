@@ -31,7 +31,9 @@ const addAward = async (req, res) => {
       image,
     });
     await newAward.save();
-    res.status(201).json({ message: "Award added successfully" });
+    res
+      .status(201)
+      .json({ success: true, message: "Award added successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -40,7 +42,7 @@ const addAward = async (req, res) => {
 
 const getAwards = async (req, res) => {
   try {
-    const awards = await Awards.find({}).aggregate([
+    const awards = await Awards.aggregate([
       {
         $addFields: {
           yearAsNumber: { $toInt: "$year" }, // Convert `year` to an integer
@@ -50,7 +52,8 @@ const getAwards = async (req, res) => {
         $sort: { yearAsNumber: -1 }, // Sort by the converted field
       },
     ]);
-    res.status(200).json({ awards });
+
+    res.status(200).json({ success: true, data: awards });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -70,7 +73,9 @@ const updateAward = async (req, res) => {
     findAward.image = image || findAward.image;
 
     await findAward.save();
-    res.status(200).json({ message: "Award updated successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Award updated successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -82,9 +87,13 @@ const deleteAward = async (req, res) => {
     const { id } = req.params;
     const award = await Awards.findByIdAndDelete(id);
     if (!award) {
-      return res.status(404).json({ message: "Award not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Award not found" });
     }
-    res.status(200).json({ message: "Award deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Award deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

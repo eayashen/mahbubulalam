@@ -8,6 +8,6 @@ router.post('/add-award', addAward);
 router.get('/get-awards', getAwards);
 router.put('/update-award/:id', updateAward);
 router.delete('/delete-award/:id', deleteAward);
-router.post('/upload-image', upload.single("file"), handleImageUpload);
+router.post('/upload-image', upload.single("image"), handleImageUpload);
 
 module.exports = router;

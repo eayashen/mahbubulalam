@@ -22,8 +22,16 @@ import {
   addDesignation,
   deleteDesignation,
 } from "../redux/admin/designation-slice";
+import {
+  getAwards,
+  updateAward,
+  addAward,
+  deleteAward,
+  uploadImage,
+} from "../redux/admin/award-slice";
 import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
+import AwardForm from "./AwardForm";
 
 const initialFormData = {
   title: "",
@@ -37,16 +45,25 @@ const initialAboutFormData = {
   bio: "",
 };
 
+const initialAward = {
+  title: "",
+  year: "",
+  image: "",
+};
+
 const Home = () => {
   const dispatch = useDispatch();
   const { about, isLoading } = useSelector((state) => state.about);
   const { designation } = useSelector((state) => state.designation);
   const { isAuthenticated } = useSelector((state) => state.auth);
-  // const { awards } = useSelector((state) => state.award);
+  const { awards } = useSelector((state) => state.award);
   const [formData, setFormData] = useState(initialFormData);
   const [aboutFormData, setAboutFormData] = useState(initialAboutFormData);
   const [isDesignationEditing, setIsDesignationEditing] = useState(false);
   const [designationId, setDesignationId] = useState(null);
+  const [awardData, setAwardData] = useState(initialAward);
+  const [isAwardEditing, setIsAwardEditing] = useState(false);
+  const [awardId, setAwardId] = useState(null);
 
   const [images, setImages] = useState([
     MAC0,
@@ -73,6 +90,7 @@ const Home = () => {
   useEffect(() => {
     dispatch(getAbout());
     dispatch(getDesignation());
+    dispatch(getAwards());
   }, []);
 
   const [imageEditing, setImageEditing] = useState(false);
@@ -121,10 +139,6 @@ const Home = () => {
     });
   };
 
-  //-------------------------Award editing functionality----------------------------
-  const [isAwardEditing, setIsAwardEditing] = useState(false);
-  const [award, setAward] = useState(null);
-
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEditClick = () => {
@@ -141,6 +155,48 @@ const Home = () => {
     });
     setIsEditing(false);
     setAboutFormData(initialAboutFormData);
+  };
+
+  const handleSaveAward = (uploadedImageUrl) => {
+    if (awardData.title === "" || awardData.year === "") {
+      alert("Title and Year fields are required");
+      return;
+    }
+    const payload = { ...awardData, image: uploadedImageUrl };
+
+    if (awardId) {
+      dispatch(updateAward({ formData: payload, id: awardId })).then(
+        (res) => {
+          if (res.payload?.success) {
+            dispatch(getAwards());
+          }
+        }
+      );
+    } else {
+      dispatch(addAward(payload)).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getAwards());
+        }
+      });
+    }
+    setIsAwardEditing(false);
+    setAwardData(initialAward);
+    awardId && setAwardId(null);
+  };
+
+  const handleUpdateAward = (a) => {
+    setIsAwardEditing(true);
+    setAwardId(a._id);
+    const { title, year, image } = a;
+    setAwardData({ title, year, image });
+  };
+
+  const handleDeleteAward = (id) => {
+    dispatch(deleteAward(id)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getAwards());
+      }
+    });
   };
 
   if (isLoading)
@@ -231,61 +287,15 @@ const Home = () => {
       )}
 
       {isAwardEditing && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
-          <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
-            <div className="space-y-2">
-              <div className="flex">
-                <p className="w-16">Image: </p>
-                <input
-                  type="file"
-                  // onChange={(e) =>
-                  //   setAward({ ...award, image: e.target.value })
-                  // }
-                  value={award?.image}
-                />
-              </div>
-              <div className="flex">
-                <p className="w-16">Title</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  // onChange={(e) =>
-                  //   setAward({ ...award, title: e.target.value })
-                  // }
-                  placeholder="Title"
-                  value={award?.title}
-                />
-              </div>
-              <div className="flex">
-                <p className="w-16">Year</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  // onChange={(e) => setAward({ ...award, year: e.target.value })}
-                  placeholder="Year"
-                  value={award?.year}
-                />
-              </div>
-            </div>
-            <div className="flex justify-center gap-4">
-              <button
-                className="save"
-                //  onClick={handleSaveAward}
-              >
-                Save
-              </button>
-              <button
-                className="cancel"
-                // onClick={() => {
-                //   setIsAwardEditing(false);
-                //   setBio(null);
-                // }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <AwardForm 
+          setIsAwardEditing={setIsAwardEditing}
+          setAwardData={setAwardData}
+          awardData={awardData}
+          setAwardId={setAwardId}
+          awardId={awardId}
+          handleSaveAward={handleSaveAward}
+          initialAward={initialAward}
+          />
       )}
 
       <div className="sm:flex gap-2">
@@ -413,19 +423,16 @@ const Home = () => {
             + Add Awards
           </button>
         )}
-        {/* {awards?.map((a) => (
+        {awards?.map((a) => (
           <div
             className="flex gap-2 p-2 border rounded my-2 shadow h-fit"
             key={a.title}
           >
             <div className="w-28 h-20 flex items-center justify-center relative">
-              <p className="absolute z-10 font-semibold text-indigo-950">
-                {a?.year?.match(regex)?.[0]}
-              </p>
               <img
-                src={award_logo}
-                alt=""
-                className="w-4/5 h-4/5 object-cover"
+                src={a.image}
+                alt="award"
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="flex-1 pl-4">
@@ -436,16 +443,16 @@ const Home = () => {
               <div className="flex gap-4 h-fit my-auto">
                 <button
                   className="fas fa-edit text-green-500"
-                  // onClick={() => handleUpdateAward(a.id, a.title, a.year)}
+                  onClick={() => handleUpdateAward(a)}
                 ></button>
                 <button
                   className="fas fa-trash text-red-400"
-                  // onClick={() => handleDeleteAward(a.id)}
+                  onClick={() => handleDeleteAward(a._id)}
                 ></button>
               </div>
             )}
           </div>
-        ))} */}
+        ))}
       </div>
     </div>
   );

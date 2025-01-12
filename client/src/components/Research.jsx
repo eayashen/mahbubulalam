@@ -42,6 +42,7 @@ const Research = () => {
   const [publicationId, setPublicationId] = useState(null);
   const [ispublicationEditing, setIsPublicationEditing] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
+  const [key, setKey] = useState("");
 
   useEffect(() => {
     dispatch(getResearch());
@@ -136,7 +137,23 @@ const Research = () => {
     setPublicationId(null);
   };
 
-  if (isLoading)
+  const addItem = () => {
+    if (key === "") return;
+    setPublicationData({
+      ...publicationData,
+      keywords: [...publicationData.keywords, key],
+    });
+    setKey("");
+  };
+
+  const removeItem = (value) => {
+    setPublicationData({
+      ...publicationData,
+      keywords: publicationData.keywords.filter((keyword) => keyword !== value),
+    });
+  };
+
+  if (isLoading) {
     return (
       <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
         <Triangle
@@ -150,6 +167,7 @@ const Research = () => {
         />
       </div>
     );
+  }
 
   return (
     <div className="lg:mx-24 mx-4">
@@ -160,7 +178,7 @@ const Research = () => {
               <div className="flex items-center">
                 <p className="w-20">Status</p>
                 <select
-                  className="px-2 border rounded flex-1"
+                  className="px-2 h-10 border rounded flex-1"
                   onChange={(e) =>
                     setFormData({
                       ...formData,
@@ -306,7 +324,37 @@ const Research = () => {
                   value={publicationData?.link}
                 />
               </div>
-              <div>keywords</div>
+              <div>
+                <div className="flex items-center">
+                  <p className="w-20">Keywords</p>
+                  <input
+                    type="text"
+                    className="px-2 border rounded flex-1"
+                    placeholder="Keywords"
+                    value={key}
+                    onChange={(e) => setKey(e.target.value)}
+                  />
+                  <button className="ml-2 save py-2" onClick={(e) => addItem()}>
+                    Add
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {publicationData?.keywords?.map((keyword) => (
+                    <div
+                      key={Math.random()}
+                      className="border px-2 py-1 rounded-sm"
+                    >
+                      {keyword}
+                      <button
+                        onClick={() => removeItem(keyword)}
+                        className="ml-2 text-red-500"
+                      >
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSavePublication}>
@@ -368,14 +416,14 @@ const Research = () => {
               {d?.publications?.length > 0 && (
                 <button
                   onClick={() => setSelectedProjectId(d._id)}
-                  className="border px-2 rounded my-2"
+                  className="border px-2 rounded my-2 bg-blue-200"
                 >
                   View Publications
                 </button>
               )}
               {selectedProjectId === d._id &&
                 d?.publications?.map((p) => (
-                  <div key={Math.random()} className="border-b p-2 mb-4">
+                  <div key={Math.random()} className="border-b py-2 mb-4">
                     <a
                       href={p.link}
                       target="_blank"
@@ -440,14 +488,14 @@ const Research = () => {
               {d?.publications?.length > 0 && (
                 <button
                   onClick={() => setSelectedProjectId(d._id)}
-                  className="border px-2 rounded my-2"
+                  className="border px-2 rounded my-2 bg-blue-200"
                 >
                   View Publications
                 </button>
               )}
               {selectedProjectId === d._id &&
                 d?.publications?.map((p) => (
-                  <div key={Math.random()} className="border-b mb-4">
+                  <div key={Math.random()} className="border-b mb-4 py-2">
                     <a
                       href={p.link}
                       target="_blank"
@@ -457,7 +505,20 @@ const Research = () => {
                       {p.title}
                     </a>
                     <p>{p.published}</p>
-                    <p>{p.authors}</p>
+                    <p>
+                      {p.authors.split(" ").map((word, index) => {
+                        const isKeyword = p.keywords.some(
+                          (keyword) =>
+                            keyword.toLowerCase() === word.toLowerCase()
+                        );
+                        return (
+                          <span key={index}>
+                            {isKeyword ? <strong>{word}</strong> : word}
+                            {index !== p.authors.split(" ").length - 1 && " "}
+                          </span>
+                        );
+                      })}
+                    </p>
                     {isAuthenticated && (
                       <div className="flex gap-4">
                         <button

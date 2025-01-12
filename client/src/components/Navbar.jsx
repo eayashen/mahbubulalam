@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import scholar from "../images/scholar.png";
 import { useSelector, useDispatch } from "react-redux";
 import { resetTokenAndCredentials } from "../redux/auth-slice";
-import AboutForm from "./AboutForm";
 import { getAbout, updateAbout } from "../redux/admin/about-slice";
 import FileUpload from "./FileUpload";
 

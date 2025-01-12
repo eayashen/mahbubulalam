@@ -37,7 +37,7 @@ const fetchAllPublicationsByCategory = async (req, res) => {
 };
 
 const editPublication = async (req, res) => {
-  const { title, published, category, research_id, authors, link } = req.body;
+  const { title, published, category, research_id, authors, link, keywords } = req.body;
   const { id } = req.params;
 
   try {
@@ -50,6 +50,7 @@ const editPublication = async (req, res) => {
         research_id,
         authors,
         link,
+        keywords,
       },
       { new: true }
     );
