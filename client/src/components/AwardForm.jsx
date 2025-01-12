@@ -128,7 +128,7 @@ const AwardForm = ({
             <p className="w-16">Year</p>
             <input
               className="px-2 border rounded flex-1"
-              type="text"
+              type="number"
               onChange={(e) =>
                 setAwardData({ ...awardData, year: e.target.value })
               }

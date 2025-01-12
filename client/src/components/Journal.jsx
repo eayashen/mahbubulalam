@@ -32,6 +32,7 @@ const Journal = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [isPublicationEditing, setIsPublicationEditing] = useState(false);
   const [publicationId, setPublicationId] = useState(null);
+  const [key, setKey] = useState("");
 
   useEffect(() => {
     dispatch(getPublications(location.pathname.slice(1)));
@@ -71,6 +72,22 @@ const Journal = () => {
       if (res.payload?.success) {
         dispatch(getPublications(location.pathname.slice(1)));
       }
+    });
+  };
+
+  const addItem = () => {
+    if (key === "") return;
+    setFormData({
+      ...formData,
+      keywords: [...formData.keywords, key],
+    });
+    setKey("");
+  };
+
+  const removeItem = (value) => {
+    setFormData({
+      ...formData,
+      keywords: formData.keywords.filter((keyword) => keyword !== value),
     });
   };
 
@@ -169,7 +186,37 @@ const Journal = () => {
                   value={formData?.link}
                 />
               </div>
-              <div>keywords</div>
+              <div>
+                <div className="flex items-center">
+                  <p className="w-20">Keywords</p>
+                  <input
+                    type="text"
+                    className="px-2 border rounded flex-1"
+                    placeholder="Bold Name"
+                    value={key}
+                    onChange={(e) => setKey(e.target.value)}
+                  />
+                  <button className="ml-2 save py-2" onClick={(e) => addItem()}>
+                    Add
+                  </button>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {formData?.keywords?.map((keyword) => (
+                    <div
+                      key={Math.random()}
+                      className="border px-2 py-1 rounded-sm"
+                    >
+                      {keyword}
+                      <button
+                        onClick={() => removeItem(keyword)}
+                        className="ml-2 text-red-500"
+                      >
+                        x
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSavePublication}>
@@ -217,8 +264,24 @@ const Journal = () => {
           >
             {item.title}
           </a>
-          <p className="text-md">{item.published}</p>
-          <p className="text-sm">{item.authors}</p>
+          <p className="text-sm">{item.published}</p>
+          <p>
+  {item.authors.split(",").map((author, index) => {
+    const trimmedAuthor = author.trim(); // Remove leading/trailing spaces
+    const isKeyword = item.keywords.some(
+      (keyword) => keyword.toLowerCase() === trimmedAuthor.toLowerCase()
+    );
+
+    return (
+      <span key={index}>
+        {isKeyword ? <strong>{trimmedAuthor}</strong> : trimmedAuthor}
+        {index !== item.authors.split(",").length - 1 && ", "}
+      </span>
+    );
+  })}
+</p>
+
+
           {isAuthenticated && (
             <div className="flex gap-4">
               <button

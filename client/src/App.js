@@ -7,10 +7,10 @@ import FundingHistory from "./components/FundingHistory";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
 import Research from "./components/Research";
-import Test from "./components/Test";
 import { checkAuth } from "./redux/auth-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
+import { Navigate } from "react-router-dom";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -45,6 +45,7 @@ const App = () => {
         <div>
           <Navbar />
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/research" element={<Research />} />
             <Route path="/journal" element={<Journal />} />
@@ -52,12 +53,16 @@ const App = () => {
             <Route path="/policy" element={<Journal />} />
             <Route path="/fundinghistory" element={<FundingHistory />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/test" element={<Test />} />
+            
+            {/* Admin Login Route */}
+            <Route
+              path="/login"
+              element={!user ? <Login /> : <Navigate to="/" />}
+            />
           </Routes>
         </div>
         <footer className="text-center bg-indigo-950 text-white py-2">
-          © 2023 <Link to="/login">Mahbub Ul Alam</Link>. All rights reserved.
+          © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>. All rights reserved.
         </footer>
       </Router>
     </div>

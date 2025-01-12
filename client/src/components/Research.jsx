@@ -330,7 +330,7 @@ const Research = () => {
                   <input
                     type="text"
                     className="px-2 border rounded flex-1"
-                    placeholder="Keywords"
+                    placeholder="Bold Name"
                     value={key}
                     onChange={(e) => setKey(e.target.value)}
                   />
@@ -390,11 +390,11 @@ const Research = () => {
       {research?.map(
         (d) =>
           d.status === "onGoing" && (
-            <div className="my-4" key={d._id}>
+            <div className="my-4 border-b pb-2" key={d._id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
-                <div className="flex gap-4">
+                <div className="flex gap-4 py-1">
                   <button
                     onClick={() =>
                       handleEdit(d._id, d.title, d.description, d.status)
@@ -433,9 +433,22 @@ const Research = () => {
                       {p.title}
                     </a>
                     <p>{p.published}</p>
-                    <p>{p.authors}</p>
+                    <p>
+                      {p.authors.split(" ").map((word, index) => {
+                        const isKeyword = p.keywords.some(
+                          (keyword) =>
+                            keyword.toLowerCase() === word.toLowerCase()
+                        );
+                        return (
+                          <span key={index}>
+                            {isKeyword ? <strong>{word}</strong> : word}
+                            {index !== p.authors.split(" ").length - 1 && " "}
+                          </span>
+                        );
+                      })}
+                    </p>
                     {isAuthenticated && (
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 py-2">
                         <button
                           onClick={() => {
                             setPublicationData(p);
@@ -462,11 +475,11 @@ const Research = () => {
       {research?.map(
         (d) =>
           d.status === "previousResearch" && (
-            <div className="my-4" key={d._id}>
+            <div className="my-4 border-b pb-2" key={d._id}>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
-                <div className="flex gap-4">
+                <div className="flex gap-4 py-1">
                   <button
                     onClick={() =>
                       handleEdit(d._id, d.title, d.description, d.status)
@@ -488,7 +501,7 @@ const Research = () => {
               {d?.publications?.length > 0 && (
                 <button
                   onClick={() => setSelectedProjectId(d._id)}
-                  className="border px-2 rounded my-2 bg-blue-200"
+                  className="border px-2 py-1 rounded my-2 bg-blue-200"
                 >
                   View Publications
                 </button>
@@ -520,7 +533,7 @@ const Research = () => {
                       })}
                     </p>
                     {isAuthenticated && (
-                      <div className="flex gap-4">
+                      <div className="flex gap-4 py-2">
                         <button
                           onClick={() => {
                             setPublicationData(p);

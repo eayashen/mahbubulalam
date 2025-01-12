@@ -120,7 +120,7 @@ const FundingHistory = () => {
                 <p className="w-24">Year: </p>
                 <input
                   className="px-2 border rounded flex-1"
-                  type="text"
+                  type="number"
                   onChange={(e) =>
                     setFormData({ ...formData, year: e.target.value })
                   }
@@ -162,7 +162,7 @@ const FundingHistory = () => {
                 <p className="w-24">Award</p>
                 <input
                   className="px-2 border rounded flex-1"
-                  type="text"
+                  type="number"
                   onChange={(e) =>
                     setFormData({ ...formData, awarded_amount: e.target.value })
                   }
@@ -218,24 +218,24 @@ const FundingHistory = () => {
       <div className="text-right mr-10">
         <p>
           Total amount awarded till date:{" "}
-          <span className="font-medium">${total}</span>
+          <span className="font-medium">${total.toLocaleString()}</span>
         </p>
         <p>
           As Principal Investigator (PI):{" "}
           <span className="font-medium">
-            ${roleSum ? roleSum["Principal Investigator"] ?? 0 : 0}
+            ${roleSum ? (roleSum["Principal Investigator"] ?? 0).toLocaleString() : 0}
           </span>
         </p>
         <p>
           As Co-Principal Investigator (Co-PI):{" "}
           <span className="font-medium">
-            ${roleSum ? roleSum["Co-Principal Investigator"] ?? 0 : 0}
+            ${roleSum ? (roleSum["Co-Principal Investigator"] ?? 0).toLocaleString() : 0}
           </span>
         </p>
         <p>
           As Co-Investigator (Co-I):{" "}
           <span className="font-medium">
-            ${roleSum ? roleSum["Co-Investigator"] ?? 0 : 0}
+            ${roleSum ? (roleSum["Co-Investigator"] ?? 0).toLocaleString() : 0}
           </span>
         </p>
       </div>
@@ -268,7 +268,7 @@ const FundingHistory = () => {
             <p className="w-10 px-1">{d.year}</p>
             <p className="flex-1 px-4">{d.title}</p>
             <p className="w-40 px-1">{d.role}</p>
-            <p className="w-20 px-1">${d.awarded_amount}</p>
+            <p className="w-20 px-1">${Number(d.awarded_amount).toLocaleString()}</p>
             <p className="w-40 px-1">{d.time_period}</p>
             <p className="w-32 px-1">{d.donor}</p>
             {isAuthenticated && (
