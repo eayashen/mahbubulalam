@@ -15,7 +15,6 @@ import {
   getAbout,
   updateAbout,
   uploadBanner,
-  uploadProPic,
 } from "../redux/admin/about-slice";
 import {
   getDesignation,
@@ -43,10 +42,9 @@ const Home = () => {
   const { about, isLoading } = useSelector((state) => state.about);
   const { designation } = useSelector((state) => state.designation);
   const { isAuthenticated } = useSelector((state) => state.auth);
+  // const { awards } = useSelector((state) => state.award);
   const [formData, setFormData] = useState(initialFormData);
   const [aboutFormData, setAboutFormData] = useState(initialAboutFormData);
-  const [awards, setAwards] = useState();
-  const [editBio, setEditBio] = useState(null);
   const [isDesignationEditing, setIsDesignationEditing] = useState(false);
   const [designationId, setDesignationId] = useState(null);
 
@@ -415,7 +413,7 @@ const Home = () => {
             + Add Awards
           </button>
         )}
-        {awards?.map((a) => (
+        {/* {awards?.map((a) => (
           <div
             className="flex gap-2 p-2 border rounded my-2 shadow h-fit"
             key={a.title}
@@ -447,7 +445,7 @@ const Home = () => {
               </div>
             )}
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );

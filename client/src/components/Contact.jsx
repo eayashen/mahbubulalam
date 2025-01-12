@@ -14,7 +14,7 @@ const Contact = () => {
             </div>
             <div className="flex items-center gap-2 text-lg">
               <i className="fas fa-regular fa-envelope"></i>
-              <p>mahbub@icddrb.org</p>
+              <p>mahbubalam@icddrb.org</p>
             </div>
             <div className="flex items-center gap-2 text-lg">
               <i className="fas fa-solid fa-location-arrow"></i>
