@@ -1,27 +1,164 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import scholar from "../images/scholar.png";
+import { useDispatch, useSelector } from "react-redux";
+import { getContact, updateContact } from "../redux/admin/contact-slice";
+import { Triangle } from "react-loader-spinner";
+
+const initialFormData = {
+  phone: "",
+  phoneVisible: true,
+  email: "",
+  emailVisible: true,
+  address: "",
+  addressVisible: true,
+};
 
 const Contact = () => {
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { contact, isLoading } = useSelector((state) => state.contact);
+  const [formData, setFormData] = useState(initialFormData);
+  const [openModal, setOpenModal] = useState(false);
+
+  const handleSave = () => {
+    dispatch(updateContact(formData));
+    setOpenModal(false);
+    setFormData(initialFormData);
+  };
+
+  const handleModalOpen = () => {
+    setOpenModal(true);
+    if (contact) {
+      const { phone, phoneVisible, email, emailVisible, address, addressVisible } = contact;
+      setFormData({ phone, phoneVisible, email, emailVisible, address, addressVisible });
+    } else {
+      setFormData(initialFormData);
+    }
+  };
+
+  useEffect(() => {
+    dispatch(getContact());
+  }, []);
+
+  if (isLoading)
+    return (
+      <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
+        <Triangle
+          height="60"
+          width="60"
+          color="#4fa94d"
+          ariaLabel="triangle-loading"
+          wrapperStyle={{}}
+          wrapperClassName=""
+          visible={true}
+        />
+      </div>
+    );
+
   return (
     <div className="bg-gray-200 py-20 lg:px-24 px-14">
+      {openModal && (
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
+          <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
+            <p className="sm:text-lg font-semibold mb-2 block">
+              Contact Information
+            </p>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  setFormData({ ...formData, phoneVisible: e.target.checked })
+                }
+                checked={formData?.phoneVisible}
+              />
+              <p className="w-20 ml-2">Phone: </p>
+              <input
+                className="px-2 border rounded flex-1"
+                type="text"
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
+                value={formData?.phone}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  setFormData({ ...formData, emailVisible: e.target.checked })
+                }
+                checked={formData?.emailVisible}
+              />
+              <p className="w-20 ml-2">Email: </p>
+              <input
+                className="px-2 border rounded flex-1"
+                type="text"
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
+                value={formData?.email}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    addressVisible: e.target.checked,
+                  })
+                }
+                checked={formData?.addressVisible}
+              />
+              <p className="w-20 ml-2">Address: </p>
+              <textarea
+                className="px-2 border rounded flex-1 min-h-28"
+                type="text"
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+                value={formData?.address}
+              />
+            </div>
+            <div className="flex justify-center gap-4">
+              <button className="save" onClick={handleSave}>
+                Save
+              </button>
+              <button
+                className="cancel"
+                onClick={() => {
+                  setOpenModal(false);
+                  setFormData(initialFormData);
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="w-full h-fit bg-white rounded-xl lg:w-[800px] mx-auto">
-        <div className="flex justif-center sm:flex-row flex-col px-10">
+        <div className="flex justif-center sm:flex-row flex-col sm:px-10">
           <div className="flex-1 flex flex-col p-6 space-y-5">
             <p className="text-2xl font-bold">Contact Info</p>
-            <div className="flex items-center gap-2 text-lg">
-              <i className="fas fa-solid fa-phone"></i>
-              <p>+880 1818-585465</p>
-            </div>
-            <div className="flex items-center gap-2 text-lg">
-              <i className="fas fa-regular fa-envelope"></i>
-              <p>mahbubalam@icddrb.org</p>
-            </div>
-            <div className="flex items-center gap-2 text-lg">
-              <i className="fas fa-solid fa-location-arrow"></i>
-              <p>
-                68, Shaheed Tajuddin Ahmed Sharani, Mohakhali, Dhaka, Bangladesh
-              </p>
-            </div>
+            {contact?.phoneVisible && (
+              <div className="flex items-center gap-2 text-lg">
+                <i className="fas fa-solid fa-phone"></i>
+                <p>{contact?.phone}</p>
+              </div>
+            )}
+            {contact?.emailVisible && (
+              <div className="flex items-center gap-2 text-lg">
+                <i className="fas fa-regular fa-envelope"></i>
+                <p>{contact?.email}</p>
+              </div>
+            )}
+            {contact?.addressVisible && (
+              <div className="flex items-center gap-2 text-lg">
+                <i className="fas fa-solid fa-location-arrow"></i>
+                <p>{contact?.address}</p>
+              </div>
+            )}
             <div className="flex text-black gap-2 h-6 text-xl">
               <a
                 href="https://scholar.google.com/citations?hl=en&user=UwwIXLUAAAAJ"
@@ -86,6 +223,13 @@ const Contact = () => {
             </button>
           </div>
         </div>
+        {isAuthenticated && (
+          <div className="flex justify-center pb-6">
+            <button className="save" onClick={handleModalOpen}>
+              Edit Contact
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

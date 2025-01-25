@@ -10,6 +10,7 @@ const awardRoutes = require("./routes/admin/award-routes");
 const fundingRoutes = require("./routes/admin/funding-routes");
 const researchRoutes = require("./routes/admin/research-routes");
 const publicationRoutes = require("./routes/admin/publication-routes");
+const contactRoutes = require("./routes/admin/contact-routes");
 
 dotenv.config();
 const app = express();
@@ -47,6 +48,7 @@ app.use("/api/award", awardRoutes);
 app.use("/api/funding", fundingRoutes);
 app.use("/api/research", researchRoutes);
 app.use("/api/publication", publicationRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

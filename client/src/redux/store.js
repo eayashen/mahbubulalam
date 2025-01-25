@@ -6,6 +6,7 @@ import fundingSlice from "./admin/funding-slice";
 import designationSlice from "./admin/designation-slice";
 import researchSlice from "./admin/research-slice";
 import publicationSlice from "./admin/publication-slice";
+import contactSlice from "./admin/contact-slice";
 
 import { loginData } from "./loginData";
 
@@ -18,6 +19,7 @@ const store = configureStore({
     designation: designationSlice,
     research: researchSlice,
     publication: publicationSlice,
+    contact: contactSlice,
     loginData: loginData.reducer,
   },
 });

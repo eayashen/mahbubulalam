@@ -32,6 +32,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
 import AwardForm from "./AwardForm";
+import Gallery from "./Gallery";
 
 const initialFormData = {
   title: "",
@@ -64,6 +65,8 @@ const Home = () => {
   const [awardData, setAwardData] = useState(initialAward);
   const [isAwardEditing, setIsAwardEditing] = useState(false);
   const [awardId, setAwardId] = useState(null);
+  const [openImageUpdateModal, setOpenImageUpdateModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const [images, setImages] = useState([
     MAC0,
@@ -85,7 +88,6 @@ const Home = () => {
     slidesToScroll: 1,
     adaptiveHeight: true,
   };
-  const regex = /\b\d{4}\b/g;
 
   useEffect(() => {
     dispatch(getAbout());
@@ -139,8 +141,6 @@ const Home = () => {
     });
   };
 
-  const [isEditing, setIsEditing] = useState(false);
-
   const handleEditClick = () => {
     const { name, motto, bio } = about;
     setAboutFormData({ name, motto, bio });
@@ -157,6 +157,12 @@ const Home = () => {
     setAboutFormData(initialAboutFormData);
   };
 
+  // image section
+  const handleImageUpdateModal = () => {
+    setOpenImageUpdateModal(true);
+  };
+
+  // award section
   const handleSaveAward = (uploadedImageUrl) => {
     if (awardData.title === "" || awardData.year === "") {
       alert("Title and Year fields are required");
@@ -165,13 +171,11 @@ const Home = () => {
     const payload = { ...awardData, image: uploadedImageUrl };
 
     if (awardId) {
-      dispatch(updateAward({ formData: payload, id: awardId })).then(
-        (res) => {
-          if (res.payload?.success) {
-            dispatch(getAwards());
-          }
+      dispatch(updateAward({ formData: payload, id: awardId })).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getAwards());
         }
-      );
+      });
     } else {
       dispatch(addAward(payload)).then((res) => {
         if (res.payload?.success) {
@@ -286,8 +290,16 @@ const Home = () => {
         </div>
       )}
 
+      {openImageUpdateModal && (
+        <Gallery
+          setOpenModal={() => setOpenImageUpdateModal(false)}
+          // images={about?.banner}
+          images={images}
+        />
+      )}
+
       {isAwardEditing && (
-        <AwardForm 
+        <AwardForm
           setIsAwardEditing={setIsAwardEditing}
           setAwardData={setAwardData}
           awardData={awardData}
@@ -295,7 +307,7 @@ const Home = () => {
           awardId={awardId}
           handleSaveAward={handleSaveAward}
           initialAward={initialAward}
-          />
+        />
       )}
 
       <div className="sm:flex gap-2">
@@ -403,11 +415,8 @@ const Home = () => {
           </div>
 
           {isAuthenticated && (
-            <button
-              // onClick={handleCarouselImage}
-              className="edit"
-            >
-              + Add Pictures
+            <button onClick={handleImageUpdateModal} className="edit">
+              Update Image
             </button>
           )}
         </div>
