@@ -225,6 +225,7 @@ const Home = () => {
           setOpenModal={() => setImageEditing(false)}
           name="image"
           api="upload-pro-pic"
+          text="Upload Profile Picture"
         />
       )}
 
@@ -293,8 +294,8 @@ const Home = () => {
       {openImageUpdateModal && (
         <Gallery
           setOpenModal={() => setOpenImageUpdateModal(false)}
-          // images={about?.banner}
-          images={images}
+          images={about?.banner}
+          // images={images}
         />
       )}
 
@@ -403,7 +404,7 @@ const Home = () => {
 
           <div className="w-full overflow-hidden pb-10">
             <Slider {...settings}>
-              {images?.map((img, index) => (
+              {about?.banner?.map((img, index) => (
                 <div
                   key={index}
                   className="image-container border-4 border-indigo-950"

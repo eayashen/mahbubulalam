@@ -6,7 +6,8 @@ import { getAbout } from "../redux/admin/about-slice";
 const FileUpload = ({
     setOpenModal,
     name,
-    api
+    api,
+    text
 }) => {
   const inputRef = useRef(null);
   const dispatch = useDispatch();
@@ -63,7 +64,7 @@ const FileUpload = ({
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
       <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
-        <p className="sm:text-lg font-semibold mb-2 block">Upload File</p>
+        <p className="sm:text-lg font-semibold mb-2 block">{text || "Upload File"}</p>
         <div
           onDragOver={handleDragOver}
           onDrop={handleDrop}
@@ -83,7 +84,7 @@ const FileUpload = ({
               className={`cursor-pointer flex flex-col items-center justify-center sm:h-32 h-fit`}
             >
               {/* <UploadCloudIcon className="w-10 h-10 text-muted-forground mb-2" /> */}
-              <span>Drag & drop or click to upload file</span>
+              <span>Drag & drop or click to {text || "upload file"}</span>
             </label>
           ) : imageLoadingState ? (
             <div className="h-10 bg-gray-200" />
