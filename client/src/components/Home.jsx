@@ -226,6 +226,7 @@ const Home = () => {
           name="image"
           api="upload-pro-pic"
           text="Upload Profile Picture"
+          oldImage={null}
         />
       )}
 

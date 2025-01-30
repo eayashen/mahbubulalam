@@ -80,6 +80,21 @@ export const uploadBanner = createAsyncThunk(
   }
 );
 
+export const deleteBannerImage = createAsyncThunk(
+  "about/deleteBannerImage",
+  async (imageUrl) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_SERVER_API_URL}/api/about/delete-banner-image`,
+        { imageUrl },
+      );
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
 const aboutSlice = createSlice({
   name: "about",
   initialState: initicalState,
@@ -122,6 +137,15 @@ const aboutSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(uploadBanner.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteBannerImage.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteBannerImage.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteBannerImage.rejected, (state) => {
         state.isLoading = false;
       });
   },

@@ -193,6 +193,7 @@ const Navbar = () => {
           name={"cv"}
           api={"upload-cv"}
           text="Upload CV"
+          oldImage={null}
         />
       )}
 
@@ -212,12 +213,12 @@ const Navbar = () => {
                   })
                 }
                 checked={socialLinkData?.scholarVisible}
-                placeholder="Enter Scholar Link Address"
               />
               <p className="w-20 ml-2">Scholar: </p>
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://scholar.google.com/citations?user=1234567890"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -242,6 +243,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://orcid.org/0000-0002-1825-0097"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -266,6 +268,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://publons.com/researcher/1234567"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -290,6 +293,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://www.linkedin.com/in/username"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -314,6 +318,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://twitter.com/username"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -338,6 +343,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://www.instagram.com/username"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -362,6 +368,7 @@ const Navbar = () => {
               <input
                 className="px-2 border rounded flex-1"
                 type="text"
+                placeholder="@Example: https://www.facebook.com/username"
                 onChange={(e) =>
                   setSocialLinkData({
                     ...socialLinkData,
@@ -523,6 +530,7 @@ const Navbar = () => {
               href={socialLinks?.orcid}
               title="Orcid"
               className="fab fa-orcid hover:scale-125 ease duration-300"
+              target="_blank"
             >
               <span className="sr-only">Orcid</span>
             </a>
@@ -532,6 +540,7 @@ const Navbar = () => {
               href={socialLinks?.publons}
               title="Publons"
               className="fa hover:scale-125 ease duration-300"
+              target="_blank"
             >
               <b>P</b>
             </a>
@@ -541,6 +550,7 @@ const Navbar = () => {
               href={socialLinks?.linkedin}
               title="LInkedin"
               className="fab fa-linkedin-in hover:scale-125 ease duration-300"
+              target="_blank"
             ></a>
           )}
           {socialLinks?.twitterVisible && (
@@ -548,6 +558,7 @@ const Navbar = () => {
               href={socialLinks?.twitter}
               title="Twitter"
               className="fab fa-twitter hover:scale-125 ease duration-300"
+              target="_blank"
             ></a>
           )}
           {socialLinks?.instagramVisible && (
@@ -555,6 +566,7 @@ const Navbar = () => {
               href={socialLinks?.instagram}
               title="Instagram"
               className="fab fa-instagram hover:scale-125 ease duration-300"
+              target="_blank"
             ></a>
           )}
           {socialLinks?.facebookVisible && (
@@ -562,6 +574,7 @@ const Navbar = () => {
               href={socialLinks?.facebook}
               title="Facebook"
               className="fab fa-facebook-f hover:scale-125 ease duration-300"
+              target="_blank"
             ></a>
           )}
         </div>

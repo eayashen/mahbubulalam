@@ -7,7 +7,8 @@ const FileUpload = ({
     setOpenModal,
     name,
     api,
-    text
+    text,
+    oldImage
 }) => {
   const inputRef = useRef(null);
   const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const FileUpload = ({
       // const token = JSON.parse(sessionStorage.getItem("token"));
       const data = new FormData();
       data.append(name, imageFile);
+      if (oldImage) data.append("oldImage", oldImage);
 
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_API_URL}/api/about/${api}`,

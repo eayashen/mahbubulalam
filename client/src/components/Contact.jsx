@@ -17,6 +17,9 @@ const Contact = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { contact, isLoading } = useSelector((state) => state.contact);
+  const { socialLinks, isLinkLoading } = useSelector(
+    (state) => state.socialLinks
+  );
   const [formData, setFormData] = useState(initialFormData);
   const [openModal, setOpenModal] = useState(false);
 
@@ -29,8 +32,22 @@ const Contact = () => {
   const handleModalOpen = () => {
     setOpenModal(true);
     if (contact) {
-      const { phone, phoneVisible, email, emailVisible, address, addressVisible } = contact;
-      setFormData({ phone, phoneVisible, email, emailVisible, address, addressVisible });
+      const {
+        phone,
+        phoneVisible,
+        email,
+        emailVisible,
+        address,
+        addressVisible,
+      } = contact;
+      setFormData({
+        phone,
+        phoneVisible,
+        email,
+        emailVisible,
+        address,
+        addressVisible,
+      });
     } else {
       setFormData(initialFormData);
     }
@@ -160,47 +177,72 @@ const Contact = () => {
               </div>
             )}
             <div className="flex text-black gap-2 h-6 text-xl">
-              <a
-                href="https://scholar.google.com/citations?hl=en&user=UwwIXLUAAAAJ"
-                title="Google Scholer"
-                className="hover:scale-125 ease duration-300"
-              >
-                <img className="h-5 w-5 -mt-0.5" src={scholar} alt="scholar" />
-              </a>
-              <a
-                href="https://orcid.org/0000-0001-6940-364X"
-                title="Orcid"
-                className="fab fa-orcid hover:scale-125 ease duration-300"
-              >
-                <span className="sr-only">Orcid</span>
-              </a>
-              <a
-                href="#"
-                title="Publons"
-                className="fa hover:scale-125 ease duration-300"
-              >
-                <b>P</b>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/mahbubalamicddrb/"
-                title="LInkedin"
-                className="fab fa-linkedin-in hover:scale-125 ease duration-300"
-              ></a>
-              <a
-                href="https://twitter.com/mahbubicddrb"
-                title="Twitter"
-                className="fab fa-twitter hover:scale-125 ease duration-300"
-              ></a>
-              <a
-                href="#"
-                title="Instagram"
-                className="fab fa-instagram hover:scale-125 ease duration-300"
-              ></a>
-              <a
-                href="https://www.facebook.com/mahbubul.alam.79025"
-                title="Facebook"
-                className="fab fa-facebook-f hover:scale-125 ease duration-300"
-              ></a>
+              {socialLinks?.scholarVisible && (
+                <a
+                  href={socialLinks?.scholar}
+                  title="Google Scholer"
+                  className="hover:scale-125 ease duration-300"
+                  target="_blank"
+                >
+                  <img
+                    className="h-5 w-5 -mt-0.5"
+                    src={scholar}
+                    alt="scholar"
+                  />
+                </a>
+              )}
+              {socialLinks?.orcidVisible && (
+                <a
+                  href={socialLinks?.orcid}
+                  title="Orcid"
+                  className="fab fa-orcid hover:scale-125 ease duration-300"
+                  target="_blank"
+                >
+                  <span className="sr-only">Orcid</span>
+                </a>
+              )}
+              {socialLinks?.publonsVisible && (
+                <a
+                  href={socialLinks?.publons}
+                  title="Publons"
+                  className="fa hover:scale-125 ease duration-300"
+                  target="_blank"
+                >
+                  <b>P</b>
+                </a>
+              )}
+              {socialLinks?.linkedinVisible && (
+                <a
+                  href={socialLinks?.linkedin}
+                  title="LInkedin"
+                  className="fab fa-linkedin-in hover:scale-125 ease duration-300"
+                  target="_blank"
+                ></a>
+              )}
+              {socialLinks?.twitterVisible && (
+                <a
+                  href={socialLinks?.twitter}
+                  title="Twitter"
+                  className="fab fa-twitter hover:scale-125 ease duration-300"
+                  target="_blank"
+                ></a>
+              )}
+              {socialLinks?.instagramVisible && (
+                <a
+                  href={socialLinks?.instagram}
+                  title="Instagram"
+                  className="fab fa-instagram hover:scale-125 ease duration-300"
+                  target="_blank"
+                ></a>
+              )}
+              {socialLinks?.facebookVisible && (
+                <a
+                  href={socialLinks?.facebook}
+                  title="Facebook"
+                  className="fab fa-facebook-f hover:scale-125 ease duration-300"
+                  target="_blank"
+                ></a>
+              )}
             </div>
           </div>
           <div className="flex-1 flex flex-col p-6 space-y-3 justify-center">

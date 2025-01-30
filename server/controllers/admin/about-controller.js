@@ -18,10 +18,15 @@ const handleProPicUpload = async (req, res) => {
       { new: true } // Return the updated document
     );
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, message: "Profile picture uploaded successfully" });
+    res.status(200).json({
+      success: true,
+      message: "Profile picture uploaded successfully",
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -49,10 +54,14 @@ const handleCvUpload = async (req, res) => {
       { new: true } // Return the updated document
     );
     if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
-    res.status(200).json({ success: true, message: "CV uploaded successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "CV uploaded successfully" });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -64,22 +73,71 @@ const handleCvUpload = async (req, res) => {
 
 const handleBannerUpload = async (req, res) => {
   try {
+    const { oldImage } = req.body; // Get old image URL (if replacing)
     if (!req.file) {
       return res
         .status(400)
         .json({ success: false, message: "No file uploaded" });
     }
+
     const b64 = Buffer.from(req.file.buffer).toString("base64");
     const url = "data:" + req.file.mimetype + ";base64," + b64;
     const result = await imageUploadUtil(url, "mahbubulalam");
 
-    res.status(200).json({ success: true, result });
+    if (!result || !result.secure_url) {
+      return res
+        .status(500)
+        .json({ success: false, message: "Cloudinary upload failed" });
+    }
+
+    const uploadedImageUrl = result.secure_url;
+
+    // Find the single user document (assuming there's only one entry)
+    let user = await User.findOne();
+
+    if (!user) {
+      // If no user document exists, create one
+      user = new User({ banner: [uploadedImageUrl] });
+    } else {
+      if (oldImage) {
+        // Replace the old image in the array
+        user.banner = user.banner.map((img) =>
+          img === oldImage ? uploadedImageUrl : img
+        );
+      } else {
+        // Add new image to the banner array
+        user.banner.push(uploadedImageUrl);
+      }
+    }
+
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, result: uploadedImageUrl, banner: user.banner });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to upload image",
+      message: "Failed to upload and save image",
       error: error.message,
     });
+  }
+};
+
+const deleteBannerImage = async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    console.log("Image URL:", imageUrl);
+    const user = await User.findOne();
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    user.banner = user.banner.filter((img) => img !== imageUrl);
+    await user.save();
+    res.status(200).json({ success:true, message: "Image deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -119,4 +177,11 @@ const getUserAbout = async (req, res) => {
   }
 };
 
-module.exports = { upsertUserAbout, getUserAbout, handleProPicUpload, handleBannerUpload, handleCvUpload };
+module.exports = {
+  upsertUserAbout,
+  getUserAbout,
+  handleProPicUpload,
+  handleBannerUpload,
+  handleCvUpload,
+  deleteBannerImage
+};
