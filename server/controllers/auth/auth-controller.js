@@ -87,20 +87,61 @@ const authMiddleware = async (req, res, next) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const { username, password, confirmPassword } = req.body;
-    // Check if user exists
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(400).json({ success: false, error: "User not found" });
+    const { oldPassword, password, confirmPassword } = req.body;
+
+    // Validate input fields
+    if (!oldPassword || !password || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide old password, new password, and confirm password",
+      });
     }
-    // Hash the password
+
+    // Check if the new password and confirm password match
+    if (password !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
+
+    // Check if the new password is the same as the old password
+    if (password === oldPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password cannot be the same as the old password",
+      });
+    }
+
+    // Get the user details (assuming there's only one user for now)
+    const user = await User.findOne({}); // Replace with a proper query if you have multiple users
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Check if the old password is correct
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Old password is incorrect",
+      });
+    }
+
+    // Hash the new password
     const hashedPassword = await bcrypt.hash(password, 12);
-    // Update the password
+
+    // Update the user's password
     user.password = hashedPassword;
     await user.save();
-    return res
-      .status(200)
-      .json({ success: true, message: "Password reset successfully" });
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

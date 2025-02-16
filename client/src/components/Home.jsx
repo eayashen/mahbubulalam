@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import "react-responsive-carousel/lib/styles/carousel.min.css";
-import award_logo from "../images/award_logo.png";
+
 import Slider from "react-slick";
 import { Triangle } from "react-loader-spinner";
-import MAC0 from "../images/MAC0.jpeg";
-import MAC1 from "../images/MAC1.jpeg";
-import MAC2 from "../images/MAC2.jpeg";
-import MAC3 from "../images/MAC3.jpeg";
-import MAC4 from "../images/MAC4.jpeg";
-import MAC5 from "../images/MAC5.jpeg";
-import MAC6 from "../images/MAC6.jpeg";
-import MAC7 from "../images/MAC7.jpeg";
 import {
   getAbout,
   updateAbout,
@@ -68,16 +59,6 @@ const Home = () => {
   const [openImageUpdateModal, setOpenImageUpdateModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const [images, setImages] = useState([
-    MAC0,
-    MAC1,
-    MAC2,
-    MAC3,
-    MAC4,
-    MAC5,
-    MAC6,
-    MAC7,
-  ]);
   const settings = {
     dots: true,
     autoplay: true,

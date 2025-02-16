@@ -402,18 +402,18 @@ const Navbar = () => {
       <div className="flex items-center justify-between lg:mx-24 mx-4 mt-4">
         <h1 className="text-3xl font-bold pb-1">{about?.name}</h1>
         {isAuthenticated && (
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={() => handleLogOut()}
-              className="cancel font-semibold"
-            >
-              Logout
-            </button>
+          <div className="flex gap-2">
             <button
               onClick={() => setShowResetPassword(true)}
-              className="save font-semibold"
+              className="save font-semibold flex gap-2 items-center"
             >
-              Change Password
+              <i class="fa fa-user-lock py-1"></i><span className="sm:block hidden">Change Password</span>
+            </button>
+            <button
+              onClick={() => handleLogOut()}
+              className="cancel font-semibold flex gap-2 items-center"
+            >
+             <i class="fa-solid fa-arrow-right-from-bracket py-1"></i> <span className="sm:block hidden">Logout</span>
             </button>
           </div>
         )}

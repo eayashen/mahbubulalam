@@ -5,7 +5,7 @@ import { resetPassword } from "../redux/auth-slice";
 const ResetPassword = ({ onClose }) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    username: "",
+    oldPassword: "",
     password: "",
     confirmPassword: "",
   });
@@ -29,7 +29,7 @@ const ResetPassword = ({ onClose }) => {
       if (res?.payload?.success) {
         onClose();
       } else {
-        setError(res?.payload?.error);
+        setError(res?.payload?.message);
       }
     });
   };
@@ -44,13 +44,13 @@ const ResetPassword = ({ onClose }) => {
           Change Your Password
         </p>
         {error && <p className="text-red-400 text-sm">* {error}</p>}
-        <p>Username</p>
+        <p>Old Password</p>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Old Password"
           className="outline-none border-non border p-2 w-full"
           onChange={(e) =>
-            setFormData({ ...formData, username: e.target.value })
+            setFormData({ ...formData, oldPassword: e.target.value })
           }
           required
         />
