@@ -87,7 +87,7 @@ const authMiddleware = async (req, res, next) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, confirmPassword } = req.body;
     // Check if user exists
     const user = await User.findOne({ username });
     if (!user) {

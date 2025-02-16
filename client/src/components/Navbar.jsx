@@ -9,6 +9,7 @@ import {
   updateSocialLinks,
 } from "../redux/admin/sociallinks-slice";
 import FileUpload from "./FileUpload";
+import ResetPassword from "./ResetPassword";
 
 const initialFormData = {
   name: "",
@@ -45,6 +46,7 @@ const Navbar = () => {
   const [socialLinkData, setSocialLinkData] = useState(initialSocialLinkData);
   const [cvInputOpen, setCvInputOpen] = useState(false);
   const [openSocialLinkModal, setOpenSocialModal] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const Links = [
     { name: "About Me", link: "/" },
     { name: "Research", link: "/research" },
@@ -139,6 +141,7 @@ const Navbar = () => {
 
   return (
     <div className="w-full">
+      {showResetPassword && <ResetPassword onClose={() => setShowResetPassword(false)} />}
       {showForm && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
@@ -399,12 +402,20 @@ const Navbar = () => {
       <div className="flex items-center justify-between lg:mx-24 mx-4 mt-4">
         <h1 className="text-3xl font-bold pb-1">{about?.name}</h1>
         {isAuthenticated && (
-          <button
-            onClick={() => handleLogOut()}
-            className="cancel font-semibold"
-          >
-            Logout
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => handleLogOut()}
+              className="cancel font-semibold"
+            >
+              Logout
+            </button>
+            <button
+              onClick={() => setShowResetPassword(true)}
+              className="save font-semibold"
+            >
+              Change Password
+            </button>
+          </div>
         )}
       </div>
 
@@ -498,7 +509,7 @@ const Navbar = () => {
             </p>
             {isAuthenticated && (
               <button
-                className="pl-3 font-normal text-teal-300 hover:text-teal-400 pb-1"
+                className="pl-3 font-normal text-blue-300 hover:text-blue-400 pb-1"
                 onClick={() => setCvInputOpen(true)}
               >
                 Update CV
@@ -509,7 +520,7 @@ const Navbar = () => {
         <div className="flex items-center text-white gap-2 h-full absolute lg:right-24 right-4">
           {isAuthenticated && (
             <button
-              className="text-teal-300 hover:text-teal-400"
+              className="text-blue-300 hover:text-blue-400"
               onClick={handleModalOpen}
             >
               Update Link

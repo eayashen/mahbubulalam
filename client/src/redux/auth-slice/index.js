@@ -22,7 +22,7 @@ export const login = createAsyncThunk("auth/login", async (formData) => {
 
 export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
-  async (formData, token) => {
+  async ({formData, token}) => {
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_API_URL}/api/auth/reset-password`,
@@ -85,15 +85,15 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state) => {
         state.isLoading = false;
       })
-      .addCase(resetPassword.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(resetPassword.fulfilled, (state) => {
-        state.isLoading = false;
-      })
-      .addCase(resetPassword.rejected, (state) => {
-        state.isLoading = false;
-      })
+      // .addCase(resetPassword.pending, (state) => {
+      //   state.isLoading = true;
+      // })
+      // .addCase(resetPassword.fulfilled, (state) => {
+      //   state.isLoading = false;
+      // })
+      // .addCase(resetPassword.rejected, (state) => {
+      //   state.isLoading = false;
+      // })
       .addCase(checkAuth.pending, (state) => {
         state.isLoading = true;
       })
