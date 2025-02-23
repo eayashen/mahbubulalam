@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
 import AwardForm from "./AwardForm";
 import Gallery from "./Gallery";
+import DeleteModal from "./DeleteModal";
 
 const initialFormData = {
   title: "",
@@ -58,6 +59,7 @@ const Home = () => {
   const [awardId, setAwardId] = useState(null);
   const [openImageUpdateModal, setOpenImageUpdateModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
   const settings = {
     dots: true,
@@ -67,7 +69,7 @@ const Home = () => {
     speed: 1000,
     slidesToShow: 1,
     slidesToScroll: 1,
-    adaptiveHeight: true,
+    // adaptiveHeight: true,
   };
 
   useEffect(() => {
@@ -417,7 +419,7 @@ const Home = () => {
         )}
         {awards?.map((a) => (
           <div
-            className="flex gap-2 p-2 border rounded my-2 shadow h-fit"
+            className="flex gap-2 p-2 border my-2 shadow h-fit bg-white"
             key={a.title}
           >
             <div className="w-28 h-20 flex items-center justify-center relative">

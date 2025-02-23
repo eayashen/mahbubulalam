@@ -9,9 +9,6 @@ const DeleteModal = ({ handleDelete, onClose }) => {
         </p>
 
         <div className="flex justify-center gap-4">
-          <button className="cancel" onClick={handleDelete}>
-            Delete
-          </button>
           <button
             className="save"
             onClick={() => {
@@ -19,6 +16,9 @@ const DeleteModal = ({ handleDelete, onClose }) => {
             }}
           >
             Cancel
+          </button>
+          <button className="cancel" onClick={handleDelete}>
+            Delete
           </button>
         </div>
       </div>

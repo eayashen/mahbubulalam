@@ -7,6 +7,7 @@ import FundingHistory from "./components/FundingHistory";
 import Contact from "./components/Contact";
 import Login from "./components/Login";
 import Research from "./components/Research";
+import Consultancy from "./components/Consultancy";
 import { checkAuth } from "./redux/auth-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
@@ -40,7 +41,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between bg-gray-100">
       <Router>
         <div>
           <Navbar />
@@ -53,6 +54,7 @@ const App = () => {
             <Route path="/policy" element={<Journal />} />
             <Route path="/fundinghistory" element={<FundingHistory />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/consultancy" element={<Consultancy />} />
             
             {/* Admin Login Route */}
             <Route

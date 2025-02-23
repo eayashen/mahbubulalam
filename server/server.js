@@ -12,7 +12,7 @@ const researchRoutes = require("./routes/admin/research-routes");
 const publicationRoutes = require("./routes/admin/publication-routes");
 const contactRoutes = require("./routes/admin/contact-routes");
 const sociallinksRoutes = require("./routes/admin/sociallinks-routes");
-
+const consultancyRoutes = require("./routes/admin/consultancy-routes");
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +51,7 @@ app.use("/api/research", researchRoutes);
 app.use("/api/publication", publicationRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/sociallinks", sociallinksRoutes);
+app.use("/api/consultancy", consultancyRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

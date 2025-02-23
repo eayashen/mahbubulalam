@@ -6,6 +6,7 @@ const initialState = {
   isAuthenticated: false,
   user: null,
   token: null,
+  isLoginLoading: false,
 };
 
 export const login = createAsyncThunk("auth/login", async (formData) => {
@@ -71,10 +72,10 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(login.pending, (state) => {
-        state.isLoading = true;
+        state.isLoginLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isLoginLoading = false;
         if (action.payload?.success) {
           state.isAuthenticated = true;
           state.user = action.payload.user;
@@ -83,7 +84,7 @@ const authSlice = createSlice({
         }
       })
       .addCase(login.rejected, (state) => {
-        state.isLoading = false;
+        state.isLoginLoading = false;
       })
       // .addCase(resetPassword.pending, (state) => {
       //   state.isLoading = true;

@@ -59,6 +59,7 @@ const Navbar = () => {
       ],
     },
     { name: "Funding History", link: "/fundinghistory" },
+    { name: "Consultancy", link: "/consultancy" },
     { name: "Contact", link: "/contact" },
   ];
   const [open, setOpen] = useState(false);
@@ -407,13 +408,13 @@ const Navbar = () => {
               onClick={() => setShowResetPassword(true)}
               className="save font-semibold flex gap-2 items-center"
             >
-              <i class="fa fa-user-lock py-1"></i><span className="sm:block hidden">Change Password</span>
+              <i className="fa fa-user-lock py-1"></i><span className="sm:block hidden">Change Password</span>
             </button>
             <button
               onClick={() => handleLogOut()}
               className="cancel font-semibold flex gap-2 items-center"
             >
-             <i class="fa-solid fa-arrow-right-from-bracket py-1"></i> <span className="sm:block hidden">Logout</span>
+             <i className="fa-solid fa-arrow-right-from-bracket py-1"></i> <span className="sm:block hidden">Logout</span>
             </button>
           </div>
         )}
