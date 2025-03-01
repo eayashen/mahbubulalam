@@ -20,6 +20,20 @@ export const getPublications = createAsyncThunk(
   }
 );
 
+export const getAllPublications = createAsyncThunk(
+  "publications/",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API_URL}/api/publication/`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 export const addPublication = createAsyncThunk(
   "publications/addPublication",
   async (formData) => {
@@ -78,6 +92,16 @@ const publicationSlice = createSlice({
         state.publications = payload.data;
       })
       .addCase(getPublications.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getAllPublications.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getAllPublications.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.publications = payload.data;
+      })
+      .addCase(getAllPublications.rejected, (state) => {
         state.isLoading = false;
       })
       .addCase(addPublication.pending, (state) => {

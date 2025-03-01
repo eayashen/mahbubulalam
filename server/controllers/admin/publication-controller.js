@@ -36,6 +36,17 @@ const fetchAllPublicationsByCategory = async (req, res) => {
   }
 };
 
+const fetchAllPublications = async (req, res) => {
+  try {
+    const publications = await Publication.find({}).sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: publications });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+}
+
 const editPublication = async (req, res) => {
   const { title, published, category, research_id, authors, link, keywords } = req.body;
   const { id } = req.params;
@@ -77,6 +88,7 @@ const deletePublication = async (req, res) => {
 module.exports = {
   addPublication,
   fetchAllPublicationsByCategory,
+  fetchAllPublications,
   editPublication,
   deletePublication,
 };

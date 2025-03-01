@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation } from "react-router-dom";
-import { Triangle } from "react-loader-spinner";
 import {
+  getAllPublications,
   addPublication,
-  getPublications,
   updatePublication,
   deletePublication,
 } from "../redux/admin/publication-slice";
+import { Triangle } from "react-loader-spinner";
+import { Link } from "react-router-dom";
+import DeleteModal from "./DeleteModal";
 
 const initialFormData = {
   title: "",
@@ -19,28 +20,25 @@ const initialFormData = {
 };
 
 const types = {
-  journal: "Journal",
-  "working-paper": "Working Paper",
-  policy: "Policy",
+  journal: "RESEARCH ARTICLE",
+  "working-paper": "WORKING PAPER",
+  policy: "POLICY BRIEF",
+  review: "REVIEW ARTICLE REPORTS",
 };
 
-const Journal = () => {
+const Publications = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { publications, isLoading } = useSelector((state) => state.publication);
   const [formData, setFormData] = useState(initialFormData);
   const [isPublicationEditing, setIsPublicationEditing] = useState(false);
   const [publicationId, setPublicationId] = useState(null);
   const [key, setKey] = useState("");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
-    dispatch(getPublications(location.pathname.slice(1)));
-  }, [location.pathname]);
-
-  const handleEdit = (id, research_id, title, published, authors, url) => {
-    setIsPublicationEditing(true);
-  };
+    dispatch(getAllPublications());
+  }, [dispatch]);
 
   const handleSavePublication = async () => {
     if (!formData.title || !formData.category) {
@@ -51,14 +49,14 @@ const Journal = () => {
       dispatch(updatePublication({ id: publicationId, formData })).then(
         (res) => {
           if (res.payload?.success) {
-            dispatch(getPublications(location.pathname.slice(1)));
+            dispatch(getAllPublications());
           }
         }
       );
     } else {
       dispatch(addPublication(formData)).then((res) => {
         if (res.payload?.success) {
-          dispatch(getPublications(location.pathname.slice(1)));
+          dispatch(getAllPublications());
         }
       });
     }
@@ -67,12 +65,14 @@ const Journal = () => {
     setPublicationId(null);
   };
 
-  const handlePublicationsDelete = (id) => {
-    dispatch(deletePublication(id)).then((res) => {
+  const handlePublicationsDelete = () => {
+    dispatch(deletePublication(publicationId)).then((res) => {
       if (res.payload?.success) {
-        dispatch(getPublications(location.pathname.slice(1)));
+        dispatch(getAllPublications());
       }
     });
+    setIsDeleteModalOpen(false);
+    setPublicationId(null);
   };
 
   const addItem = () => {
@@ -108,6 +108,13 @@ const Journal = () => {
 
   return (
     <div className="lg:mx-24 mx-4">
+      {isDeleteModalOpen && (
+        <DeleteModal
+        onClose={() => setIsDeleteModalOpen(false)}
+          handleDelete={handlePublicationsDelete}
+        />
+      )}
+
       {isPublicationEditing && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
@@ -149,17 +156,13 @@ const Journal = () => {
                       category: e.target.value,
                     })
                   }
-                  value={
-                    formData?.category ||
-                    (types[location.pathname.slice(1)]
-                      ? location.pathname.slice(1)
-                      : "")
-                  }
+                  value={formData?.category || ""}
                 >
                   <option value="">Select Type</option>
                   <option value="journal">Journal</option>
                   <option value="working-paper">Working Paper</option>
                   <option value="policy">Policy</option>
+                  <option value="review">Review Article Reports</option>
                 </select>
               </div>
               <div className="flex items-center">
@@ -237,34 +240,22 @@ const Journal = () => {
         </div>
       )}
 
-      <p className="text-2xl font-bold text-center my-4">
-        {types[location.pathname.slice(1)] || "Policy Briefs"}
-      </p>
       {isAuthenticated && (
         <button
-          className="edit"
+          className="edit mt-4"
           onClick={() => {
             setIsPublicationEditing(true);
-            setFormData({
-              ...formData,
-              category: location.pathname.slice(1),
-            });
           }}
         >
           + Add Publication
         </button>
       )}
+
       {publications?.map((item, index) => (
-        <div key={index} className="my-4 border-b pb-2">
-          <a
-            href={item.link}
-            className="text-xl font-semibold hover:text-teal-500"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.title}
-          </a>
-          <p className="text-sm">{item.published}</p>
+        <div key={index} className="my-8 border-b pb-4 space-y-2">
+          <p className="text-xs font-bold">{types[item.category]}</p>
+          <h3 className="text-lg text-blue-700 font-semibold">{item.title}</h3>
+          <p className="text-sm text-gray-500 italic">{item.published}</p>
           <p>
             {item.authors.split(",").map((author, index) => {
               const trimmedAuthor = author.trim(); // Remove leading/trailing spaces
@@ -281,6 +272,13 @@ const Journal = () => {
               );
             })}
           </p>
+          <Link
+            to={item.link}
+            target="_blank"
+            className="text-sm text-blue-800"
+          >
+            PDF
+          </Link>
 
           {isAuthenticated && (
             <div className="flex gap-4">
@@ -293,7 +291,10 @@ const Journal = () => {
                 className="fas fa-edit"
               ></button>
               <button
-                onClick={() => handlePublicationsDelete(item._id)}
+                onClick={() => {
+                  setPublicationId(item._id);
+                  setIsDeleteModalOpen(true);
+                }}
                 className="fas fa-trash text-red-500"
               ></button>
             </div>
@@ -304,4 +305,4 @@ const Journal = () => {
   );
 };
 
-export default Journal;
+export default Publications;

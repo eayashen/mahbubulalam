@@ -12,6 +12,7 @@ import { checkAuth } from "./redux/auth-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 import { Navigate } from "react-router-dom";
+import Publications from "./components/Publications";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ const App = () => {
             <Route path="/fundinghistory" element={<FundingHistory />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/consultancy" element={<Consultancy />} />
+            <Route path="/publications" element={<Publications />} />
             
             {/* Admin Login Route */}
             <Route

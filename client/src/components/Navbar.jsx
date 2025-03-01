@@ -52,11 +52,12 @@ const Navbar = () => {
     { name: "Research", link: "/research" },
     {
       name: "Publications",
-      submenu: [
-        { name: "Journal Article", link: "/journal" },
-        { name: "Working Paper", link: "/working-paper" },
-        { name: "Policy", link: "/policy" },
-      ],
+      // submenu: [
+      //   { name: "Journal Article", link: "/journal" },
+      //   { name: "Working Paper", link: "/working-paper" },
+      //   { name: "Policy", link: "/policy" },
+      // ],
+      link: "/publications",
     },
     { name: "Funding History", link: "/fundinghistory" },
     { name: "Consultancy", link: "/consultancy" },
@@ -476,7 +477,7 @@ const Navbar = () => {
                 >
                   {link.name}
                 </li>
-              </Link>
+              </Link>{/*
               {link.name === "Publications" && showSubmenu && (
                 <ul className="absolute left-0 top-8 z-10 w-32 px-2 bg-white shadow py-1">
                   {" "}
@@ -492,7 +493,7 @@ const Navbar = () => {
                     </li>
                   ))}
                 </ul>
-              )}
+              )}*/}
             </div>
           ))}
           <div className="text-white font-semibold mt-1 pl-2 cursor-pointer flex">
