@@ -9,6 +9,7 @@ import {
 import { Triangle } from "react-loader-spinner";
 import { Link } from "react-router-dom";
 import DeleteModal from "./DeleteModal";
+import Counter from "./CountsDisplay";
 
 const initialFormData = {
   title: "",
@@ -20,16 +21,17 @@ const initialFormData = {
 };
 
 const types = {
-  journal: "RESEARCH ARTICLE",
+  journal: "JOURNAL ARTICLE",
   "working-paper": "WORKING PAPER",
   policy: "POLICY BRIEF",
-  review: "REVIEW ARTICLE REPORTS",
 };
 
 const Publications = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { publications, isLoading } = useSelector((state) => state.publication);
+  const { publications, counts, isLoading } = useSelector(
+    (state) => state.publication
+  );
   const [formData, setFormData] = useState(initialFormData);
   const [isPublicationEditing, setIsPublicationEditing] = useState(false);
   const [publicationId, setPublicationId] = useState(null);
@@ -110,7 +112,7 @@ const Publications = () => {
     <div className="lg:mx-24 mx-4">
       {isDeleteModalOpen && (
         <DeleteModal
-        onClose={() => setIsDeleteModalOpen(false)}
+          onClose={() => setIsDeleteModalOpen(false)}
           handleDelete={handlePublicationsDelete}
         />
       )}
@@ -161,8 +163,7 @@ const Publications = () => {
                   <option value="">Select Type</option>
                   <option value="journal">Journal</option>
                   <option value="working-paper">Working Paper</option>
-                  <option value="policy">Policy</option>
-                  <option value="review">Review Article Reports</option>
+                  <option value="policy">Policy Brief</option>
                 </select>
               </div>
               <div className="flex items-center">
@@ -251,14 +252,50 @@ const Publications = () => {
         </button>
       )}
 
+      <div className="flex flex-wrap justify-center max-w-screen-lg w-full mx-auto">
+        <h1 className="text-center w-full pt-4 font-bold text-2xl  text-slate-800 ">
+          Publications
+        </h1>
+        {counts?.map((item, index) => (
+          <div
+            key={index}
+            className="p-4 rounded w-48 sm:my-4 lg:mx-10 text-center cursor-pointer"
+            onClick={() => {
+              const section = document.getElementById(
+                `section-${item.category}`
+              );
+              if (section) {
+                section.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }}
+          >
+            <Counter count={item.count} />
+            <p className="font-bold text-gray-500 hover:underline">{types[item.category]}</p>
+          </div>
+        ))}
+      </div>
+      <hr />
+
       {publications?.map((item, index) => (
-        <div key={index} className="my-8 border-b pb-4 space-y-2">
-          <p className="text-xs font-bold">{types[item.category]}</p>
-          <h3 className="text-lg text-blue-700 font-semibold">{item.title}</h3>
+        <div
+          key={index}
+          id={`section-${item.category}`} // Assign category ID here
+          className="my-4 border-b pb-4 space-y-1"
+        >
+          <p className="text-xs font-bold text-gray-500 mb-1">
+            {types[item.category]}
+          </p>
+          <Link
+            to={item.link}
+            target="_blank"
+            className="text-lg text-slate-700 font-semibold hover:underline"
+          >
+            {item.title}
+          </Link>
           <p className="text-sm text-gray-500 italic">{item.published}</p>
-          <p>
+          <p className="text-slate-700">
             {item.authors.split(",").map((author, index) => {
-              const trimmedAuthor = author.trim(); // Remove leading/trailing spaces
+              const trimmedAuthor = author.trim();
               const isKeyword = item.keywords.some(
                 (keyword) =>
                   keyword.toLowerCase() === trimmedAuthor.toLowerCase()
@@ -272,13 +309,6 @@ const Publications = () => {
               );
             })}
           </p>
-          <Link
-            to={item.link}
-            target="_blank"
-            className="text-sm text-blue-800"
-          >
-            PDF
-          </Link>
 
           {isAuthenticated && (
             <div className="flex gap-4">

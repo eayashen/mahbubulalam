@@ -4,6 +4,7 @@ import axios from "axios";
 const initialState = {
   publications: [],
   isLoading: false,
+  counts: [],
 };
 
 export const getPublications = createAsyncThunk(
@@ -100,6 +101,7 @@ const publicationSlice = createSlice({
       .addCase(getAllPublications.fulfilled, (state, { payload }) => {
         state.isLoading = false;
         state.publications = payload.data;
+        state.counts = payload.counts
       })
       .addCase(getAllPublications.rejected, (state) => {
         state.isLoading = false;

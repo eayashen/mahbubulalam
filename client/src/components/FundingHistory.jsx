@@ -215,7 +215,31 @@ const FundingHistory = () => {
       )}
 
       <p className="text-center font-bold text-2xl my-4">Funding History</p>
-      <div className="text-right mr-10">
+      <div className="sm:flex justify-center flex-wrap py-4 hidden">
+        <div className="flex-1 text-center">
+          <p className="font-bold">${total.toLocaleString()}</p>
+          <p className="">Total amount awarded till date</p>
+        </div>
+        <div className="flex-1 text-center">
+          <p className="font-bold">
+            ${roleSum ? (roleSum["Principal Investigator"] ?? 0).toLocaleString() : 0}
+          </p>
+          <p className="">As Principal Investigator (PI)</p>
+        </div>
+        <div className="flex-1 text-center">
+          <p className="font-bold">
+            ${roleSum ? (roleSum["Co-Principal Investigator"] ?? 0).toLocaleString() : 0}
+          </p>
+          <p className="">As Co-Principal Investigator (Co-PI)</p>
+        </div>
+        <div className="flex-1 text-center">
+          <p className="font-bold">
+            ${roleSum ? (roleSum["Co-Investigator"] ?? 0).toLocaleString() : 0}
+          </p>
+          <p className="">As Co-Investigator (Co-I)</p>
+        </div>
+      </div>
+      <div className="text-right mr-10 sm:hidden">
         <p>
           Total amount awarded till date:{" "}
           <span className="font-medium">${total.toLocaleString()}</span>
@@ -260,7 +284,7 @@ const FundingHistory = () => {
         )}
         {fundings?.map((d) => (
           <div
-            className={`flex border shadow p-1 my-2 ${
+            className={`flex border shadow p-1 my-2 bg-white ${
               isAuthenticated ? "min-w-[1096px]" : "min-w-[1016px]"
             }`}
             key={Math.random()}

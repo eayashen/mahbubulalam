@@ -27,7 +27,9 @@ const fetchAllPublicationsByCategory = async (req, res) => {
   const { category } = req.params;
 
   try {
-    const publications = await Publication.find({ category }).sort({ createdAt: -1 });
+    const publications = await Publication.find({ category }).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json({ success: true, data: publications });
   } catch (error) {
@@ -38,17 +40,54 @@ const fetchAllPublicationsByCategory = async (req, res) => {
 
 const fetchAllPublications = async (req, res) => {
   try {
+    // Define custom sorting order
+    const categoryOrder = ["journal", "working-paper", "policy-paper"];
+
+    // Fetch all publications sorted by createdAt (descending)
     const publications = await Publication.find({}).sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, data: publications });
+    // Count publications by category
+    const categoryCounts = await Publication.aggregate([
+      {
+        $group: {
+          _id: "$category",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // Convert categoryCounts into an array of objects
+    let counts = categoryCounts.map((item) => ({
+      category: item._id || "unknown", // Handle possible null values
+      count: item.count,
+    }));
+
+    // Sorting function for custom order
+    const sortByCategoryOrder = (a, b) => {
+      const indexA = categoryOrder.indexOf(a.category);
+      const indexB = categoryOrder.indexOf(b.category);
+      return (
+        (indexA === -1 ? Infinity : indexA) -
+        (indexB === -1 ? Infinity : indexB)
+      );
+    };
+
+    // Sort counts based on categoryOrder
+    counts.sort(sortByCategoryOrder);
+
+    // Sort publications based on categoryOrder
+    publications.sort(sortByCategoryOrder);
+
+    res.status(200).json({ success: true, data: publications, counts });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Something went wrong" });
   }
-}
+};
 
 const editPublication = async (req, res) => {
-  const { title, published, category, research_id, authors, link, keywords } = req.body;
+  const { title, published, category, research_id, authors, link, keywords } =
+    req.body;
   const { id } = req.params;
 
   try {
