@@ -217,23 +217,23 @@ const FundingHistory = () => {
       <p className="text-center font-bold text-2xl my-4">Funding History</p>
       <div className="sm:flex justify-center flex-wrap py-4 hidden">
         <div className="flex-1 text-center">
-          <p className="font-bold text-xl">${total.toLocaleString()}</p>
+          <p className="font-bold text-lg">${total.toLocaleString()}</p>
           <p className="">Total amount awarded till date</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold text-xl">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Principal Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Principal Investigator (PI)</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold text-xl">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Co-Principal Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Co-Principal Investigator (Co-PI)</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold text-xl">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Co-Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Co-Investigator (Co-I)</p>
