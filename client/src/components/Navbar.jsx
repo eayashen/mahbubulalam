@@ -65,6 +65,7 @@ const Navbar = () => {
   ];
   const [open, setOpen] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
   const location = useLocation();
 
   const handleAboutUpdate = () => {
@@ -141,9 +142,25 @@ const Navbar = () => {
     dispatch(getSocialLinks());
   }, []);
 
+  // Function to handle scrolling
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="w-full">
-      {showResetPassword && <ResetPassword onClose={() => setShowResetPassword(false)} />}
+      {showResetPassword && (
+        <ResetPassword onClose={() => setShowResetPassword(false)} />
+      )}
       {showForm && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
@@ -409,18 +426,19 @@ const Navbar = () => {
               onClick={() => setShowResetPassword(true)}
               className="save font-semibold flex gap-2 items-center"
             >
-              <i className="fa fa-user-lock py-1"></i><span className="sm:block hidden">Change Password</span>
+              <i className="fa fa-user-lock py-1"></i>
+              <span className="sm:block hidden">Change Password</span>
             </button>
             <button
               onClick={() => handleLogOut()}
               className="cancel font-semibold flex gap-2 items-center"
             >
-             <i className="fa-solid fa-arrow-right-from-bracket py-1"></i> <span className="sm:block hidden">Logout</span>
+              <i className="fa-solid fa-arrow-right-from-bracket py-1"></i>{" "}
+              <span className="sm:block hidden">Logout</span>
             </button>
           </div>
         )}
       </div>
-
       <div className="flex">
         <p className="lg:mx-24 mx-4 whitespace-pre-wrap">
           {about?.motto || ""}
@@ -430,10 +448,10 @@ const Navbar = () => {
         )}
       </div>
 
-      <div className="flex mt-4 left-0 md:px-0 bg-indigo-950 z-30 h-8 relative">
+      <div className={`flex md:px-0 bg-indigo-950 z-30 ${isSticky ? "fixed shadow-md top-0 left-0 w-full h-16 items-center" : "relative mt-4 h-8"}`}>
         <div
           onClick={() => setOpen(!open)}
-          className="absolute top-1 mr-4 pl-4 cursor-pointer md:hidden text-teal-500"
+          className={`absolute mr-4 pl-4 cursor-pointer md:hidden text-teal-500 ${isSticky ? "top-5" : "top-1"}`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -453,7 +471,7 @@ const Navbar = () => {
         <div
           className={`md:flex absolute md:static md:mt-0 mt-8 mx-2 lg:mx-24 bg-indigo-950 md:z-auto z-[-1] left-0 w-48 md:w-auto md:pl-0 pl-6 transition-all duration-500 ease-in ${
             open ? "-left-4 " : "left-[-250px]"
-          }`}
+          } ${isSticky ? "top-8" : "top-0"}`}
         >
           {Links.map((link) => (
             <div
@@ -477,23 +495,7 @@ const Navbar = () => {
                 >
                   {link.name}
                 </li>
-              </Link>{/*
-              {link.name === "Publications" && showSubmenu && (
-                <ul className="absolute left-0 top-8 z-10 w-32 px-2 bg-white shadow py-1">
-                  {" "}
-                  {link.submenu.map((submenuLink) => (
-                    <li key={submenuLink.name}>
-                      <Link
-                        className="hover:text-teal-400"
-                        to={submenuLink.link}
-                        onClick={() => setOpen(false)}
-                      >
-                        {submenuLink.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}*/}
+              </Link>
             </div>
           ))}
           <div className="text-white font-semibold mt-1 pl-2 cursor-pointer flex">
