@@ -1,41 +1,60 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { Triangle } from "react-loader-spinner";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  getMentorships,
+  addMentorship,
+  updateMentorship,
+  deleteMentorship,
+} from "../redux/admin/mentorship-slice";
 import axios from "axios";
 import DeleteModal from "./DeleteModal";
-import {
-  getConsultancies,
-  addConsultancy,
-  updateConsultancy,
-  deleteConsultancy,
-} from "../redux/admin/consultancy-slice";
 
-const initialFormData = {
-  title: "",
-  duration: "",
-  client: "",
+const initialMentorshipData = {
+  name: "",
+  present_title: "",
+  university_name: "",
+  previous_title: "",
+  email: "",
+  gender: "",
   image: "",
 };
 
-const Consultancy = () => {
+const Mentorship = () => {
   const dispatch = useDispatch();
   const inputRef = useRef(null);
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { consultancies, isLoading } = useSelector(
-    (state) => state.consultancy
-  );
-  const [formData, setFormData] = useState(initialFormData);
+  const { mentorships, isLoading } = useSelector((state) => state.mentorship);
+
+  const [formData, setFormData] = useState(initialMentorshipData);
   const [isEditing, setIsEditing] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
-  const [consultancyId, setConsultancyId] = useState(null);
+  const [mentorshipId, setMentorshipId] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
-  const handleUpdateConsultancy = (consultancy) => {
+  const handleUpdateMentorship = (mentorship) => {
     setIsEditing(true);
-    setConsultancyId(consultancy._id);
-    const { title, duration, client, image } = consultancy;
-    setFormData({ title, duration, client, image });
+    setMentorshipId(mentorship._id);
+    const {
+      name,
+      present_title,
+      university_name,
+      previous_title,
+      email,
+      gender,
+      image,
+    } = mentorship;
+    setFormData({
+      name,
+      present_title,
+      university_name,
+      previous_title,
+      email,
+      gender,
+      image,
+    });
   };
 
   const handleDragOver = (e) => {
@@ -59,30 +78,30 @@ const Consultancy = () => {
   };
 
   const handleSaveApiCall = (url) => {
-    if (formData.title === "") {
-      alert("Title is required");
+    if (formData.name === "") {
+      alert("Name is required");
       return;
     }
     const payload = { ...formData, image: url };
 
-    if (consultancyId) {
-      dispatch(
-        updateConsultancy({ formData: payload, id: consultancyId })
-      ).then((res) => {
-        if (res?.payload?.success) {
-          dispatch(getConsultancies());
+    if (mentorshipId) {
+      dispatch(updateMentorship({ formData: payload, id: mentorshipId })).then(
+        (res) => {
+          if (res?.payload?.success) {
+            dispatch(getMentorships());
+          }
         }
-      });
+      );
     } else {
-      dispatch(addConsultancy(payload)).then((res) => {
+      dispatch(addMentorship(payload)).then((res) => {
         if (res?.payload?.success) {
-          dispatch(getConsultancies());
+          dispatch(getMentorships());
         }
       });
     }
     setIsEditing(false);
-    setFormData(initialFormData);
-    setConsultancyId(null);
+    setFormData(initialMentorshipData);
+    setMentorshipId(null);
   };
 
   const handleSave = async () => {
@@ -90,14 +109,14 @@ const Consultancy = () => {
       handleSaveApiCall(formData?.image);
       return;
     }
-    try {
-      setImageLoadingState(true);
-      // const token = JSON.parse(sessionStorage.getItem("token"));
-      const data = new FormData();
-      data.append("image", imageFile);
 
+    const data = new FormData();
+    data.append("image", imageFile);
+    setImageLoadingState(true);
+
+    try {
       const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/consultancy/upload-image`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/mentorship/upload-image`,
         data
       );
       if (response?.data?.success) {
@@ -116,7 +135,7 @@ const Consultancy = () => {
   };
 
   useEffect(() => {
-    dispatch(getConsultancies());
+    dispatch(getMentorships());
   }, []);
 
   return (
@@ -125,19 +144,20 @@ const Consultancy = () => {
         <DeleteModal
           onClose={() => {
             setOpenDeleteModal(false);
-            setConsultancyId(null);
+            setMentorshipId(null);
           }}
           handleDelete={() => {
-            dispatch(deleteConsultancy(consultancyId)).then((res) => {
+            dispatch(deleteMentorship(mentorshipId)).then((res) => {
               if (res?.payload?.success) {
-                dispatch(getConsultancies());
+                dispatch(getMentorships());
               }
             });
             setOpenDeleteModal(false);
-            setConsultancyId(null);
+            setMentorshipId(null);
           }}
         />
       )}
+
       {isEditing && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-6 bg-white text-black rounded space-y-4">
@@ -184,40 +204,81 @@ const Consultancy = () => {
                 )}
               </div>
               <div className="flex items-center">
-                <p className="w-16">Title</p>
+                <p className="w-20">Name</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
+                    setFormData({ ...formData, name: e.target.value })
                   }
-                  placeholder="Title"
-                  value={formData?.title}
+                  placeholder="Name"
+                  value={formData?.name}
                 />
               </div>
               <div className="flex items-center">
-                <p className="w-16">Duration</p>
+                <p className="w-20">Present title</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setFormData({ ...formData, duration: e.target.value })
+                    setFormData({ ...formData, present_title: e.target.value })
                   }
-                  placeholder="Duration"
-                  value={formData?.duration}
+                  placeholder="Present title"
+                  value={formData?.present_title}
                 />
               </div>
               <div className="flex items-center">
-                <p className="w-16">Client</p>
+                <p className="w-20">University Name</p>
                 <input
                   className="px-2 border rounded flex-1"
                   type="text"
                   onChange={(e) =>
-                    setFormData({ ...formData, client: e.target.value })
+                    setFormData({
+                      ...formData,
+                      university_name: e.target.value,
+                    })
                   }
-                  placeholder="Client"
-                  value={formData?.client}
+                  placeholder="University Name"
+                  value={formData?.university_name}
                 />
+              </div>
+              <div className="flex items-center">
+                <p className="w-20">Previous title</p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, previous_title: e.target.value })
+                  }
+                  placeholder="Previous title"
+                  value={formData?.previous_title}
+                />
+              </div>
+              <div className="flex items-center">
+                <p className="w-20">Email</p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="Email"
+                  value={formData?.email}
+                />
+              </div>
+              <div className="flex items-center">
+                <p className="w-20">Gender</p>
+                <select
+                  className="px-2 h-10 border rounded flex-1"
+                  onChange={(e) =>
+                    setFormData({ ...formData, gender: e.target.value })
+                  }
+                  value={formData?.gender}
+                >
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
               </div>
             </div>
             <div className="flex justify-center gap-4">
@@ -228,8 +289,8 @@ const Consultancy = () => {
                 className="cancel"
                 onClick={() => {
                   setIsEditing(false);
-                  setFormData(initialFormData);
-                  setConsultancyId(null);
+                  setFormData(initialMentorshipData);
+                  setMentorshipId(null);
                 }}
               >
                 Cancel
@@ -240,50 +301,50 @@ const Consultancy = () => {
       )}
 
       <div className="flex items-center justify-between relative">
-        <h1 className="text-2xl font-bold py-4 sm:mx-auto">Consultancy</h1>
+        <h1 className="text-2xl font-bold py-4 sm:mx-auto">Mentorship</h1>
         {isAuthenticated && (
-          <button onClick={() => setIsEditing(true)} className="edit mt-2 absolute right-0">
-            + Add Consultancy
+          <button
+            onClick={() => setIsEditing(true)}
+            className="edit mt-2 absolute right-0"
+          >
+            + Add Mentorship
           </button>
         )}
       </div>
 
-      {consultancies?.map((a) => (
-        <div
-          className="flex sm:flex-row flex-col gap-2 my-3 shadow h-fit bg-white"
-          key={a?.title}
-        >
-          <div className="w-40 h-40 flex mx-auto sm:pt-0 pt-2 items-center justify-center relative">
-            <img
-              src={a?.image}
-              alt="picture"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex-1 px-4 py-2">
-            <p className="font-semibold text-md text-lg">{a?.title}</p>
-            <p className="text-md text-gray-400 py-1">{a?.duration}</p>
-            <p>{a?.client}</p>
-          </div>
-          {isAuthenticated && (
-            <div className="flex mx-auto sm:pb-0 pb-4 gap-4 h-fit my-auto pr-2">
+      <div className="flex justify-center gap-4 flex-wrap">
+        {mentorships?.map((mentor, index) => (
+          <div key={index} className="w-72 min-h-80 h-fit bg-white shadow-md p-4 flex flex-col gap-2 group relative overflow-hidden">
+            <div className="h-36 w-full overflow-hidden">
+                <img src={mentor.image} alt="" className="w-full h-full object-contain" />
+            </div>
+            <div className="text-center text-sm">
+                <h1 className="text-lg font-bold">{mentor.name}</h1>
+                <p>{mentor.present_title}</p>
+                <p>{mentor.university_name}</p>
+                <p>{mentor.previous_title}</p>
+                <p>{mentor.email}</p>
+            </div>
+            {isAuthenticated && (
+            <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4  group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">
               <button
                 className="fas fa-edit text-green-500"
-                onClick={() => handleUpdateConsultancy(a)}
+                onClick={() => handleUpdateMentorship(mentor)}
               ></button>
               <button
                 className="fas fa-trash text-red-400"
                 onClick={() => {
                   setOpenDeleteModal(true);
-                  setConsultancyId(a._id);
+                  setMentorshipId(mentor._id);
                 }}
               ></button>
             </div>
           )}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
-export default Consultancy;
+export default Mentorship;

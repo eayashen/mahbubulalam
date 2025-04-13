@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-
 import Slider from "react-slick";
 import { Triangle } from "react-loader-spinner";
 import {
@@ -18,7 +17,6 @@ import {
   updateAward,
   addAward,
   deleteAward,
-  uploadImage,
 } from "../redux/admin/award-slice";
 import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
