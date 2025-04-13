@@ -265,12 +265,19 @@ const Publications = () => {
                 `section-${item.category}`
               );
               if (section) {
-                section.scrollIntoView({ behavior: "smooth", block: "start" });
+                const navbarHeight = 150;
+                const sectionTop = section.offsetTop;
+                window.scrollTo({
+                  top: sectionTop - navbarHeight,
+                  behavior: "smooth",
+                });
               }
             }}
           >
             <Counter count={item.count} />
-            <p className="font-bold text-gray-500 hover:underline">{types[item.category]}</p>
+            <p className="font-bold text-gray-500 hover:underline">
+              {types[item.category]}
+            </p>
           </div>
         ))}
       </div>

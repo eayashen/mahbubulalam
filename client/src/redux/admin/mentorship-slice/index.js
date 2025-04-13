@@ -64,21 +64,6 @@ export const deleteMentorship = createAsyncThunk(
   }
 );
 
-export const uploadImage = createAsyncThunk(
-  "mentorships/uploadImage",
-  async (formData) => {
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/mentorship/upload-image`,
-        formData
-      );
-      return response.data;
-    } catch (error) {
-      return error.response.data;
-    }
-  }
-);
-
 const mentorshipSlice = createSlice({
   name: "mentorships",
   initialState,
@@ -122,15 +107,6 @@ const mentorshipSlice = createSlice({
       .addCase(deleteMentorship.rejected, (state) => {
         state.isLoading = false;
       })
-      .addCase(uploadImage.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(uploadImage.fulfilled, (state, action) => {
-        state.isLoading = false;
-      })
-      .addCase(uploadImage.rejected, (state) => {
-        state.isLoading = false;
-      });
   },
 });
 

@@ -477,9 +477,7 @@ const Navbar = () => {
           {Links.map((link) => (
             <div
               key={link.name}
-              className="relative inline-block" // Add this class to create a relative container
-              onMouseEnter={() => setShowSubmenu(link.name === "Publications")}
-              onMouseLeave={() => setShowSubmenu(false)}
+              className="relative inline-block"
             >
               <Link to={link.link} className="font-semibold">
                 <li
@@ -489,9 +487,7 @@ const Navbar = () => {
                       : "text-white"
                   }`}
                   onClick={() => {
-                    if (link.name !== "Publications") {
                       setOpen(false);
-                    }
                   }}
                 >
                   {link.name}

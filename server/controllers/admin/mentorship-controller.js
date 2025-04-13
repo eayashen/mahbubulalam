@@ -9,7 +9,6 @@ const addMentorship = async (req, res) => {
       previous_title,
       email,
       gender,
-      image,
     } = req.body;
     const newMontorship = new Mentorship({
       name,
@@ -18,7 +17,6 @@ const addMentorship = async (req, res) => {
       previous_title,
       email,
       gender,
-      image,
     });
     await newMontorship.save();
     res
@@ -50,7 +48,6 @@ const updateMentorship = async (req, res) => {
       previous_title,
       email,
       gender,
-      image,
     } = req.body;
     const findMentorship = await Mentorship.findById(id);
     if (!findMentorship) {
@@ -65,7 +62,6 @@ const updateMentorship = async (req, res) => {
       previous_title || findMentorship.previous_title;
     findMentorship.email = email || findMentorship.email;
     findMentorship.gender = gender || findMentorship.gender;
-    findMentorship.image = image || findMentorship.image;
 
     await findMentorship.save();
     res

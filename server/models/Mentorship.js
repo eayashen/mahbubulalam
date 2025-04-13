@@ -26,10 +26,6 @@ const mentorshipSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  image: {
-    type: String,
-    trim: true,
-  },
 });
 
 module.exports = mongoose.model("Mentorship", mentorshipSchema);

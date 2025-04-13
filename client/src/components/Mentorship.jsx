@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Triangle } from "react-loader-spinner";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -7,8 +7,9 @@ import {
   updateMentorship,
   deleteMentorship,
 } from "../redux/admin/mentorship-slice";
-import axios from "axios";
 import DeleteModal from "./DeleteModal";
+import boyIcon from "../images/boy_icon.jpg";
+import girlIcon from "../images/girl_icon.jpg";
 
 const initialMentorshipData = {
   name: "",
@@ -17,20 +18,15 @@ const initialMentorshipData = {
   previous_title: "",
   email: "",
   gender: "",
-  image: "",
 };
 
 const Mentorship = () => {
   const dispatch = useDispatch();
-  const inputRef = useRef(null);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { mentorships, isLoading } = useSelector((state) => state.mentorship);
 
   const [formData, setFormData] = useState(initialMentorshipData);
   const [isEditing, setIsEditing] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState("");
-  const [imageLoadingState, setImageLoadingState] = useState(false);
   const [mentorshipId, setMentorshipId] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
@@ -44,7 +40,6 @@ const Mentorship = () => {
       previous_title,
       email,
       gender,
-      image,
     } = mentorship;
     setFormData({
       name,
@@ -53,28 +48,7 @@ const Mentorship = () => {
       previous_title,
       email,
       gender,
-      image,
     });
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const droppedFile = e.dataTransfer.files?.[0];
-    if (droppedFile) setImageFile(droppedFile);
-  };
-
-  const handleImageFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) setImageFile(file);
-  };
-
-  const handleRemoveImage = () => {
-    setImageFile(null);
-    if (inputRef.current) inputRef.current.value = "";
   };
 
   const handleSaveApiCall = (url) => {
@@ -82,7 +56,7 @@ const Mentorship = () => {
       alert("Name is required");
       return;
     }
-    const payload = { ...formData, image: url };
+    const payload = { ...formData };
 
     if (mentorshipId) {
       dispatch(updateMentorship({ formData: payload, id: mentorshipId })).then(
@@ -102,36 +76,6 @@ const Mentorship = () => {
     setIsEditing(false);
     setFormData(initialMentorshipData);
     setMentorshipId(null);
-  };
-
-  const handleSave = async () => {
-    if (!imageFile) {
-      handleSaveApiCall(formData?.image);
-      return;
-    }
-
-    const data = new FormData();
-    data.append("image", imageFile);
-    setImageLoadingState(true);
-
-    try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/mentorship/upload-image`,
-        data
-      );
-      if (response?.data?.success) {
-        const imageUrl = response?.data?.result?.secure_url;
-        setUploadedImageUrl(response?.data?.result?.secure_url);
-        setImageFile(null);
-        handleSaveApiCall(imageUrl);
-      } else {
-        console.log("Image upload failed");
-      }
-    } catch (error) {
-      console.error("Error uploading image:", error.message);
-    } finally {
-      setImageLoadingState(false);
-    }
   };
 
   useEffect(() => {
@@ -162,47 +106,6 @@ const Mentorship = () => {
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-6 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-              <div
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                className="border-2 border-dashed rounded-lg p-4"
-              >
-                <input
-                  id="image-upload"
-                  type="file"
-                  className="hidden"
-                  ref={inputRef}
-                  onChange={handleImageFileChange}
-                  // disabled={isEditMode}
-                />
-                {!imageFile ? (
-                  <label
-                    htmlFor="image-upload"
-                    className={`cursor-pointer flex flex-col items-center justify-center sm:h-32 h-fit`}
-                  >
-                    {/* <UploadCloudIcon className="w-10 h-10 text-muted-forground mb-2" /> */}
-                    <span>Drag & drop or click to upload file</span>
-                  </label>
-                ) : imageLoadingState ? (
-                  <div className="h-10 bg-gray-200" />
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 text-promary mr-2" />
-                    </div>
-                    <p className="text-sm font-medium">{imageFile.name}</p>
-                    <button
-                      variant="ghost"
-                      size="icon"
-                      className="text-muted-forground hover:text-foreground"
-                      onClick={handleRemoveImage}
-                    >
-                      <p className="w-4 h-4">X</p>
-                      <span className="sr-only">Remove File</span>
-                    </button>
-                  </div>
-                )}
-              </div>
               <div className="flex items-center">
                 <p className="w-20">Name</p>
                 <input
@@ -282,7 +185,7 @@ const Mentorship = () => {
               </div>
             </div>
             <div className="flex justify-center gap-4">
-              <button className="save" onClick={handleSave}>
+              <button className="save" onClick={handleSaveApiCall}>
                 Save
               </button>
               <button
@@ -314,32 +217,39 @@ const Mentorship = () => {
 
       <div className="flex justify-center gap-4 flex-wrap">
         {mentorships?.map((mentor, index) => (
-          <div key={index} className="w-72 min-h-80 h-fit bg-white shadow-md p-4 flex flex-col gap-2 group relative overflow-hidden">
+          <div
+            key={index}
+            className="w-72 min-h-80 h-fit bg-white shadow-md p-4 flex flex-col gap-2 group relative overflow-hidden"
+          >
             <div className="h-36 w-full overflow-hidden">
-                <img src={mentor.image} alt="" className="w-full h-full object-contain" />
+              <img
+                src={mentor.gender === "Male" ? boyIcon : girlIcon}
+                alt="add"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="text-center text-sm">
-                <h1 className="text-lg font-bold">{mentor.name}</h1>
-                <p>{mentor.present_title}</p>
-                <p>{mentor.university_name}</p>
-                <p>{mentor.previous_title}</p>
-                <p>{mentor.email}</p>
+              <h1 className="text-lg font-bold">{mentor.name}</h1>
+              <p>{mentor.present_title}</p>
+              <p>{mentor.university_name}</p>
+              <p>{mentor.previous_title}</p>
+              <p>{mentor.email}</p>
             </div>
             {isAuthenticated && (
-            <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4  group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">
-              <button
-                className="fas fa-edit text-green-500"
-                onClick={() => handleUpdateMentorship(mentor)}
-              ></button>
-              <button
-                className="fas fa-trash text-red-400"
-                onClick={() => {
-                  setOpenDeleteModal(true);
-                  setMentorshipId(mentor._id);
-                }}
-              ></button>
-            </div>
-          )}
+              <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4  group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">
+                <button
+                  className="fas fa-edit text-green-500"
+                  onClick={() => handleUpdateMentorship(mentor)}
+                ></button>
+                <button
+                  className="fas fa-trash text-red-400"
+                  onClick={() => {
+                    setOpenDeleteModal(true);
+                    setMentorshipId(mentor._id);
+                  }}
+                ></button>
+              </div>
+            )}
           </div>
         ))}
       </div>
