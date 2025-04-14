@@ -215,7 +215,7 @@ const Mentorship = () => {
         )}
       </div>
 
-      <div className="flex justify-center gap-4 flex-wrap">
+      <div className="flex justify-center gap-4 flex-wrap my-4">
         {mentorships?.map((mentor, index) => (
           <div
             key={index}
@@ -233,7 +233,9 @@ const Mentorship = () => {
               <p>{mentor.present_title}</p>
               <p>{mentor.university_name}</p>
               <p>{mentor.previous_title}</p>
-              <p>{mentor.email}</p>
+              <p className="text-teal-500 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                {mentor.email}
+              </p>
             </div>
             {isAuthenticated && (
               <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4  group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">

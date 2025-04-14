@@ -30,7 +30,7 @@ const addMentorship = async (req, res) => {
 
 const getMentorships = async (req, res) => {
   try {
-    const mentorships = await Mentorship.find({});
+    const mentorships = await Mentorship.find({}).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: mentorships });
   } catch (error) {
     console.error(error);
@@ -49,6 +49,7 @@ const updateMentorship = async (req, res) => {
       email,
       gender,
     } = req.body;
+    
     const findMentorship = await Mentorship.findById(id);
     if (!findMentorship) {
       return res.status(404).json({ message: "Mentorship not found" });
@@ -60,7 +61,7 @@ const updateMentorship = async (req, res) => {
       university_name || findMentorship.university_name;
     findMentorship.previous_title =
       previous_title || findMentorship.previous_title;
-    findMentorship.email = email || findMentorship.email;
+      findMentorship.email = email ?? findMentorship.email;
     findMentorship.gender = gender || findMentorship.gender;
 
     await findMentorship.save();
