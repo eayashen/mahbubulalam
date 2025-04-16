@@ -19,10 +19,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  time_period: {
-    type: String,
-    trim: true,
-  },
   donor: {
     type: String,
     trim: true,

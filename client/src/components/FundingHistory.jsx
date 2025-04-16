@@ -217,23 +217,23 @@ const FundingHistory = () => {
       <p className="text-center font-bold text-2xl my-4">Funding History</p>
       <div className="sm:flex justify-center flex-wrap py-4 hidden">
         <div className="flex-1 text-center">
-          <p className="font-bold">${total.toLocaleString()}</p>
+          <p className="font-bold text-lg">${total.toLocaleString()}</p>
           <p className="">Total amount awarded till date</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Principal Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Principal Investigator (PI)</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Co-Principal Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Co-Principal Investigator (Co-PI)</p>
         </div>
         <div className="flex-1 text-center">
-          <p className="font-bold">
+          <p className="font-bold text-lg">
             ${roleSum ? (roleSum["Co-Investigator"] ?? 0).toLocaleString() : 0}
           </p>
           <p className="">As Co-Investigator (Co-I)</p>
@@ -272,9 +272,8 @@ const FundingHistory = () => {
           <p className="w-10 px-1">Year</p>
           <p className="flex-1 px-4">Title</p>
           <p className="w-40 px-1">Role</p>
-          <p className="w-20 px-1">Awarded Amount($)</p>
-          <p className="w-40 text-center px-1">Duration</p>
-          <p className="w-32 px-1">Donor</p>
+          <p className="w-24 px-1">Awarded Amount($)</p>
+          <p className="w-48 px-1">Donor</p>
           {isAuthenticated && <div className="w-20">Actions</div>}
         </div>
         {isAuthenticated && (
@@ -292,9 +291,8 @@ const FundingHistory = () => {
             <p className="w-10 px-1">{d.year}</p>
             <p className="flex-1 px-4">{d.title}</p>
             <p className="w-40 px-1">{d.role}</p>
-            <p className="w-20 px-1">${Number(d.awarded_amount).toLocaleString()}</p>
-            <p className="w-40 px-1">{d.time_period}</p>
-            <p className="w-32 px-1">{d.donor}</p>
+            <p className="w-24 px-1">${Number(d.awarded_amount).toLocaleString()}</p>
+            <p className="w-48 px-1">{d.donor}</p>
             {isAuthenticated && (
               <div className="flex w-20 gap-4 justify-center items-center">
                 <button

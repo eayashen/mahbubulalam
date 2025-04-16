@@ -61,7 +61,7 @@ const Navbar = () => {
     },
     { name: "Funding History", link: "/fundinghistory" },
     { name: "Consultancy", link: "/consultancy" },
-    { name: "Mentorship", link: "/mentorship" },
+    { name: "Mentoring", link: "/mentoring" },
     { name: "Contact", link: "/contact" },
   ];
   const [open, setOpen] = useState(false);

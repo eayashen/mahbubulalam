@@ -30,7 +30,7 @@ const addMentorship = async (req, res) => {
 
 const getMentorships = async (req, res) => {
   try {
-    const mentorships = await Mentorship.find({}).sort({ createdAt: -1 });
+    const mentorships = await Mentorship.find({}).collation({ locale: 'en' }).sort({ name: 1 });
     res.status(200).json({ success: true, data: mentorships });
   } catch (error) {
     console.error(error);

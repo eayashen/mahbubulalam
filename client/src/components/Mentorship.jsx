@@ -204,7 +204,7 @@ const Mentorship = () => {
       )}
 
       <div className="flex items-center justify-between relative">
-        <h1 className="text-2xl font-bold py-4 sm:mx-auto">Mentorship</h1>
+        <h1 className="text-2xl font-bold py-4 sm:mx-auto">Mentoring</h1>
         {isAuthenticated && (
           <button
             onClick={() => setIsEditing(true)}
