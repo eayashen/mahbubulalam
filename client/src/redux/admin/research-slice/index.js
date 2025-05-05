@@ -3,6 +3,7 @@ import axios from "axios";
 
 const initialState = {
   research: [],
+  publications: [],
   isLoading: false,
 };
 
@@ -12,6 +13,20 @@ export const getResearch = createAsyncThunk(
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_SERVER_API_URL}/api/research/all`
+      );
+      return response.data;
+    } catch (error) {
+      return error.response.data;
+    }
+  }
+);
+
+export const getPublications = createAsyncThunk(
+  "research/getPublications",
+  async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API_URL}/api/research/publications`
       );
       return response.data;
     } catch (error) {
@@ -69,46 +84,54 @@ const researchSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (bulder) => {
-    bulder.addCase(getResearch.pending, (state) => {
-      state.isLoading = true;
-    });
-    bulder.addCase(getResearch.fulfilled, (state, { payload }) => {
-      state.isLoading = false;
-      state.research = payload.data;
-    });
-    bulder.addCase(getResearch.rejected, (state) => {
-      state.isLoading = false;
-    });
-
-    bulder.addCase(addResearch.pending, (state) => {
-      state.isLoading = true;
-    });
-    bulder.addCase(addResearch.fulfilled, (state) => {
-      state.isLoading = false;
-    });
-    bulder.addCase(addResearch.rejected, (state) => {
-      state.isLoading = false;
-    });
-
-    bulder.addCase(updateResearch.pending, (state) => {
-      state.isLoading = true;
-    });
-    bulder.addCase(updateResearch.fulfilled, (state) => {
-      state.isLoading = false;
-    });
-    bulder.addCase(updateResearch.rejected, (state) => {
-      state.isLoading = false;
-    });
-
-    bulder.addCase(deleteResearch.pending, (state) => {
-      state.isLoading = true;
-    });
-    bulder.addCase(deleteResearch.fulfilled, (state) => {
-      state.isLoading = false;
-    });
-    bulder.addCase(deleteResearch.rejected, (state) => {
-      state.isLoading = false;
-    });
+    bulder
+      .addCase(getResearch.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getResearch.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.research = payload.data;
+      })
+      .addCase(getResearch.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getPublications.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getPublications.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.publications = payload.data;
+      })
+      .addCase(getPublications.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(addResearch.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addResearch.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(addResearch.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateResearch.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateResearch.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateResearch.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteResearch.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteResearch.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(deleteResearch.rejected, (state) => {
+        state.isLoading = false;
+      });
   },
 });
 

@@ -2,13 +2,15 @@ const Research = require("../../models/Research");
 const Publication = require("../../models/Publication");
 
 const addResearch = async (req, res) => {
-  const { title, description, status } = req.body;
+  const { duration, title, description, status } = req.body;
 
   try {
     const newlyCreatedResearch = new Research({
+      duration,
       title,
       description,
       status,
+      publications: [],
     });
 
     await newlyCreatedResearch.save();
@@ -22,30 +24,12 @@ const addResearch = async (req, res) => {
 
 const fetchAllResearch = async (req, res) => {
   try {
-    const listOfResearch = await Research.aggregate([
-      {
-        $lookup: {
-          from: "publications",
-          let: { researchId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $eq: ["$research_id", { $toString: "$$researchId" }], // Convert ObjectId to String
-                },
-              },
-            },
-            {
-              $sort: { createdAt: -1 }, // Sort publications in reverse order by _id
-            },
-          ],
-          as: "publications",
-        },
-      },
-      {
-        $sort: { createdAt: -1 },
-      },
-    ]);
+    const listOfResearch = await Research.find({})
+      .populate({
+        path: "publications",
+        options: { sort: { createdAt: -1 } },
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json({ success: true, data: listOfResearch });
   } catch (error) {
@@ -54,14 +38,25 @@ const fetchAllResearch = async (req, res) => {
   }
 };
 
+const fetchAllPublications = async (req, res) => {
+  try {
+    const publications = await Publication.find({}, "_id title").sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, data: publications });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Something went wrong" });
+  }
+};
+
 const editResearch = async (req, res) => {
-  const { title, description, status } = req.body;
+  const { duration, title, description, status } = req.body;
   const { id } = req.params;
 
   try {
     const updatedResearch = await Research.findByIdAndUpdate(
       id,
-      { title, description, status },
+      { duration, title, description, status },
       { new: true }
     );
 
@@ -91,6 +86,7 @@ const deleteResearch = async (req, res) => {
 module.exports = {
   addResearch,
   fetchAllResearch,
+  fetchAllPublications,
   editResearch,
   deleteResearch,
 };

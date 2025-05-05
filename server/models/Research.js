@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
+    duration: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     title: {
       type: String,
       required: true,
@@ -17,6 +22,12 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "onGoing",
     },
+    publications: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Publication",
+      },
+    ],
   },
   {
     timestamps: true,

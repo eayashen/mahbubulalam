@@ -1,14 +1,13 @@
 const Publication = require("../../models/Publication");
 
 const addPublication = async (req, res) => {
-  const { title, published, category, research_id, authors, link, keywords } =
+  const { title, published, category, authors, link, keywords } =
     req.body;
   try {
     const newlyCreatedPublication = new Publication({
       title,
       published,
       category,
-      research_id,
       authors,
       link,
       keywords,
@@ -86,7 +85,7 @@ const fetchAllPublications = async (req, res) => {
 };
 
 const editPublication = async (req, res) => {
-  const { title, published, category, research_id, authors, link, keywords } =
+  const { title, published, category, authors, link, keywords } =
     req.body;
   const { id } = req.params;
 
@@ -97,7 +96,6 @@ const editPublication = async (req, res) => {
         title,
         published,
         category,
-        research_id,
         authors,
         link,
         keywords,

@@ -2,56 +2,63 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 import {
+  Combobox,
+  ComboboxButton,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from "@headlessui/react";
+import {
   getResearch,
+  getPublications,
   addResearch,
   updateResearch,
   deleteResearch,
 } from "../redux/admin/research-slice";
-import {
-  addPublication,
-  updatePublication,
-  deletePublication,
-} from "../redux/admin/publication-slice";
 
 const initialFormData = {
+  duration: "",
   title: "",
   description: "",
   status: "",
-};
-
-const initialPublicationData = {
-  title: "",
-  published: "",
-  category: "",
-  research_id: "",
-  authors: "",
-  link: "",
-  keywords: [],
+  publications: [],
 };
 
 const Research = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { research, isLoading } = useSelector((state) => state.research);
-  const [formData, setFormData] = useState(initialFormData);
-  const [publicationData, setPublicationData] = useState(
-    initialPublicationData
+  const { research, publications, isLoading } = useSelector(
+    (state) => state.research
   );
+  const [formData, setFormData] = useState(initialFormData);
   const [researchId, setResearchId] = useState(null);
   const [isResearchEditing, setIsResearchEditing] = useState(false);
-  const [publicationId, setPublicationId] = useState(null);
-  const [ispublicationEditing, setIsPublicationEditing] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [key, setKey] = useState("");
+  const [isPublicationSelecting, setIsPublicationSelecting] = useState(false);
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState(null);
+
+  const filteredPublications =
+    query === ""
+      ? publications
+      : publications.filter((p) =>
+          p.title.toLowerCase().includes(query.toLowerCase())
+        );
+
+  const handleChange = (value) => {
+    setSelected(value);
+  };
 
   useEffect(() => {
     dispatch(getResearch());
-  }, []);
+    dispatch(getPublications());
+  }, [dispatch]);
 
-  const handleEdit = (id, title, description, status) => {
+  const handleEdit = (id, duration, status, title, description) => {
     setResearchId(id);
     setFormData((prevData) => ({
       ...prevData,
+      duration,
       title,
       description,
       status,
@@ -91,65 +98,50 @@ const Research = () => {
     setResearchId(null);
   };
 
-  const handlePublicationsEdit = (id) => {
+  const handleSelectPublications = (id) => {
     setResearchId(id);
-    setIsPublicationEditing(true);
+    setIsPublicationSelecting(true);
   };
 
   const handleSavePublication = () => {
-    if (!publicationData?.title || !publicationData?.category) {
-      alert("Title and Category are required fields");
+    if (!selected || !selected._id) {
+      alert("Please select a publication");
       return;
     }
-    if (researchId === null) {
-      alert("Please select a research to add publication");
+  
+    const selectedPublicationId = selected._id;
+  
+    // Find the current research item by ID
+    const currentResearch = research?.find((r) => r._id === researchId);
+  
+    if (!currentResearch) {
+      alert("Research item not found");
       return;
     }
-    if (researchId !== null && publicationId !== null) {
-      dispatch(
-        updatePublication({ formData: publicationData, id: publicationId })
-      ).then((res) => {
-        if (res.payload?.success) {
-          dispatch(getResearch());
-        }
-      });
-    } else {
-      dispatch(
-        addPublication({ ...publicationData, research_id: researchId })
-      ).then((res) => {
-        if (res.payload?.success) {
-          dispatch(getResearch());
-        }
-      });
+  
+    // Extract current publication IDs and add new one if not already present
+    const existingPublications = currentResearch.publications?.map((p) => p._id) || [];
+    if (existingPublications.includes(selectedPublicationId)) {
+      alert("Publication already added to this research");
+      return;
     }
-    setIsPublicationEditing(false);
-    setPublicationData(initialPublicationData);
-    setResearchId(null);
-    setPublicationId(null);
-  };
-
-  const handlePublicationDelete = (id) => {
-    dispatch(deletePublication(id)).then((res) => {
+  
+    const updatedPublications = [...existingPublications, selectedPublicationId];
+  
+    dispatch(
+      updateResearch({
+        id: researchId,
+        formData: {
+          ...currentResearch,
+          publications: updatedPublications,
+        },
+      })
+    ).then((res) => {
       if (res.payload?.success) {
         dispatch(getResearch());
+        setIsPublicationSelecting(false);
+        setSelected(null);
       }
-    });
-    setPublicationId(null);
-  };
-
-  const addItem = () => {
-    if (key === "") return;
-    setPublicationData({
-      ...publicationData,
-      keywords: [...publicationData.keywords, key],
-    });
-    setKey("");
-  };
-
-  const removeItem = (value) => {
-    setPublicationData({
-      ...publicationData,
-      keywords: publicationData.keywords.filter((keyword) => keyword !== value),
     });
   };
 
@@ -175,6 +167,21 @@ const Research = () => {
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
           <div className="sm:w-[600px] w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
+            <div className="flex items-center">
+                <p className="w-20">Duration</p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      duration: e.target.value,
+                    })
+                  }
+                  placeholder="Duration"
+                  value={formData?.duration}
+                />
+              </div>
               <div className="flex items-center">
                 <p className="w-20">Status</p>
                 <select
@@ -242,119 +249,81 @@ const Research = () => {
         </div>
       )}
 
-      {ispublicationEditing && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
+      {isPublicationSelecting && (
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-              <div className="flex items-center">
-                <p className="w-20">Title</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setPublicationData({
-                      ...publicationData,
-                      title: e.target.value,
-                    })
-                  }
-                  placeholder="Title"
-                  value={publicationData?.title}
-                />
+              <h1 className="text-lg font-semibold text-center">
+                Select Publications for Research
+              </h1>
+              {/* Scrollable list of selected publications */}
+              <div className="max-h-40 overflow-y-auto border p-2 rounded">
+                {research?.publications?.map((p) => (
+                  <div
+                    key={p._id}
+                    className="flex items-center justify-between gap-2 my-2 p-2 border rounded"
+                  >
+                    <p className="truncate">{p.title}</p>
+                    <span className="cursor-pointer text-red-500 bg-gray-100 px-2 rounded text-sm">
+                      X
+                    </span>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-center">
-                <p className="w-20">Published</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setPublicationData({
-                      ...publicationData,
-                      published: e.target.value,
-                    })
-                  }
-                  placeholder="Site name"
-                  value={publicationData?.published}
-                />
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Type</p>
-                <select
-                  className="px-1 border rounded flex-1 h-10"
-                  onChange={(e) =>
-                    setPublicationData({
-                      ...publicationData,
-                      category: e.target.value,
-                    })
-                  }
-                  value={publicationData?.category || ""}
-                >
-                  <option value="">Select Type</option>
-                  <option value="journal">Journal</option>
-                  <option value="working-paper">Working Paper</option>
-                  <option value="policy">Policy</option>
-                </select>
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Authors</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setPublicationData({
-                      ...publicationData,
-                      authors: e.target.value,
-                    })
-                  }
-                  placeholder="Authors"
-                  value={publicationData?.authors}
-                />
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Link</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setPublicationData({
-                      ...publicationData,
-                      link: e.target.value,
-                    })
-                  }
-                  placeholder="https://example.com"
-                  value={publicationData?.link}
-                />
-              </div>
-              <div>
-                <div className="flex items-center">
-                  <p className="w-20">Keywords</p>
-                  <input
-                    type="text"
-                    className="px-2 border rounded flex-1"
-                    placeholder="Bold Name"
-                    value={key}
-                    onChange={(e) => setKey(e.target.value)}
-                  />
-                  <button className="ml-2 save py-2" onClick={(e) => addItem()}>
-                    Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {publicationData?.keywords?.map((keyword) => (
-                    <div
-                      key={Math.random()}
-                      className="border px-2 py-1 rounded-sm"
-                    >
-                      {keyword}
-                      <button
-                        onClick={() => removeItem(keyword)}
-                        className="ml-2 text-red-500"
+
+              <Combobox value={selected} onChange={handleChange}>
+                <div className="relative">
+                  <div className="relative w-full cursor-default overflow-hidden rounded border bg-white text-left shadow-md">
+                    <ComboboxInput
+                      className="w-full border-none py-2 pl-3 pr-10 leading-5 focus:ring-0"
+                      displayValue={(p) => p?.title || ""}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Search and select publication"
+                    />
+                    <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
+                      {/* <ChevronDownIcon className="h-5 w-5 text-gray-400" /> */}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="30px"
+                        height="30px"
+                        viewBox="0 0 24 24"
+                        fill="none"
                       >
-                        x
-                      </button>
-                    </div>
-                  ))}
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
+                          fill="#000000"
+                        />
+                      </svg>
+                    </ComboboxButton>
+                  </div>
+
+                  <ComboboxOptions className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                    {filteredPublications.length === 0 && query !== "" ? (
+                      <div className="relative cursor-default select-none px-4 py-2 text-gray-700">
+                        Nothing found.
+                      </div>
+                    ) : (
+                      filteredPublications.map((p) => (
+                        <ComboboxOption
+                          key={p._id}
+                          value={p}
+                          className={({ active }) =>
+                            `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
+                              active
+                                ? "bg-blue-100 text-blue-900"
+                                : "text-gray-900"
+                            }`
+                          }
+                        >
+                          {p.title}
+                        </ComboboxOption>
+                      ))
+                    )}
+                  </ComboboxOptions>
                 </div>
-              </div>
+              </Combobox>
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSavePublication}>
@@ -363,9 +332,7 @@ const Research = () => {
               <button
                 className="cancel"
                 onClick={() => {
-                  setIsPublicationEditing(false);
-                  setPublicationData(null);
-                  setPublicationId(null);
+                  setIsPublicationSelecting(false);
                   setResearchId(null);
                 }}
               >
@@ -391,13 +358,14 @@ const Research = () => {
         (d) =>
           d.status === "onGoing" && (
             <div className="my-4 border-b pb-2" key={d._id}>
+              <p className="text-sm text-gray-500">{d.duration}</p>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
                 <div className="flex gap-4 py-1">
                   <button
                     onClick={() =>
-                      handleEdit(d._id, d.title, d.description, d.status)
+                      handleEdit(d._id, d.duration, d.status, d.title, d.description)
                     }
                     className="fas fa-edit"
                   ></button>
@@ -406,16 +374,16 @@ const Research = () => {
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handlePublicationsEdit(d._id)}
+                    onClick={() => handleSelectPublications(d._id)}
                     className="edit"
                   >
-                    + Add Publication
+                    + Select Publication
                   </button>
                 </div>
               )}
               {d?.publications?.length > 0 && (
                 <button
-                  onClick={() => setSelectedProjectId(d._id)}
+                  // onClick={() => setSelectedProjectId(d._id)}
                   className="border px-2 rounded my-2 bg-blue-200"
                 >
                   View Publications
@@ -450,16 +418,7 @@ const Research = () => {
                     {isAuthenticated && (
                       <div className="flex gap-4 py-2">
                         <button
-                          onClick={() => {
-                            setPublicationData(p);
-                            setPublicationId(p._id);
-                            setIsPublicationEditing(true);
-                            setResearchId(d._id);
-                          }}
-                          className="fas fa-edit"
-                        ></button>
-                        <button
-                          onClick={() => handlePublicationDelete(p._id)}
+                          // onClick={() => handlePublicationDelete(p._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>
@@ -476,6 +435,7 @@ const Research = () => {
         (d) =>
           d.status === "previousResearch" && (
             <div className="my-4 border-b pb-2" key={d._id}>
+              <p className="text-sm text-gray-500">{d.duration}</p>
               <p className="text-lg font-semibold">{d.title}</p>
               <p className="whitespace-pre-line">{d.description}</p>
               {isAuthenticated && (
@@ -491,10 +451,10 @@ const Research = () => {
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handlePublicationsEdit(d._id)}
+                    onClick={() => handleSelectPublications(d._id)}
                     className="edit"
                   >
-                    + Add Publication
+                    + Select Publication
                   </button>
                 </div>
               )}
@@ -535,16 +495,7 @@ const Research = () => {
                     {isAuthenticated && (
                       <div className="flex gap-4 py-2">
                         <button
-                          onClick={() => {
-                            setPublicationData(p);
-                            setPublicationId(p._id);
-                            setIsPublicationEditing(true);
-                            setResearchId(d._id);
-                          }}
-                          className="fas fa-edit"
-                        ></button>
-                        <button
-                          onClick={() => handlePublicationDelete(d._id)}
+                          // onClick={() => handlePublicationDelete(d._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>

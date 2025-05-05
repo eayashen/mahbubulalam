@@ -171,18 +171,6 @@ const FundingHistory = () => {
                 />
               </div>
               <div className="flex items-center">
-                <p className="w-24">Duration</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({ ...formData, time_period: e.target.value })
-                  }
-                  placeholder="Duration"
-                  value={formData?.time_period}
-                />
-              </div>
-              <div className="flex items-center">
                 <p className="w-24">Donor</p>
                 <input
                   className="px-2 border rounded flex-1"

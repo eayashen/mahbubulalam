@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    research_id: {
-      type: String,
-      trim: true,
-    },
     authors: {
       type: String,
       trim: true,
