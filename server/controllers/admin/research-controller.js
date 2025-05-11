@@ -50,13 +50,13 @@ const fetchAllPublications = async (req, res) => {
 };
 
 const editResearch = async (req, res) => {
-  const { duration, title, description, status } = req.body;
+  const { duration, title, description, status, publications } = req.body;
   const { id } = req.params;
 
   try {
     const updatedResearch = await Research.findByIdAndUpdate(
       id,
-      { duration, title, description, status },
+      { duration, title, description, status, publications },
       { new: true }
     );
 

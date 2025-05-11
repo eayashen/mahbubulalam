@@ -15,6 +15,7 @@ import {
   updateResearch,
   deleteResearch,
 } from "../redux/admin/research-slice";
+import { Accordion } from "rsuite";
 
 const initialFormData = {
   duration: "",
@@ -37,6 +38,7 @@ const Research = () => {
   const [isPublicationSelecting, setIsPublicationSelecting] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
+  const [selectedResearch, setSelectedResearch] = useState(null);
 
   const filteredPublications =
     query === ""
@@ -98,8 +100,9 @@ const Research = () => {
     setResearchId(null);
   };
 
-  const handleSelectPublications = (id) => {
-    setResearchId(id);
+  const handleSelectPublications = (res) => {
+    setResearchId(res?._id);
+    setSelectedResearch(res);
     setIsPublicationSelecting(true);
   };
 
@@ -108,31 +111,35 @@ const Research = () => {
       alert("Please select a publication");
       return;
     }
-  
+
     const selectedPublicationId = selected._id;
-  
+
     // Find the current research item by ID
-    const currentResearch = research?.find((r) => r._id === researchId);
-  
-    if (!currentResearch) {
-      alert("Research item not found");
-      return;
-    }
-  
+    // const currentResearch = research?.find((r) => r._id === researchId);
+
+    // if (!currentResearch) {
+    //   alert("Research item not found");
+    //   return;
+    // }
+
     // Extract current publication IDs and add new one if not already present
-    const existingPublications = currentResearch.publications?.map((p) => p._id) || [];
+    const existingPublications =
+      selectedResearch.publications?.map((p) => p._id) || [];
     if (existingPublications.includes(selectedPublicationId)) {
       alert("Publication already added to this research");
       return;
     }
-  
-    const updatedPublications = [...existingPublications, selectedPublicationId];
-  
+
+    const updatedPublications = [
+      ...existingPublications,
+      selectedPublicationId,
+    ];
+
     dispatch(
       updateResearch({
         id: researchId,
         formData: {
-          ...currentResearch,
+          ...selectedResearch,
           publications: updatedPublications,
         },
       })
@@ -141,6 +148,29 @@ const Research = () => {
         dispatch(getResearch());
         setIsPublicationSelecting(false);
         setSelected(null);
+      }
+    });
+  };
+
+  const handlePublicationDelete = (publicationId) => () => {
+    const updatedPublications = selectedResearch.publications.filter(
+      (p) => p._id !== publicationId
+    );
+    dispatch(
+      updateResearch({
+        id: researchId,
+        formData: {
+          ...selectedResearch,
+          publications: updatedPublications,
+        },
+      })
+    ).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getResearch());
+        setSelectedResearch((prev) => ({
+          ...prev,
+          publications: updatedPublications,
+        }));
       }
     });
   };
@@ -167,7 +197,7 @@ const Research = () => {
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
           <div className="sm:w-[600px] w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
-            <div className="flex items-center">
+              <div className="flex items-center">
                 <p className="w-20">Duration</p>
                 <input
                   className="px-2 border rounded flex-1"
@@ -254,17 +284,26 @@ const Research = () => {
           <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
             <div className="space-y-2">
               <h1 className="text-lg font-semibold text-center">
-                Select Publications for Research
+                Select Publications for Research{" "}
+                {research?.publications?.length}
               </h1>
               {/* Scrollable list of selected publications */}
-              <div className="max-h-40 overflow-y-auto border p-2 rounded">
-                {research?.publications?.map((p) => (
+              <div className="max-h-80 overflow-y-auto">
+                {selectedResearch?.publications?.length === 0 && (
+                  <p className="text-center text-gray-500">
+                    No publication selected
+                  </p>
+                )}
+                {selectedResearch?.publications?.map((p) => (
                   <div
                     key={p._id}
                     className="flex items-center justify-between gap-2 my-2 p-2 border rounded"
                   >
-                    <p className="truncate">{p.title}</p>
-                    <span className="cursor-pointer text-red-500 bg-gray-100 px-2 rounded text-sm">
+                    <p className="">{p.title}</p>
+                    <span
+                      className="cursor-pointer text-red-500 bg-gray-100 px-2 rounded text-sm"
+                      onClick={handlePublicationDelete(p._id)}
+                    >
                       X
                     </span>
                   </div>
@@ -290,8 +329,8 @@ const Research = () => {
                         fill="none"
                       >
                         <path
-                          fill-rule="evenodd"
-                          clip-rule="evenodd"
+                          fillRule="evenodd"
+                          clipRule="evenodd"
                           d="M12.7071 14.7071C12.3166 15.0976 11.6834 15.0976 11.2929 14.7071L6.29289 9.70711C5.90237 9.31658 5.90237 8.68342 6.29289 8.29289C6.68342 7.90237 7.31658 7.90237 7.70711 8.29289L12 12.5858L16.2929 8.29289C16.6834 7.90237 17.3166 7.90237 17.7071 8.29289C18.0976 8.68342 18.0976 9.31658 17.7071 9.70711L12.7071 14.7071Z"
                           fill="#000000"
                         />
@@ -327,7 +366,7 @@ const Research = () => {
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSavePublication}>
-                Save
+                Add
               </button>
               <button
                 className="cancel"
@@ -365,7 +404,13 @@ const Research = () => {
                 <div className="flex gap-4 py-1">
                   <button
                     onClick={() =>
-                      handleEdit(d._id, d.duration, d.status, d.title, d.description)
+                      handleEdit(
+                        d._id,
+                        d.duration,
+                        d.status,
+                        d.title,
+                        d.description
+                      )
                     }
                     className="fas fa-edit"
                   ></button>
@@ -374,7 +419,7 @@ const Research = () => {
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handleSelectPublications(d._id)}
+                    onClick={() => handleSelectPublications(d)}
                     className="edit"
                   >
                     + Select Publication
@@ -383,15 +428,20 @@ const Research = () => {
               )}
               {d?.publications?.length > 0 && (
                 <button
-                  // onClick={() => setSelectedProjectId(d._id)}
+                  onClick={() =>
+                    setSelectedProjectId((prevId) =>
+                      prevId === d._id ? null : d._id
+                    )
+                  }
                   className="border px-2 rounded my-2 bg-blue-200"
                 >
                   View Publications
                 </button>
               )}
+
               {selectedProjectId === d._id &&
                 d?.publications?.map((p) => (
-                  <div key={Math.random()} className="border-b py-2 mb-4">
+                  <div key={Math.random()} className="border-b py-2 mb-4 ml-6">
                     <a
                       href={p.link}
                       target="_blank"
@@ -415,14 +465,14 @@ const Research = () => {
                         );
                       })}
                     </p>
-                    {isAuthenticated && (
+                    {/* {isAuthenticated && (
                       <div className="flex gap-4 py-2">
                         <button
                           // onClick={() => handlePublicationDelete(p._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 ))}
             </div>
@@ -492,14 +542,14 @@ const Research = () => {
                         );
                       })}
                     </p>
-                    {isAuthenticated && (
+                    {/* {isAuthenticated && (
                       <div className="flex gap-4 py-2">
                         <button
                           // onClick={() => handlePublicationDelete(d._id)}
                           className="fas fa-trash text-red-500"
                         ></button>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 ))}
             </div>
