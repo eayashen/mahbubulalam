@@ -492,7 +492,13 @@ const Research = () => {
                 <div className="flex gap-4 py-1">
                   <button
                     onClick={() =>
-                      handleEdit(d._id, d.title, d.description, d.status)
+                      handleEdit(
+                        d._id,
+                        d.duration,
+                        d.status,
+                        d.title,
+                        d.description
+                      )
                     }
                     className="fas fa-edit"
                   ></button>
@@ -501,7 +507,7 @@ const Research = () => {
                     className="fas fa-trash text-red-500"
                   ></button>
                   <button
-                    onClick={() => handleSelectPublications(d._id)}
+                    onClick={() => handleSelectPublications(d)}
                     className="edit"
                   >
                     + Select Publication
@@ -510,15 +516,19 @@ const Research = () => {
               )}
               {d?.publications?.length > 0 && (
                 <button
-                  onClick={() => setSelectedProjectId(d._id)}
-                  className="border px-2 py-1 rounded my-2 bg-blue-200"
+                  onClick={() =>
+                    setSelectedProjectId((prevId) =>
+                      prevId === d._id ? null : d._id
+                    )
+                  }
+                  className="border px-2 rounded my-2 bg-blue-200"
                 >
                   View Publications
                 </button>
               )}
               {selectedProjectId === d._id &&
                 d?.publications?.map((p) => (
-                  <div key={Math.random()} className="border-b mb-4 py-2">
+                  <div key={Math.random()} className="border-b mb-4 py-2 ml-6">
                     <a
                       href={p.link}
                       target="_blank"
