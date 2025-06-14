@@ -80,12 +80,12 @@ const App = () => {
             />
           </Routes>
         </div>
-        <footer className="text-center bg-indigo-950 text-white py-2">
-          © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>.
-          All rights reserved.
-          <span className="ml-2">
-            Visited {count} times 
+        <footer className="text-center bg-indigo-950 text-white py-2 flex flex-col sm:flex-row justify-between px-10">
+          <span>
+            © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>
+            . All rights reserved.
           </span>
+          <span className="ml-2">Visited {count} times</span>
         </footer>
       </Router>
     </div>
