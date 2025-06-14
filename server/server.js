@@ -14,6 +14,7 @@ const contactRoutes = require("./routes/admin/contact-routes");
 const sociallinksRoutes = require("./routes/admin/sociallinks-routes");
 const consultancyRoutes = require("./routes/admin/consultancy-routes");
 const mentorshipRoutes = require("./routes/admin/mentorship-routes");
+const visitorRoutes = require("./routes/admin/visitor-router");
 
 dotenv.config();
 const app = express();
@@ -55,6 +56,7 @@ app.use("/api/contact", contactRoutes);
 app.use("/api/sociallinks", sociallinksRoutes);
 app.use("/api/consultancy", consultancyRoutes);
 app.use("/api/mentorship", mentorshipRoutes);
+app.use("/api/visitor", visitorRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
