@@ -85,7 +85,7 @@ const App = () => {
             © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>
             . All rights reserved.
           </span>
-          <span className="ml-2">Visited {count} times</span>
+          <span className="ml-2">This website has been visited {count} times</span>
         </footer>
       </Router>
     </div>
