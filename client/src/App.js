@@ -80,7 +80,7 @@ const App = () => {
             />
           </Routes>
         </div>
-        <footer className="text-center bg-indigo-950 text-white py-2 flex flex-col sm:flex-row justify-between px-10">
+        <footer className="text-center bg-indigo-950 text-white py-2 flex flex-col sm:flex-row justify-between lg:px-24 px-4">
           <span>
             © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>
             . All rights reserved.
