@@ -10,6 +10,7 @@ import contactSlice from "./admin/contact-slice";
 import sociallinksSlice from "./admin/sociallinks-slice";
 import consultancySlice from "./admin/consultancy-slice";
 import mentorshipSlice from "./admin/mentorship-slice";
+import visitorSlice from "./admin/visitor-slice";
 
 import { loginData } from "./loginData";
 
@@ -26,6 +27,7 @@ const store = configureStore({
     socialLinks: sociallinksSlice,
     consultancy: consultancySlice,
     mentorship: mentorshipSlice,
+    visitor: visitorSlice,
     loginData: loginData.reducer,
   },
 });

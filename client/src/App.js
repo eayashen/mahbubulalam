@@ -14,16 +14,29 @@ import { checkAuth } from "./redux/auth-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 import { Navigate } from "react-router-dom";
+import { fetchVisitors, addVisitor } from "./redux/admin/visitor-slice";
 
 const App = () => {
   const dispatch = useDispatch();
   const { user, isLoading } = useSelector((state) => state.auth);
+  const { count } = useSelector((state) => state.visitor);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
     if (token) {
       dispatch(checkAuth(token));
     }
+
+    const now = Date.now(); // current timestamp in milliseconds
+    const lastVisited = localStorage.getItem("lastVisited");
+
+    if (!lastVisited || now - parseInt(lastVisited) > 60 * 60 * 1000) {
+      dispatch(addVisitor()).then(() => {
+        localStorage.setItem("lastVisited", now.toString());
+      });
+    }
+
+    dispatch(fetchVisitors());
   }, []);
 
   if (isLoading) {
@@ -59,7 +72,7 @@ const App = () => {
             <Route path="/consultancy" element={<Consultancy />} />
             <Route path="/mentoring" element={<Mentorship />} />
             <Route path="/publications" element={<Publications />} />
-            
+
             {/* Admin Login Route */}
             <Route
               path="/login"
@@ -68,7 +81,11 @@ const App = () => {
           </Routes>
         </div>
         <footer className="text-center bg-indigo-950 text-white py-2">
-          © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>. All rights reserved.
+          © {new Date().getFullYear()} <Link to="/login">Mahbub Ul Alam</Link>.
+          All rights reserved.
+          <span className="ml-2">
+            Visited {count} times 
+          </span>
         </footer>
       </Router>
     </div>
