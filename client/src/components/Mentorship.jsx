@@ -18,6 +18,7 @@ const initialMentorshipData = {
   previous_title: "",
   email: "",
   gender: "",
+  year: "",
 };
 
 const Mentorship = () => {
@@ -40,6 +41,7 @@ const Mentorship = () => {
       previous_title,
       email,
       gender,
+      year,
     } = mentorship;
     setFormData({
       name,
@@ -48,6 +50,7 @@ const Mentorship = () => {
       previous_title,
       email,
       gender,
+      year,
     });
   };
 
@@ -183,6 +186,18 @@ const Mentorship = () => {
                   <option value="Female">Female</option>
                 </select>
               </div>
+              <div className="flex items-center">
+                <p className="w-20">Year</p>
+                <input
+                  className="px-2 border rounded flex-1"
+                  type="text"
+                  onChange={(e) =>
+                    setFormData({ ...formData, year: e.target.value })
+                  }
+                  placeholder="Year"
+                  value={formData?.year}
+                />
+              </div>
             </div>
             <div className="flex justify-center gap-4">
               <button className="save" onClick={handleSaveApiCall}>
@@ -215,45 +230,65 @@ const Mentorship = () => {
         )}
       </div>
 
-      <div className="flex justify-center gap-4 flex-wrap my-4">
-        {mentorships?.map((mentor, index) => (
-          <div
-            key={index}
-            className="w-72 min-h-80 h-fit bg-white shadow-md p-4 flex flex-col gap-2 group relative overflow-hidden"
-          >
-            <div className="h-36 w-full overflow-hidden">
-              <img
-                src={mentor.gender === "Male" ? boyIcon : girlIcon}
-                alt="add"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div className="text-center text-sm">
-              <h1 className="text-lg font-bold">{mentor.name}</h1>
-              <p>{mentor.present_title}</p>
-              <p>{mentor.university_name}</p>
-              <p>{mentor.previous_title}</p>
-              <p className="text-teal-500 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                {mentor.email}
-              </p>
-            </div>
-            {isAuthenticated && (
-              <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4  group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">
-                <button
-                  className="fas fa-edit text-green-500"
-                  onClick={() => handleUpdateMentorship(mentor)}
-                ></button>
-                <button
-                  className="fas fa-trash text-red-400"
-                  onClick={() => {
-                    setOpenDeleteModal(true);
-                    setMentorshipId(mentor._id);
-                  }}
-                ></button>
+      <div className="flex flex-col items-center my-6 gap-8">
+        {mentorships &&
+          mentorships.map(({ year, mentors }) => (
+            <div key={year} className="w-full">
+              {/* Year heading */}
+              <div className="relative flex items-center justify-center my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+                </div>
+                <h2 className="relative z-10 px-4 text-2xl font-bold text-gray-700">
+                  {year}
+                </h2>
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Mentors for that year */}
+              <div className="flex justify-center gap-4 flex-wrap">
+                {mentors.map((mentor, index) => (
+                  <div
+                    key={mentor._id || index}
+                    className="w-72 min-h-80 h-fit bg-white shadow-md p-4 flex flex-col gap-2 group relative overflow-hidden"
+                  >
+                    <div className="h-36 w-full overflow-hidden">
+                      <img
+                        src={mentor.gender === "Male" ? boyIcon : girlIcon}
+                        alt={mentor.name}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+
+                    <div className="text-center text-sm">
+                      <h1 className="text-lg font-bold">{mentor.name}</h1>
+                      <p>{mentor.present_title}</p>
+                      <p>{mentor.university_name}</p>
+                      <p>{mentor.previous_title}</p>
+                      <p className="text-teal-500 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        {mentor.email}
+                      </p>
+                    </div>
+
+                    {isAuthenticated && (
+                      <div className="absolute left-0 sm:-bottom-10 bottom-0 flex gap-4 group-hover:bottom-0 transition-all duration-300 ease-in-out bg-black bg-opacity-20 w-full p-3 justify-center rounded-t-md">
+                        <button
+                          className="fas fa-edit text-green-500"
+                          onClick={() => handleUpdateMentorship(mentor)}
+                        ></button>
+                        <button
+                          className="fas fa-trash text-red-400"
+                          onClick={() => {
+                            setOpenDeleteModal(true);
+                            setMentorshipId(mentor._id);
+                          }}
+                        ></button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );
