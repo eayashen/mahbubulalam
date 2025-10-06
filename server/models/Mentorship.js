@@ -27,6 +27,10 @@ const mentorshipSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    year: {
+      type: String,
+      trim: true,
+    },
   },
   {
     timestamps: true,
