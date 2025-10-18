@@ -1,4 +1,6 @@
 const { imageUploadUtil } = require("../../helper/cloudinary");
+const NewsAndEvents = require("../../models/NewsAndEvents");
+const Publication = require("../../models/Publication");
 const User = require("../../models/User");
 
 const handleProPicUpload = async (req, res) => {
@@ -127,14 +129,16 @@ const handleBannerUpload = async (req, res) => {
 const deleteBannerImage = async (req, res) => {
   try {
     const { imageUrl } = req.body;
-    console.log("Image URL:", imageUrl);
+
     const user = await User.findOne();
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     user.banner = user.banner.filter((img) => img !== imageUrl);
     await user.save();
-    res.status(200).json({ success:true, message: "Image deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Image deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -177,11 +181,29 @@ const getUserAbout = async (req, res) => {
   }
 };
 
+const getHomePageData = async (req, res) => {
+  try {
+    const publications = await Publication.find()
+      .sort({
+        createdAt: -1,
+      })
+      .limit(3);
+
+    const newsAndEvents = await NewsAndEvents.find()
+      .sort({ date: -1 })
+      .limit(3);
+    res
+      .status(200)
+      .json({ success: true, data: { publications, newsAndEvents } });
+  } catch (error) {}
+};
+
 module.exports = {
   upsertUserAbout,
   getUserAbout,
   handleProPicUpload,
   handleBannerUpload,
   handleCvUpload,
-  deleteBannerImage
+  deleteBannerImage,
+  getHomePageData,
 };

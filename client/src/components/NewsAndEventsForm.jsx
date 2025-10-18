@@ -2,20 +2,21 @@ import React, { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 
-const AwardForm = ({
-  awardData,
-  setAwardData,
-  handleSaveAward,
-  setIsAwardEditing,
-  awardId,
-  setAwardId,
-  initialAward,
+const NewsAndEventsForm = ({
+  newsAndEventData,
+  setNewsAndEventData,
+  handleSaveNewsAndEvent,
+  setIsNewsAndEventEditing,
+  newsAndEventId,
+  setNewsAndEventId,
+  initialNewsAndEvent,
 }) => {
   const inputRef = useRef(null);
   const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
+  console.log(newsAndEventData);
 
   const handleImageFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -38,8 +39,8 @@ const AwardForm = ({
   };
 
   const uploadImageToCloudinary = async () => {
-    if(!imageFile) {
-      handleSaveAward(awardData?.image);
+    if (!imageFile) {
+      handleSaveNewsAndEvent(newsAndEventData?.image);
       return;
     }
     try {
@@ -49,14 +50,14 @@ const AwardForm = ({
       data.append("image", imageFile);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/award/upload-image`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/news-event/upload-image`,
         data
       );
       if (response?.data?.success) {
         const imageUrl = response?.data?.result?.secure_url;
         setUploadedImageUrl(response?.data?.result?.secure_url);
         setImageFile(null);
-        handleSaveAward(imageUrl);
+        handleSaveNewsAndEvent(imageUrl);
       } else {
         console.log("Image upload failed");
       }
@@ -69,8 +70,11 @@ const AwardForm = ({
 
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-40 flex justify-center items-center">
-      <div className="w-96 h-fit p-4 bg-white text-black rounded space-y-4">
+      <div className="sm:w-2/3 w-96 h-fit p-4 bg-white text-black rounded space-y-4">
         <div className="space-y-2">
+          <p className="sm:text-lg font-semibold">
+            Create/Update News And Event
+          </p>
           <div
             onDragOver={handleDragOver}
             onDrop={handleDrop}
@@ -112,30 +116,67 @@ const AwardForm = ({
               </div>
             )}
           </div>
-          <div className="flex">
-            <p className="w-16">Title</p>
+          <div className="flex pt-2">
+            <p className="w-20">Title</p>
             <input
               className="px-2 border rounded flex-1"
               type="text"
               onChange={(e) =>
-                setAwardData({ ...awardData, title: e.target.value })
+                setNewsAndEventData({
+                  ...newsAndEventData,
+                  title: e.target.value,
+                })
               }
               placeholder="Title"
-              value={awardData?.title}
+              value={newsAndEventData?.title}
             />
           </div>
           <div className="flex">
-            <p className="w-16">Year</p>
-            <input
-              className="px-2 border rounded flex-1"
-              type="number"
+            <p className="w-20">Description</p>
+            <textarea
+              className="px-2 border rounded flex-1 min-h-40"
+              type="text"
               onChange={(e) =>
-                setAwardData({ ...awardData, year: e.target.value })
+                setNewsAndEventData({
+                  ...newsAndEventData,
+                  description: e.target.value,
+                })
               }
-              placeholder="Year"
-              value={awardData?.year}
+              placeholder="Description"
+              value={newsAndEventData?.description}
             />
           </div>
+        </div>
+        <div className="flex">
+          <p className="w-20">Date</p>
+          <input
+            className="px-2 border rounded flex-1"
+            type="date"
+            onChange={(e) =>
+              setNewsAndEventData({ ...newsAndEventData, date: e.target.value })
+            }
+            placeholder="Date"
+            value={
+              newsAndEventData?.date
+                ? new Date(newsAndEventData.date).toISOString().split("T")[0]
+                : ""
+            }
+          />
+        </div>
+        <div className="flex">
+          <p className="w-20">Link</p>
+          <input
+            className="px-2 border rounded flex-1"
+            type="text"
+            onChange={(e) =>
+              setNewsAndEventData({
+                ...newsAndEventData,
+                link: e.target.value,
+              })
+            }
+            placeholder="Link"
+            value={newsAndEventData?.link}
+          />
         </div>
         <div className="flex justify-center gap-4">
           <button className="save" onClick={uploadImageToCloudinary}>
@@ -144,9 +185,9 @@ const AwardForm = ({
           <button
             className="cancel"
             onClick={() => {
-              setIsAwardEditing(false);
-              setAwardData(initialAward);
-              setAwardId(null);
+              setIsNewsAndEventEditing(false);
+              setNewsAndEventData(initialNewsAndEvent);
+              setNewsAndEventId(null);
             }}
           >
             Cancel
@@ -157,4 +198,4 @@ const AwardForm = ({
   );
 };
 
-export default AwardForm;
+export default NewsAndEventsForm;

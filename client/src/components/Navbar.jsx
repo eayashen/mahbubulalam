@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import scholar from "../images/scholar.png";
 import { useSelector, useDispatch } from "react-redux";
@@ -41,7 +41,6 @@ const Navbar = () => {
   const { socialLinks, isLinkLoading } = useSelector(
     (state) => state.socialLinks
   );
-  const [showSubmenu, setShowSubmenu] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [socialLinkData, setSocialLinkData] = useState(initialSocialLinkData);
   const [cvInputOpen, setCvInputOpen] = useState(false);
@@ -50,17 +49,10 @@ const Navbar = () => {
   const Links = [
     { name: "About Me", link: "/" },
     { name: "Research", link: "/research" },
-    {
-      name: "Publications",
-      // submenu: [
-      //   { name: "Journal Article", link: "/journal" },
-      //   { name: "Working Paper", link: "/working-paper" },
-      //   { name: "Policy", link: "/policy" },
-      // ],
-      link: "/publications",
-    },
+    { name: "Publications", link: "/publications" },
     { name: "Funding History", link: "/fundinghistory" },
     { name: "Consultancy", link: "/consultancy" },
+    { name: "News & Events", link: "/news-events" },
     { name: "Mentoring", link: "/mentoring" },
     { name: "Contact", link: "/contact" },
   ];
@@ -449,10 +441,18 @@ const Navbar = () => {
         )}
       </div>
 
-      <div className={`flex md:px-0 bg-indigo-950 z-30 ${isSticky ? "fixed shadow-md top-0 left-0 w-full h-16 items-center" : "relative mt-4 h-8"}`}>
+      <div
+        className={`flex lg:px-0 bg-indigo-950 z-30 ${
+          isSticky
+            ? "fixed shadow-md top-0 left-0 w-full h-16 items-center"
+            : "relative mt-4 h-8"
+        }`}
+      >
         <div
           onClick={() => setOpen(!open)}
-          className={`absolute mr-4 pl-4 cursor-pointer md:hidden text-teal-500 ${isSticky ? "top-5" : "top-1"}`}
+          className={`absolute mr-4 pl-4 cursor-pointer lg:hidden text-teal-500 ${
+            isSticky ? "top-5" : "top-1"
+          }`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -470,16 +470,13 @@ const Navbar = () => {
           </svg>
         </div>
         <div
-          className={`md:flex absolute md:static md:mt-0 mt-8 mx-2 lg:mx-24 bg-indigo-950 md:z-auto z-[-1] left-0 w-48 md:w-auto md:pl-0 pl-6 transition-all duration-500 ease-in ${
+          className={`flex lg:flex-row flex-col absolute lg:static lg:mt-px mt-8 mx-2 lg:mx-24 bg-indigo-950 lg:z-auto z-[-1] left-0 w-48 lg:w-auto lg:pl-0 pl-6 transition-all duration-500 ease-in ${
             open ? "-left-4 " : "left-[-250px]"
           } ${isSticky ? "top-8" : "top-0"}`}
         >
           {Links.map((link) => (
-            <div
-              key={link.name}
-              className="relative inline-block"
-            >
-              <Link to={link.link} className="font-semibold">
+            <div key={link.name} className="relative inline-block">
+              <Link to={link.link} className="text-sm">
                 <li
                   className={`px-2 py-1 hover:text-teal-400 list-none duration-500 ${
                     location.pathname === link.link
@@ -487,7 +484,7 @@ const Navbar = () => {
                       : "text-white"
                   }`}
                   onClick={() => {
-                      setOpen(false);
+                    setOpen(false);
                   }}
                 >
                   {link.name}
@@ -495,7 +492,7 @@ const Navbar = () => {
               </Link>
             </div>
           ))}
-          <div className="text-white font-semibold mt-1 pl-2 cursor-pointer flex">
+          <div className="text-white text-sm mt-1 pl-2 cursor-pointer flex lg:mb-0 mb-2">
             <p
               className="hover:text-teal-400"
               onClick={() => {

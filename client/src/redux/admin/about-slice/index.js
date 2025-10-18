@@ -4,12 +4,24 @@ import axios from "axios";
 const initicalState = {
   about: null,
   isLoading: false,
+  homePageData: null,
 };
 
 export const getAbout = createAsyncThunk("about/getAbout", async () => {
   try {
     const response = await axios.get(
       `${process.env.REACT_APP_SERVER_API_URL}/api/about/get-user-about`
+    );
+    return response.data;
+  } catch (error) {
+    return error.response.data;
+  }
+});
+
+export const getHomePageData = createAsyncThunk("about/getHomePageData", async () => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_SERVER_API_URL}/api/about/get-home-page-data`
     );
     return response.data;
   } catch (error) {
@@ -147,7 +159,10 @@ const aboutSlice = createSlice({
       })
       .addCase(deleteBannerImage.rejected, (state) => {
         state.isLoading = false;
-      });
+      })
+      .addCase(getHomePageData.fulfilled, (state, action) => {
+        state.homePageData = action.payload.data;
+      })
   },
 });
 

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Slider from "react-slick";
 import { Triangle } from "react-loader-spinner";
 import {
   getAbout,
   updateAbout,
-  uploadBanner,
+  getHomePageData,
 } from "../redux/admin/about-slice";
 import {
   getDesignation,
@@ -23,6 +23,13 @@ import FileUpload from "./FileUpload";
 import AwardForm from "./AwardForm";
 import Gallery from "./Gallery";
 import DeleteModal from "./DeleteModal";
+import { Link } from "react-router-dom";
+
+const types = {
+  journal: "JOURNAL ARTICLE",
+  "working-paper": "WORKING PAPER",
+  policy: "POLICY BRIEF",
+};
 
 const initialFormData = {
   title: "",
@@ -44,7 +51,9 @@ const initialAward = {
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { about, isLoading } = useSelector((state) => state.about);
+  const { about, homePageData, isLoading } = useSelector(
+    (state) => state.about
+  );
   const { designation } = useSelector((state) => state.designation);
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { awards } = useSelector((state) => state.award);
@@ -74,6 +83,7 @@ const Home = () => {
     dispatch(getAbout());
     dispatch(getDesignation());
     dispatch(getAwards());
+    dispatch(getHomePageData());
   }, []);
 
   const [imageEditing, setImageEditing] = useState(false);
@@ -405,11 +415,64 @@ const Home = () => {
         </div>
       </div>
 
+      {/* --------------------- News And Events --------------------- */}
+      
+
+      {/* ----------------------- Publication ----------------------- */}
+      <div className="relative flex items-center justify-center my-10">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+          </div>
+          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+            Recent Publications
+          </h2>
+        </div>
+      {homePageData?.publications?.map((item, index) => (
+        <div
+          key={index}
+          className="my-4 border-b pb-4 space-y-1"
+        >
+          <p className="text-xs font-bold text-gray-500 mb-1">
+            {types[item.category]}
+          </p>
+          <Link
+            to={item.link}
+            target="_blank"
+            className="text-lg text-slate-700 font-semibold hover:underline"
+          >
+            {item.title}
+          </Link>
+          <p className="text-sm text-gray-500 italic">{item.published}</p>
+          <p className="text-slate-700">
+            {item.authors.split(",").map((author, index) => {
+              const trimmedAuthor = author.trim();
+              const isKeyword = item.keywords.some(
+                (keyword) =>
+                  keyword.toLowerCase() === trimmedAuthor.toLowerCase()
+              );
+
+              return (
+                <span key={index}>
+                  {isKeyword ? <strong>{trimmedAuthor}</strong> : trimmedAuthor}
+                  {index !== item.authors.split(",").length - 1 && ", "}
+                </span>
+              );
+            })}
+          </p>
+        </div>
+      ))}
+      <Link to="/publications" className="float-right text-teal-500 font-semibold hover-text-teal-600">Read More</Link>
+
       {/* ----------------------- Award Section --------------------- */}
-      <div className="my-4">
-        <p className="w-full text-center py-1 bg-indigo-950 text-white font-semibold mt-4">
-          Awards
-        </p>
+      <div className="my-4 pt-12">
+        <div className="relative flex items-center justify-center my-10">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+          </div>
+          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+            Awards
+          </h2>
+        </div>
         {isAuthenticated && (
           <button onClick={() => setIsAwardEditing(true)} className="edit mt-2">
             + Add Awards
