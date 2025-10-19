@@ -23,7 +23,7 @@ import FileUpload from "./FileUpload";
 import AwardForm from "./AwardForm";
 import Gallery from "./Gallery";
 import DeleteModal from "./DeleteModal";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const types = {
   journal: "JOURNAL ARTICLE",
@@ -50,6 +50,7 @@ const initialAward = {
 };
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { about, homePageData, isLoading } = useSelector(
     (state) => state.about
@@ -192,6 +193,10 @@ const Home = () => {
         dispatch(getAwards());
       }
     });
+  };
+
+  const handleNewsPage = (id) => {
+    navigate(`/news-events/${id}`);
   };
 
   if (isLoading)
@@ -416,22 +421,77 @@ const Home = () => {
       </div>
 
       {/* --------------------- News And Events --------------------- */}
-      
+      <div className="relative flex items-center justify-center my-10">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+        </div>
+        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+          News & Events
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {homePageData?.newsAndEvents?.map((newsAndEvent) => (
+          <div
+            key={newsAndEvent._id}
+            className="relative group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
+          >
+            {/* Background Image */}
+            <div
+              className="h-56 sm:h-64 md:h-72 bg-cover bg-center cursor-pointer"
+              onClick={() => handleNewsPage(newsAndEvent._id)}
+              style={{
+                backgroundImage: `url(${
+                  newsAndEvent.image || "/placeholder.jpg"
+                })`,
+              }}
+            >
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+              {/* Content */}
+              <div className="absolute bottom-4 left-4 right-4 text-white z-10">
+                <span className="text-[10px] sm:text-xs bg-sky-600 px-2 py-1 rounded-sm uppercase font-semibold tracking-wide">
+                  NEWS
+                </span>
+
+                <h3 className="text-base sm:text-lg font-semibold mt-2 line-clamp-2">
+                  {newsAndEvent.title}
+                </h3>
+
+                {newsAndEvent.date && (
+                  <p className="text-xs sm:text-sm text-gray-200">
+                    {new Date(newsAndEvent.date).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="mt-4 text-right">
+        <Link
+          to="/news-events"
+          className="text-teal-500 font-semibold hover:text-teal-600"
+        >
+          Read More
+        </Link>
+      </div>
 
       {/* ----------------------- Publication ----------------------- */}
       <div className="relative flex items-center justify-center my-10">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-          </div>
-          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-            Recent Publications
-          </h2>
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
         </div>
+        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+          Recent Publications
+        </h2>
+      </div>
       {homePageData?.publications?.map((item, index) => (
-        <div
-          key={index}
-          className="my-4 border-b pb-4 space-y-1"
-        >
+        <div key={index} className="my-4 border-b pb-4 space-y-1">
           <p className="text-xs font-bold text-gray-500 mb-1">
             {types[item.category]}
           </p>
@@ -461,7 +521,12 @@ const Home = () => {
           </p>
         </div>
       ))}
-      <Link to="/publications" className="float-right text-teal-500 font-semibold hover-text-teal-600">Read More</Link>
+      <Link
+        to="/publications"
+        className="float-right text-teal-500 font-semibold hover-text-teal-600"
+      >
+        Read More
+      </Link>
 
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">

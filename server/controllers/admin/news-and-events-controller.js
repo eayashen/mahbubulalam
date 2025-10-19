@@ -52,6 +52,20 @@ const getNewsAndEvents = async (req, res) => {
   }
 };
 
+const getNewsAndEventById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const newsAndEvent = await NewsAndEvents.findById(id);
+    if (!newsAndEvent) {
+      return res.status(404).json({ success: false, message: "News/Event not found" });
+    }
+    res.status(200).json({ success: true, data: newsAndEvent });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const updateNewsOrEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -99,6 +113,7 @@ module.exports = {
   handleImageUpload,
   addNewsOrEvent,
   getNewsAndEvents,
+  getNewsAndEventById,
   updateNewsOrEvent,
   deleteNewsOrEvent,
 };

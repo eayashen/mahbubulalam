@@ -16,7 +16,6 @@ const NewsAndEventsForm = ({
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
-  console.log(newsAndEventData);
 
   const handleImageFileChange = (e) => {
     const file = e.target.files?.[0];
