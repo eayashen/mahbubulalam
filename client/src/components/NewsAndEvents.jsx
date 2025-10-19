@@ -2,20 +2,28 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 import NewsAndEventsForm from "./NewsAndEventsForm";
+import { useNavigate } from "react-router-dom";
 import {
   getNewsAndEvents,
   addNewsAndEvents,
   updateNewsAndEvents,
   deleteNewsAndEvents,
 } from "../redux/admin/news-event-slice";
+import DeleteModal from "../components/DeleteModal"; // ✅ import your modal
+import { Link } from "react-router-dom";
 
 const NewsAndEvents = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
   const { newsAndEvents } = useSelector((state) => state.newsEvent);
+
   const [isNewsAndEventEditing, setIsNewsAndEventEditing] = useState(false);
   const [newsAndEventData, setNewsAndEventData] = useState({});
   const [newsAndEventId, setNewsAndEventId] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // ✅ modal control
+  const [deleteId, setDeleteId] = useState(null); // ✅ store which ID to delete
+
   const initialNewsAndEvent = {
     title: "",
     description: "",
@@ -23,6 +31,8 @@ const NewsAndEvents = () => {
     image: "",
     link: "",
   };
+
+  // ✅ handle save (add or update)
   const handleSaveNewsAndEvent = (uploadedImageUrl) => {
     if (
       newsAndEventData.title === "" ||
@@ -32,6 +42,7 @@ const NewsAndEvents = () => {
       alert("Title, Description and Date fields are required");
       return;
     }
+
     const payload = { ...newsAndEventData, image: uploadedImageUrl };
 
     if (newsAndEventId) {
@@ -49,15 +60,30 @@ const NewsAndEvents = () => {
         }
       });
     }
+
     setIsNewsAndEventEditing(false);
     setNewsAndEventData(initialNewsAndEvent);
     newsAndEventId && setNewsAndEventId(null);
   };
 
+  // ✅ fetch all data
   useEffect(() => {
     dispatch(getNewsAndEvents());
-  }, []);
+  }, [dispatch]);
 
+  // ✅ delete handler (triggered from modal confirm)
+  const handleDelete = () => {
+    if (!deleteId) return;
+    dispatch(deleteNewsAndEvents(deleteId)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getNewsAndEvents());
+        setShowDeleteModal(false);
+        setDeleteId(null);
+      }
+    });
+  };
+
+  // ✅ loading spinner
   if (isLoading)
     return (
       <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
@@ -66,15 +92,18 @@ const NewsAndEvents = () => {
           width="60"
           color="#4fa94d"
           ariaLabel="triangle-loading"
-          wrapperStyle={{}}
-          wrapperClassName=""
           visible={true}
         />
       </div>
     );
 
+  const handleNewsPage = (id) => {
+    navigate(`/news-events/${id}`);
+  };
+
   return (
     <div className="mt-4 lg:mx-24 mx-4">
+      {/* Edit Form */}
       {isNewsAndEventEditing && (
         <NewsAndEventsForm
           setIsNewsAndEventEditing={setIsNewsAndEventEditing}
@@ -86,6 +115,8 @@ const NewsAndEvents = () => {
           initialNewsAndEvent={initialNewsAndEvent}
         />
       )}
+
+      {/* Header */}
       <div className="flex items-center justify-between relative">
         <h1 className="text-2xl font-bold py-4 sm:mx-auto">News and Events</h1>
 
@@ -98,9 +129,11 @@ const NewsAndEvents = () => {
           </button>
         )}
       </div>
+
+      {/* List */}
       <div className="my-12 px-4">
         {newsAndEvents.length === 0 ? (
-          <p className="text-center text-gray-500">No News and Events found.</p>
+          <p className="text-center text-gray-500">No news or events found</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {newsAndEvents.map((newsAndEvent) => (
@@ -110,32 +143,31 @@ const NewsAndEvents = () => {
               >
                 {/* Background Image */}
                 <div
-                  className="h-64 bg-cover bg-center"
+                  className="h-64 bg-cover bg-center cursor-pointer"
+                  onClick={() => handleNewsPage(newsAndEvent._id)}
                   style={{
                     backgroundImage: `url(${
                       newsAndEvent.image || "/placeholder.jpg"
                     })`,
                   }}
                 >
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                  {/* Content Overlay */}
                   <div className="absolute bottom-4 left-4 right-4 text-white z-10">
-                    {/* Category Tag */}
                     <span className="text-xs bg-sky-600 px-2 py-1 rounded-sm uppercase font-semibold tracking-wide">
-                      {newsAndEvent.category || "NEWS"}
+                      NEWS
                     </span>
 
-                    {/* Title */}
-                    <h3 className="text-lg font-semibold mt-2">
+                    <h3 className="text-lg font-semibold mt-2 line-clamp-2">
                       {newsAndEvent.title}
                     </h3>
 
-                    {/* Optional Date */}
                     {newsAndEvent.date && (
                       <p className="text-sm text-gray-200">
-                        {new Date(newsAndEvent.date).toLocaleDateString()}
+                        {new Date(newsAndEvent.date).toLocaleDateString(
+                          "en-GB",
+                          { day: "numeric", month: "long", year: "numeric" }
+                        )}
                       </p>
                     )}
                   </div>
@@ -154,15 +186,11 @@ const NewsAndEvents = () => {
                     >
                       Edit
                     </button>
+
                     <button
                       onClick={() => {
-                        dispatch(deleteNewsAndEvents(newsAndEvent._id)).then(
-                          (res) => {
-                            if (res.payload?.success) {
-                              dispatch(getNewsAndEvents());
-                            }
-                          }
-                        );
+                        setShowDeleteModal(true);
+                        setDeleteId(newsAndEvent._id);
                       }}
                       className="bg-red-500 text-white text-xs px-2 py-1 rounded hover:bg-red-600"
                     >
@@ -175,6 +203,14 @@ const NewsAndEvents = () => {
           </div>
         )}
       </div>
+
+      {/* ✅ Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <DeleteModal
+          handleDelete={handleDelete}
+          onClose={() => setShowDeleteModal(false)}
+        />
+      )}
     </div>
   );
 };

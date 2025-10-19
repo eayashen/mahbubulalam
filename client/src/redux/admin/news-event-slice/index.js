@@ -4,6 +4,7 @@ import axios from "axios";
 const initialState = {
   newsAndEvents: [],
   isLoading: false,
+  newsAndEvent: null,
 };
 
 export const getNewsAndEvents = createAsyncThunk(
@@ -16,6 +17,20 @@ export const getNewsAndEvents = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const getNewsAndEventById = createAsyncThunk(
+  "news/getNewsById",
+  async (id) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API_URL}/api/news-event/get-news-event/${id}`
+      );
+      return response.data;
+    } catch (error) {
+      return error.response.data;
     }
   }
 );
@@ -105,6 +120,16 @@ const newsAndEventSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(deleteNewsAndEvents.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getNewsAndEventById.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getNewsAndEventById.fulfilled, (state, { payload }) => {
+        state.isLoading = false;
+        state.newsAndEvent = payload.data;
+      })
+      .addCase(getNewsAndEventById.rejected, (state) => {
         state.isLoading = false;
       });
   },

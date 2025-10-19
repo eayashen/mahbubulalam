@@ -11,6 +11,7 @@ import Consultancy from "./components/Consultancy";
 import Mentorship from "./components/Mentorship";
 import Publications from "./components/Publications";
 import NewsAndEvents from "./components/NewsAndEvents";
+import NewsAndEvent from "./components/NewsAndEvent";
 import { checkAuth } from "./redux/auth-slice";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
@@ -72,6 +73,7 @@ const App = () => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/consultancy" element={<Consultancy />} />
             <Route path="/news-events" element={<NewsAndEvents />} />
+            <Route path="/news-events/:id" element={<NewsAndEvent />} />
             <Route path="/mentoring" element={<Mentorship />} />
             <Route path="/publications" element={<Publications />} />
 
