@@ -529,65 +529,128 @@ const Home = () => {
       </Link>
 
       {/* ----------------------- Professional Membership Section --------------------- */}
-      <div className="my-4 pt-12">
-        {/* Section Title */}
-        <div className="relative flex items-center justify-center my-10">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-          </div>
-          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-            Professional Memberships
-          </h2>
-        </div>
       
-        {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* 1️⃣ American Society of Tropical Medicine and Hygiene */}
-          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-            <img
-              src="https://www.astmh.org/ASTMH/media/Images/Site/astmh_logo.png"
-              alt="American Society of Tropical Medicine and Hygiene"
-              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-            />
-            <div className="p-4">
-              <p className="font-semibold text-md text-gray-800">
-                American Society of Tropical Medicine and Hygiene
+      export default function ProfessionalMemberships() {
+        const [showMore, setShowMore] = useState(false);
+      
+        return (
+          <div className="my-4 pt-12">
+            {/* Section Title */}
+            <div className="relative flex items-center justify-center my-10">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+              </div>
+              <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+                Professional Membership
+              </h2>
+            </div>
+      
+            {/* Grid Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* ----- FIRST 3 VISIBLE ----- */}
+              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                <img
+                  src="https://www.astmh.org/ASTMH/media/Images/Site/astmh_logo.png"
+                  alt="ASTMH"
+                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                />
+                <div className="p-4">
+                  <p className="font-semibold text-md text-gray-800">
+                    American Society of Tropical Medicine and Hygiene
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2020</p>
+                </div>
+              </div>
+      
+              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                <img
+                  src="https://www.susana.org/_resources/images/720/1-732-282-1624514258.jpg"
+                  alt="WSSCC"
+                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                />
+                <div className="p-4">
+                  <p className="font-semibold text-md text-gray-800">
+                    Water Supply & Sanitation Collaborative Council (WSSCC)
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2018</p>
+                </div>
+              </div>
+      
+              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                <img
+                  src="https://www.susana.org/_resources/images/720/57.jpg"
+                  alt="GWA"
+                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                />
+                <div className="p-4">
+                  <p className="font-semibold text-md text-gray-800">
+                    Gender and Water Alliance (GWA)
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2017</p>
+                </div>
+              </div>
+      
+              {/* ----- EXTRA 3 HIDDEN INITIALLY ----- */}
+              {showMore && (
+                <>
+                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                    <img
+                      src="https://www.susana.org/media/templates/site/susana/images/ci/susana_logo_navbar.png"
+                      alt="SuSanA"
+                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                    />
+                    <div className="p-4">
+                      <p className="font-semibold text-md text-gray-800">
+                        Sustainable Sanitation Alliance (SuSanA)
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2016</p>
+                    </div>
+                  </div>
+      
+                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9ePIMpzItX9_0uJZrNPbeBE7kzdGnzkugqw&s"
+                      alt="One Health Bangladesh"
+                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                    />
+                    <div className="p-4">
+                      <p className="font-semibold text-md text-gray-800">
+                        One Health Bangladesh (Lifetime Member)
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2015</p>
+                    </div>
+                  </div>
+      
+                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+                    <img
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUht7puT5AwwEL-DpBmkf0ITUNA4WiUOxN5Q&s"
+                      alt="WGCD"
+                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                    />
+                    <div className="p-4">
+                      <p className="font-semibold text-md text-gray-800">
+                        Women & Girls at the Center of Development (WGCD) Network
+                      </p>
+                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2014</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+      
+            {/* See More / See Less Button */}
+            <div className="mt-4 text-right">
+              <p
+                onClick={() => setShowMore(!showMore)}
+                className="cursor-pointer text-teal-500 font-semibold hover:text-teal-600"
+              >
+                {showMore ? "See Less ▲" : "See More ▼"}
               </p>
-              <p className="text-sm text-gray-600 mt-1">Membership Year: 2020</p>
             </div>
           </div>
-      
-          {/* 2️⃣ Water Supply & Sanitation Collaborative Council (WSSCC) */}
-          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-            <img
-              src="https://upload.wikimedia.org/wikipedia/en/d/d3/WSSCC_logo.png" // example; replace with actual WSSCC logo URL
-              alt="Water Supply & Sanitation Collaborative Council"
-              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-            />
-            <div className="p-4">
-              <p className="font-semibold text-md text-gray-800">
-                Water Supply & Sanitation Collaborative Council (WSSCC)
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Membership Year: 2018</p>
-            </div>
-          </div>
-      
-          {/* 3️⃣ Gender and Water Alliance (GWA) */}
-          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-            <img
-              src="https://www.genderandwater.org/theme/images/gwa-logo.png" // example; replace with real URL if available
-              alt="Gender and Water Alliance"
-              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-            />
-            <div className="p-4">
-              <p className="font-semibold text-md text-gray-800">
-                Gender and Water Alliance (GWA)
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Membership Year: 2017</p>
-            </div>
-          </div>
-        </div>
-      </div>
+        );
+      }
+
 
 
       {/* ----------------------- Award Section --------------------- */}
