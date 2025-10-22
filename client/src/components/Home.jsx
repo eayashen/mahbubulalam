@@ -533,6 +533,57 @@ const Home = () => {
       export default function ProfessionalMemberships() {
         const [showMore, setShowMore] = useState(false);
       
+        const memberships = [
+          {
+            id: 1,
+            title: "American Society of Tropical Medicine and Hygiene",
+            img: "https://www.astmh.org/ASTMH/media/Images/Site/astmh_logo.png",
+            year: 2020,
+            url: "https://www.astmh.org/",
+          },
+          {
+            id: 2,
+            title: "Water Supply & Sanitation Collaborative Council (WSSCC)",
+            img: "https://upload.wikimedia.org/wikipedia/en/d/d3/WSSCC_logo.png",
+            year: 2018,
+            url: "https://www.wsscc.org/",
+          },
+          {
+            id: 3,
+            title: "Gender and Water Alliance (GWA)",
+            img: "https://www.genderandwater.org/theme/images/gwa-logo.png",
+            year: 2017,
+            url: "https://www.genderandwater.org/",
+          },
+      
+          // hidden by default (index 3,4,5)
+          {
+            id: 4,
+            title: "Sustainable Sanitation Alliance (SuSanA)",
+            img: "https://www.susana.org/images/susana-logo.png",
+            year: 2016,
+            url: "https://www.susana.org/",
+          },
+          {
+            id: 5,
+            title: "One Health Bangladesh (Lifetime Member)",
+            img: "https://onehealthbd.org/wp-content/uploads/2021/06/logo.png",
+            year: 2015,
+            url: "https://onehealthbd.org/",
+          },
+          {
+            id: 6,
+            title:
+              "Women & Girls at the Center of Development (WGCD) Network",
+            img: "/WGCD-placeholder.png", // replace with real URL or put file in /public
+            year: 2014,
+            url: "#",
+          },
+        ];
+      
+        const firstThree = memberships.slice(0, 3);
+        const extra = memberships.slice(3);
+      
         return (
           <div className="my-4 pt-12">
             {/* Section Title */}
@@ -541,108 +592,67 @@ const Home = () => {
                 <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
               </div>
               <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-                Professional Membership
+                Professional Memberships
               </h2>
             </div>
       
             {/* Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* ----- FIRST 3 VISIBLE ----- */}
-              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                <img
-                  src="https://www.astmh.org/ASTMH/media/Images/Site/astmh_logo.png"
-                  alt="ASTMH"
-                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                />
-                <div className="p-4">
-                  <p className="font-semibold text-md text-gray-800">
-                    American Society of Tropical Medicine and Hygiene
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2020</p>
+              {firstThree.map((m) => (
+                <a
+                  key={m.id}
+                  href={m.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+                >
+                  <img
+                    src={m.img}
+                    alt={m.title}
+                    className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                  />
+                  <div className="p-4">
+                    <p className="font-semibold text-md text-gray-800">{m.title}</p>
+                    <p className="text-sm text-gray-600 mt-1">Membership Year: {m.year}</p>
+                  </div>
+                </a>
+              ))}
+      
+              {/* Hidden extra cards container — animate open/close via max-height */}
+              <div
+                className={`md:col-span-3 transition-[max-height] duration-500 ease-in-out overflow-hidden ${
+                  showMore ? "max-h-[1000px]" : "max-h-0"
+                }`}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                  {extra.map((m) => (
+                    <a
+                      key={m.id}
+                      href={m.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+                    >
+                      <img
+                        src={m.img}
+                        alt={m.title}
+                        className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+                      />
+                      <div className="p-4">
+                        <p className="font-semibold text-md text-gray-800">{m.title}</p>
+                        <p className="text-sm text-gray-600 mt-1">Membership Year: {m.year}</p>
+                      </div>
+                    </a>
+                  ))}
                 </div>
               </div>
-      
-              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                <img
-                  src="https://www.susana.org/_resources/images/720/1-732-282-1624514258.jpg"
-                  alt="WSSCC"
-                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                />
-                <div className="p-4">
-                  <p className="font-semibold text-md text-gray-800">
-                    Water Supply & Sanitation Collaborative Council (WSSCC)
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2018</p>
-                </div>
-              </div>
-      
-              <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                <img
-                  src="https://www.susana.org/_resources/images/720/57.jpg"
-                  alt="GWA"
-                  className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                />
-                <div className="p-4">
-                  <p className="font-semibold text-md text-gray-800">
-                    Gender and Water Alliance (GWA)
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">Membership Year: 2017</p>
-                </div>
-              </div>
-      
-              {/* ----- EXTRA 3 HIDDEN INITIALLY ----- */}
-              {showMore && (
-                <>
-                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                    <img
-                      src="https://www.susana.org/media/templates/site/susana/images/ci/susana_logo_navbar.png"
-                      alt="SuSanA"
-                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                    />
-                    <div className="p-4">
-                      <p className="font-semibold text-md text-gray-800">
-                        Sustainable Sanitation Alliance (SuSanA)
-                      </p>
-                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2016</p>
-                    </div>
-                  </div>
-      
-                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS9ePIMpzItX9_0uJZrNPbeBE7kzdGnzkugqw&s"
-                      alt="One Health Bangladesh"
-                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                    />
-                    <div className="p-4">
-                      <p className="font-semibold text-md text-gray-800">
-                        One Health Bangladesh (Lifetime Member)
-                      </p>
-                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2015</p>
-                    </div>
-                  </div>
-      
-                  <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
-                    <img
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUht7puT5AwwEL-DpBmkf0ITUNA4WiUOxN5Q&s"
-                      alt="WGCD"
-                      className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
-                    />
-                    <div className="p-4">
-                      <p className="font-semibold text-md text-gray-800">
-                        Women & Girls at the Center of Development (WGCD) Network
-                      </p>
-                      <p className="text-sm text-gray-600 mt-1">Membership Year: 2014</p>
-                    </div>
-                  </div>
-                </>
-              )}
             </div>
       
             {/* See More / See Less Button */}
             <div className="mt-4 text-right">
               <p
-                onClick={() => setShowMore(!showMore)}
-                className="cursor-pointer text-teal-500 font-semibold hover:text-teal-600"
+                onClick={() => setShowMore((s) => !s)}
+                className="cursor-pointer text-teal-500 font-semibold hover:text-teal-600 select-none"
               >
                 {showMore ? "See Less ▲" : "See More ▼"}
               </p>
@@ -652,7 +662,7 @@ const Home = () => {
       }
 
 
-
+      
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">
         <div className="relative flex items-center justify-center my-10">
