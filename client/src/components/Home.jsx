@@ -528,6 +528,68 @@ const Home = () => {
         Read More
       </Link>
 
+      {/* ----------------------- Professional Membership Section --------------------- */}
+      <div className="my-4 pt-12">
+        {/* Section Title */}
+        <div className="relative flex items-center justify-center my-10">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+          </div>
+          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+            Professional Memberships
+          </h2>
+        </div>
+      
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* 1️⃣ American Society of Tropical Medicine and Hygiene */}
+          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+            <img
+              src="https://www.astmh.org/ASTMH/media/Images/Site/astmh_logo.png"
+              alt="American Society of Tropical Medicine and Hygiene"
+              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+            />
+            <div className="p-4">
+              <p className="font-semibold text-md text-gray-800">
+                American Society of Tropical Medicine and Hygiene
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Membership Year: 2020</p>
+            </div>
+          </div>
+      
+          {/* 2️⃣ Water Supply & Sanitation Collaborative Council (WSSCC) */}
+          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+            <img
+              src="https://upload.wikimedia.org/wikipedia/en/d/d3/WSSCC_logo.png" // example; replace with actual WSSCC logo URL
+              alt="Water Supply & Sanitation Collaborative Council"
+              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+            />
+            <div className="p-4">
+              <p className="font-semibold text-md text-gray-800">
+                Water Supply & Sanitation Collaborative Council (WSSCC)
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Membership Year: 2018</p>
+            </div>
+          </div>
+      
+          {/* 3️⃣ Gender and Water Alliance (GWA) */}
+          <div className="border bg-white rounded-xl shadow hover:shadow-lg transition-shadow duration-300">
+            <img
+              src="https://www.genderandwater.org/theme/images/gwa-logo.png" // example; replace with real URL if available
+              alt="Gender and Water Alliance"
+              className="w-full h-40 object-contain bg-gray-50 rounded-t-xl p-4"
+            />
+            <div className="p-4">
+              <p className="font-semibold text-md text-gray-800">
+                Gender and Water Alliance (GWA)
+              </p>
+              <p className="text-sm text-gray-600 mt-1">Membership Year: 2017</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">
         <div className="relative flex items-center justify-center my-10">
