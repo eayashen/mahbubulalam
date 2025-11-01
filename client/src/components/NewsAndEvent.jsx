@@ -31,7 +31,7 @@ const NewsAndEvent = () => {
     );
 
   return (
-    <div className="my-6 lg:mx-24 mx-4">
+    <div className="py-10 xl:px-60 md:px-28 px-4  lg:mx-24 mx-4 bg-white">
       {/* Image */}
       <img
         src={newsAndEvent?.image}

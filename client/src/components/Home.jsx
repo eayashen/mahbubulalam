@@ -24,6 +24,7 @@ import AwardForm from "./AwardForm";
 import Gallery from "./Gallery";
 import DeleteModal from "./DeleteModal";
 import { Link, useNavigate } from "react-router-dom";
+import Membership from "./Membership";
 
 const types = {
   journal: "JOURNAL ARTICLE",
@@ -527,6 +528,17 @@ const Home = () => {
       >
         Read More
       </Link>
+
+      {/* ------------------------Membership Section --------------------- */}
+      <div className="relative flex items-center justify-center mt-28">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
+        </div>
+        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
+          Professional Memberships
+        </h2>
+      </div>
+      <Membership />
 
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">
