@@ -1,6 +1,6 @@
 import React from "react";
 
-const DeleteModal = ({ handleDelete, onClose }) => {
+const DeleteModal = ({ handleDelete = () => {}, onClose = () => {} }) => {
   return (
     <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-50 flex justify-center items-center">
       <div className="w-96 h-fit p-6 bg-white text-black rounded space-y-4">

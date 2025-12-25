@@ -1,4 +1,5 @@
 const { imageUploadUtil } = require("../../helper/cloudinary");
+const Membership = require("../../models/Membership");
 const NewsAndEvents = require("../../models/NewsAndEvents");
 const Publication = require("../../models/Publication");
 const User = require("../../models/User");
@@ -192,9 +193,15 @@ const getHomePageData = async (req, res) => {
     const newsAndEvents = await NewsAndEvents.find()
       .sort({ date: -1 })
       .limit(3);
+
+    const memberships = await Membership.find();
+
     res
       .status(200)
-      .json({ success: true, data: { publications, newsAndEvents } });
+      .json({
+        success: true,
+        data: { publications, newsAndEvents, memberships },
+      });
   } catch (error) {}
 };
 

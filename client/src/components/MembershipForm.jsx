@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
 import axios from "axios";
+import { useRef, useState } from "react";
+import { useDispatch } from "react-redux";
 
-const AwardForm = ({
-  awardData,
-  setAwardData,
-  handleSaveAward,
-  setIsAwardEditing,
-  awardId,
-  setAwardId,
-  initialAward,
+const MembershipForm = ({
+  setIsMembershipEditing,
+  handleSaveMembership,
+  membershipData,
+  setMembershipData,
+  setMembershipId,
 }) => {
   const inputRef = useRef(null);
+  const dispatch = useDispatch();
   const [imageFile, setImageFile] = useState(null);
   const [uploadedImageUrl, setUploadedImageUrl] = useState("");
   const [imageLoadingState, setImageLoadingState] = useState(false);
@@ -36,8 +36,8 @@ const AwardForm = ({
   };
 
   const uploadImageToCloudinary = async () => {
-    if(!imageFile) {
-      handleSaveAward(awardData?.image);
+    if (!imageFile) {
+      handleSaveMembership(membershipData?.image);
       return;
     }
     try {
@@ -47,14 +47,14 @@ const AwardForm = ({
       data.append("image", imageFile);
 
       const response = await axios.post(
-        `${process.env.REACT_APP_SERVER_API_URL}/api/award/upload-image`,
+        `${process.env.REACT_APP_SERVER_API_URL}/api/membership/upload-image`,
         data
       );
       if (response?.data?.success) {
         const imageUrl = response?.data?.result?.secure_url;
         setUploadedImageUrl(response?.data?.result?.secure_url);
         setImageFile(null);
-        handleSaveAward(imageUrl);
+        handleSaveMembership(imageUrl);
       } else {
         console.log("Image upload failed");
       }
@@ -110,31 +110,23 @@ const AwardForm = ({
               </div>
             )}
           </div>
-          <div className="flex">
-            <p className="w-16">Title</p>
+          <div className="flex items-center">
+            <p className="w-24">Hover Text</p>
             <input
               className="px-2 border rounded flex-1"
               type="text"
               onChange={(e) =>
-                setAwardData({ ...awardData, title: e.target.value })
+                setMembershipData({
+                  ...membershipData,
+                  hoverText: e.target.value,
+                })
               }
               placeholder="Title"
-              value={awardData?.title}
-            />
-          </div>
-          <div className="flex">
-            <p className="w-16">Year</p>
-            <input
-              className="px-2 border rounded flex-1"
-              type="number"
-              onChange={(e) =>
-                setAwardData({ ...awardData, year: e.target.value })
-              }
-              placeholder="Year"
-              value={awardData?.year}
+              value={membershipData?.hoverText}
             />
           </div>
         </div>
+
         <div className="flex justify-center gap-4">
           <button className="save" onClick={uploadImageToCloudinary}>
             Save
@@ -142,9 +134,9 @@ const AwardForm = ({
           <button
             className="cancel"
             onClick={() => {
-              setIsAwardEditing(false);
-              setAwardData(initialAward);
-              setAwardId(null);
+              setIsMembershipEditing(false);
+              setMembershipId(null);
+              setMembershipData({ hoverText: "", imageLink: "" });
             }}
           >
             Cancel
@@ -155,4 +147,4 @@ const AwardForm = ({
   );
 };
 
-export default AwardForm;
+export default MembershipForm;

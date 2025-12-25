@@ -25,6 +25,8 @@ import Gallery from "./Gallery";
 import DeleteModal from "./DeleteModal";
 import { Link, useNavigate } from "react-router-dom";
 import Membership from "./Membership";
+import MembershipForm from "./MembershipForm";
+import { addMembership, updateMembership } from "../redux/admin/membership-slice";
 
 const types = {
   journal: "JOURNAL ARTICLE",
@@ -69,6 +71,10 @@ const Home = () => {
   const [openImageUpdateModal, setOpenImageUpdateModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [isMembershipEditing, setIsMembershipEditing] = useState(false);
+  const [membershipData, setMembershipData] = useState({ hoverText: "", imageLink: "" });
+  const [membershipId, setMembershipId] = useState(null);
+
 
   const settings = {
     dots: true,
@@ -181,6 +187,30 @@ const Home = () => {
     awardId && setAwardId(null);
   };
 
+  const handleSaveMembership = (uploadedImageUrl) => {
+    if (membershipData.hoverText === "") {
+      alert("Hover Text and Image Link fields are required");
+      return;
+    }
+    const payload = { ...membershipData, imageLink: uploadedImageUrl };
+    if (membershipId) {
+      dispatch(updateMembership({ formData: payload, id: membershipId })).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getHomePageData());
+        }
+      });
+    } else {
+      dispatch(addMembership(payload)).then((res) => {
+        if (res.payload?.success) {
+          dispatch(getHomePageData());
+        }
+      });
+    }
+    setIsMembershipEditing(false);
+    setMembershipData({ hoverText: "", imageLink: "" });
+    membershipId && setMembershipId(null);
+  };
+
   const handleUpdateAward = (a) => {
     setIsAwardEditing(true);
     setAwardId(a._id);
@@ -194,6 +224,13 @@ const Home = () => {
         dispatch(getAwards());
       }
     });
+  };
+
+  const handleUpdateMembership = (m) => {
+    setIsMembershipEditing(true);
+    setMembershipId(m._id);
+    const { hoverText, imageLink } = m;
+    setMembershipData({ hoverText, imageLink });
   };
 
   const handleNewsPage = (id) => {
@@ -306,6 +343,16 @@ const Home = () => {
           awardId={awardId}
           handleSaveAward={handleSaveAward}
           initialAward={initialAward}
+        />
+      )}
+
+      {isMembershipEditing && (
+        <MembershipForm
+          setIsMembershipEditing={setIsMembershipEditing}
+          setMembershipData={setMembershipData}
+          membershipData={membershipData}
+          setMembershipId={setMembershipId}
+          handleSaveMembership={handleSaveMembership}
         />
       )}
 
@@ -538,7 +585,15 @@ const Home = () => {
           Professional Memberships
         </h2>
       </div>
-      <Membership />
+      {isAuthenticated && (
+        <button
+          onClick={() => setIsMembershipEditing(true)}
+          className="edit mt-6"
+        >
+          + Add Membership
+        </button>
+      )}
+      <Membership handleUpdateMembership={handleUpdateMembership} />
 
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">

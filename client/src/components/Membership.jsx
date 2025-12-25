@@ -1,71 +1,49 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Slider from "react-slick";
+import DeleteModal from "./DeleteModal";
+import { useState } from "react";
+import { deleteMembership } from "../redux/admin/membership-slice";
+import { getHomePageData } from "../redux/admin/about-slice";
 
-import astmh_2020 from "../images/astmh_2020.png";
-import GWA_2017 from "../images/GWA_2017.jpg";
-import onehealthBangladesh_2015 from "../images/onehealthBangladesh_2015.png.webp";
-import susana_2016 from "../images/susana_2016.png";
-import WGCD_2014 from "../images/WGCD_2014.jpeg";
-import WSSCC_2018 from "../images/WSSCC_2018.jpg";
-
-const Membership = () => {
-  const membership = [
-    {
-      imageLink: astmh_2020,
-      hoverText: "Membership Since 2020",
-    },
-    {
-      imageLink: WSSCC_2018,
-      hoverText: "Membership Since 2018",
-    },
-    {
-      imageLink: GWA_2017,
-      hoverText: "Membership Since 2017",
-    },
-    {
-      imageLink: susana_2016,
-      hoverText: "Membership Since 2016",
-    },
-    {
-      imageLink: onehealthBangladesh_2015,
-      hoverText: "Membership Since 2015",
-    },
-    {
-      imageLink: WGCD_2014,
-      hoverText: "Membership Since 2014",
-    }
-  ];
+const Membership = ({ handleUpdateMembership }) => {
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { homePageData, isLoading } = useSelector((state) => state.about);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedId, setSelectedId] = useState(null); // ✅ store membership ID
 
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: homePageData?.memberships?.length > 3,
     autoplay: true,
-    autoplaySpeed: 2000, // for continuous movement
-    speed: 3000, // adjust for smooth speed
-    slidesToShow: 3, // number of visible slides at once
+    autoplaySpeed: 2000,
+    speed: 3000,
+    slidesToShow: 3,
     slidesToScroll: 1,
     pauseOnHover: true,
     arrows: false,
     responsive: [
-      {
-        breakpoint: 1024,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 768,
-        settings: { slidesToShow: 2 },
-      },
-      {
-        breakpoint: 480,
-        settings: { slidesToShow: 1 },
-      },
+      { breakpoint: 1024, settings: { slidesToShow: 2 } },
+      { breakpoint: 768, settings: { slidesToShow: 2 } },
+      { breakpoint: 480, settings: { slidesToShow: 1 } },
     ],
+  };
+
+  const handleDelete = () => {
+    dispatch(deleteMembership(selectedId)).then((res) => {
+      if (res.payload?.success) {
+        dispatch(getHomePageData());
+      }
+    });
+
+    setOpenDeleteModal(false);
+    setSelectedId(null);
   };
 
   return (
     <div className="w-full overflow-hidden py-10 mt-4">
       <Slider {...settings}>
-        {membership.map((item, idx) => (
+        {homePageData?.memberships?.map((item, idx) => (
           <div key={idx} className="px-3">
             <div className="relative w-full h-40 md:h-48 overflow-hidden rounded-xl group shadow-md bg-white border border-gray-200 flex items-center justify-center">
               <img
@@ -73,13 +51,47 @@ const Membership = () => {
                 alt="membership"
                 className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-105 bg-white"
               />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-sm font-semibold transition-opacity duration-300">
+
+              {/* Hover overlay text */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-sm font-semibold transition-opacity duration-300 space-y-2">
                 {item.hoverText}
+
+                {/* Show Edit & Delete buttons only if authenticated */}
+                {isAuthenticated && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdateMembership(item)} // ✅ call update handler
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md text-xs transition-colors"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedId(item._id);
+                        setOpenDeleteModal(true);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-xs transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         ))}
       </Slider>
+
+      {/* Delete Modal */}
+      {isAuthenticated && openDeleteModal && (
+        <DeleteModal
+          onClose={() => {
+            setOpenDeleteModal(false);
+            setSelectedId(null);
+          }}
+          handleDelete={handleDelete} // will use selectedId inside handleDelete
+        />
+      )}
     </div>
   );
 };

@@ -245,7 +245,7 @@ const Contact = () => {
               )}
             </div>
           </div>
-          <div className="flex-1 flex flex-col p-6 space-y-3 justify-center">
+          {/* <div className="flex-1 flex flex-col p-6 space-y-3 justify-center">
             <input
               className="p-1 border outline-none w-full rounded bg-gray-100"
               type="text"
@@ -263,7 +263,7 @@ const Contact = () => {
             <button className="save bg-indigo-950 hover:bg-indigo-950 hover:text-teal-300 w-full">
               SEND EMAIL
             </button>
-          </div>
+          </div> */}
         </div>
         {isAuthenticated && (
           <div className="flex justify-center pb-6">

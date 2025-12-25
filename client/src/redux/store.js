@@ -12,6 +12,7 @@ import consultancySlice from "./admin/consultancy-slice";
 import mentorshipSlice from "./admin/mentorship-slice";
 import visitorSlice from "./admin/visitor-slice";
 import newsEventSlice from "./admin/news-event-slice";
+import membershipSlice from "./admin/membership-slice";
 
 import { loginData } from "./loginData";
 
@@ -30,6 +31,7 @@ const store = configureStore({
     mentorship: mentorshipSlice,
     visitor: visitorSlice,
     newsEvent: newsEventSlice,
+    membership: membershipSlice,
     loginData: loginData.reducer,
   },
 });
