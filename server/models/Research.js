@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const researchSchema = new mongoose.Schema(
   {
     duration: {
       type: String,
@@ -22,6 +22,15 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "onGoing",
     },
+    image: {
+      type: String,
+      default: "",
+    },
+    url: {
+      type: String,
+      default: "",
+    },
+
     publications: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -34,4 +43,4 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Research", userSchema);
+module.exports = mongoose.model("Research", researchSchema);

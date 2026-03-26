@@ -27,6 +27,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Membership from "./Membership";
 import MembershipForm from "./MembershipForm";
 import { addMembership, updateMembership } from "../redux/admin/membership-slice";
+import TitleText from "./ui/TitleText";
 
 const types = {
   journal: "JOURNAL ARTICLE",
@@ -469,15 +470,8 @@ const Home = () => {
       </div>
 
       {/* --------------------- News And Events --------------------- */}
-      <div className="relative flex items-center justify-center my-10">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-        </div>
-        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-          News & Events
-        </h2>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <TitleText title="News & Events" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {homePageData?.newsAndEvents?.map((newsAndEvent) => (
           <div
             key={newsAndEvent._id}
@@ -530,14 +524,8 @@ const Home = () => {
       </div>
 
       {/* ----------------------- Publication ----------------------- */}
-      <div className="relative flex items-center justify-center my-10">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-        </div>
-        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-          Recent Publications
-        </h2>
-      </div>
+      <TitleText title="Recent Publications" />
+      <div className="py-4"></div>
       {homePageData?.publications?.map((item, index) => (
         <div key={index} className="my-4 border-b pb-4 space-y-1">
           <p className="text-xs font-bold text-gray-500 mb-1">
@@ -577,14 +565,7 @@ const Home = () => {
       </Link>
 
       {/* ------------------------Membership Section --------------------- */}
-      <div className="relative flex items-center justify-center mt-28">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-        </div>
-        <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-          Professional Memberships
-        </h2>
-      </div>
+      <TitleText title="Professional Memberships" />
       {isAuthenticated && (
         <button
           onClick={() => setIsMembershipEditing(true)}
@@ -597,14 +578,8 @@ const Home = () => {
 
       {/* ----------------------- Award Section --------------------- */}
       <div className="my-4 pt-12">
-        <div className="relative flex items-center justify-center my-10">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full h-10 bg-gradient-to-r from-transparent via-teal-300 to-transparent opacity-60" />
-          </div>
-          <h2 className="relative z-10 px-4 text-xl font-bold text-gray-700 uppercase">
-            Awards
-          </h2>
-        </div>
+        <TitleText title="Awards" />
+        <div className="py-4"></div>
         {isAuthenticated && (
           <button onClick={() => setIsAwardEditing(true)} className="edit mt-2">
             + Add Awards

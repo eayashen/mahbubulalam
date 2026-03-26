@@ -2,7 +2,7 @@ const Research = require("../../models/Research");
 const Publication = require("../../models/Publication");
 
 const addResearch = async (req, res) => {
-  const { duration, title, description, status } = req.body;
+  const { duration, title, description, status, image, url } = req.body;
 
   try {
     const newlyCreatedResearch = new Research({
@@ -10,15 +10,23 @@ const addResearch = async (req, res) => {
       title,
       description,
       status,
+      image,
+      url,
       publications: [],
     });
 
     await newlyCreatedResearch.save();
 
-    res.status(201).json({ success: true, data: newlyCreatedResearch });
+    res.status(201).json({
+      success: true,
+      data: newlyCreatedResearch,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Something went wrong" });
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };
 
@@ -50,20 +58,36 @@ const fetchAllPublications = async (req, res) => {
 };
 
 const editResearch = async (req, res) => {
-  const { duration, title, description, status, publications } = req.body;
+  const { duration, title, description, status, publications, image, url } =
+    req.body;
+
   const { id } = req.params;
 
   try {
     const updatedResearch = await Research.findByIdAndUpdate(
       id,
-      { duration, title, description, status, publications },
+      {
+        duration,
+        title,
+        description,
+        status,
+        publications,
+        image,
+        url,
+      },
       { new: true }
     );
 
-    res.status(200).json({ success: true, data: updatedResearch });
+    res.status(200).json({
+      success: true,
+      data: updatedResearch,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "Something went wrong" });
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong",
+    });
   }
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Triangle } from "react-loader-spinner";
 import {
@@ -15,7 +15,9 @@ import {
   updateResearch,
   deleteResearch,
 } from "../redux/admin/research-slice";
-import { Accordion } from "rsuite";
+import { ResearchCard } from "./ui/ResearchCard";
+import TitleText from "./ui/TitleText";
+import ResearchForm from "./ResearchForm";
 
 const initialFormData = {
   duration: "",
@@ -29,7 +31,7 @@ const Research = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { research, publications, isLoading } = useSelector(
-    (state) => state.research
+    (state) => state.research,
   );
   const [formData, setFormData] = useState(initialFormData);
   const [researchId, setResearchId] = useState(null);
@@ -44,7 +46,7 @@ const Research = () => {
     query === ""
       ? publications
       : publications.filter((p) =>
-          p.title.toLowerCase().includes(query.toLowerCase())
+          p.title.toLowerCase().includes(query.toLowerCase()),
         );
 
   const handleChange = (value) => {
@@ -68,24 +70,24 @@ const Research = () => {
     setIsResearchEditing(true);
   };
 
-  const handleSaveResearch = () => {
-    if (!formData.title || !formData.status) {
+  const handleSaveResearch = (data) => {
+    if (!data.title || !data.status) {
       alert("Title and Status are required fields");
       return;
     }
-    if (formData && researchId !== null) {
-      dispatch(updateResearch({ formData, id: researchId })).then((res) => {
-        if (res.payload?.success) {
-          dispatch(getResearch());
-        }
-      });
+
+    if (researchId) {
+      dispatch(updateResearch({ formData: data, id: researchId })).then(
+        (res) => {
+          if (res.payload?.success) dispatch(getResearch());
+        },
+      );
     } else {
-      dispatch(addResearch(formData)).then((res) => {
-        if (res.payload?.success) {
-          dispatch(getResearch());
-        }
+      dispatch(addResearch(data)).then((res) => {
+        if (res.payload?.success) dispatch(getResearch());
       });
     }
+
     setIsResearchEditing(false);
     setResearchId(null);
     setFormData(initialFormData);
@@ -142,7 +144,7 @@ const Research = () => {
           ...selectedResearch,
           publications: updatedPublications,
         },
-      })
+      }),
     ).then((res) => {
       if (res.payload?.success) {
         dispatch(getResearch());
@@ -154,7 +156,7 @@ const Research = () => {
 
   const handlePublicationDelete = (publicationId) => () => {
     const updatedPublications = selectedResearch.publications.filter(
-      (p) => p._id !== publicationId
+      (p) => p._id !== publicationId,
     );
     dispatch(
       updateResearch({
@@ -163,7 +165,7 @@ const Research = () => {
           ...selectedResearch,
           publications: updatedPublications,
         },
-      })
+      }),
     ).then((res) => {
       if (res.payload?.success) {
         dispatch(getResearch());
@@ -194,89 +196,15 @@ const Research = () => {
   return (
     <div className="lg:mx-24 mx-4">
       {isResearchEditing && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-25 z-10 flex justify-center items-center">
-          <div className="sm:w-[600px] w-96 h-fit p-4 bg-white text-black rounded space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <p className="w-20">Duration</p>
-                <input
-                  className="px-2 border rounded flex-1"
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      duration: e.target.value,
-                    })
-                  }
-                  placeholder="Duration"
-                  value={formData?.duration}
-                />
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Status</p>
-                <select
-                  className="px-2 h-10 border rounded flex-1"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      status: e.target.value,
-                    })
-                  }
-                  value={formData?.status}
-                >
-                  <option value="">Select status</option>
-                  <option value="onGoing">On Going</option>
-                  <option value="previousResearch">Previous Research</option>
-                </select>
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Title</p>
-                <textarea
-                  className="px-2 border rounded flex-1 max-h-32 h-20"
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      title: e.target.value,
-                    })
-                  }
-                  placeholder="Title"
-                  value={formData?.title}
-                />
-              </div>
-              <div className="flex items-center">
-                <p className="w-20">Description</p>
-                <textarea
-                  className="px-2 border rounded flex-1 max-h-60 h-40"
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      description: e.target.value,
-                    })
-                  }
-                  placeholder="Description"
-                  value={formData?.description}
-                />
-              </div>
-            </div>
-            <div className="flex justify-center gap-4">
-              <button className="save" onClick={handleSaveResearch}>
-                Save
-              </button>
-              <button
-                className="cancel"
-                onClick={() => {
-                  setIsResearchEditing(false);
-                  setResearchId(null);
-                  setFormData(initialFormData);
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        <ResearchForm
+          formData={formData}
+          setFormData={setFormData}
+          handleSaveResearch={handleSaveResearch}
+          setIsResearchEditing={setIsResearchEditing}
+          setResearchId={setResearchId}
+          initialFormData={initialFormData}
+          researchId={researchId}
+        />
       )}
 
       {isPublicationSelecting && (
@@ -384,11 +312,9 @@ const Research = () => {
 
       <p className="text-2xl font-bold text-center my-4">Research</p>
       <div className="flex gap-4">
-        <p className="text-xl font-bold bg-indigo-950 p-2 text-white w-fit">
-          On Going
-        </p>
+        <TitleText title="On Going" />
         {isAuthenticated && (
-          <button onClick={() => setIsResearchEditing(true)} className="edit">
+          <button onClick={() => setIsResearchEditing(true)} className="edit text-nowrap h-10 mt-4">
             + Add Research
           </button>
         )}
@@ -396,10 +322,9 @@ const Research = () => {
       {research?.map(
         (d) =>
           d.status === "onGoing" && (
-            <div className="my-4 border-b pb-2" key={d._id}>
-              <p className="text-sm text-gray-500">{d.duration}</p>
-              <p className="text-lg font-semibold">{d.title}</p>
-              <p className="whitespace-pre-line">{d.description}</p>
+            <div key={d._id} className="my-4">
+              <ResearchCard data={d} type="ongoing" />
+
               {isAuthenticated && (
                 <div className="flex gap-4 py-1">
                   <button
@@ -409,7 +334,7 @@ const Research = () => {
                         d.duration,
                         d.status,
                         d.title,
-                        d.description
+                        d.description,
                       )
                     }
                     className="fas fa-edit"
@@ -430,7 +355,7 @@ const Research = () => {
                 <button
                   onClick={() =>
                     setSelectedProjectId((prevId) =>
-                      prevId === d._id ? null : d._id
+                      prevId === d._id ? null : d._id,
                     )
                   }
                   className="border px-2 rounded my-2 bg-blue-200"
@@ -455,7 +380,7 @@ const Research = () => {
                       {p.authors.split(" ").map((word, index) => {
                         const isKeyword = p.keywords.some(
                           (keyword) =>
-                            keyword.toLowerCase() === word.toLowerCase()
+                            keyword.toLowerCase() === word.toLowerCase(),
                         );
                         return (
                           <span key={index}>
@@ -476,18 +401,14 @@ const Research = () => {
                   </div>
                 ))}
             </div>
-          )
+          ),
       )}
-      <p className="text-xl font-bold bg-indigo-950 p-2 text-white w-fit">
-        Previous Research
-      </p>
+      <TitleText title="Previous Research" />
       {research?.map(
         (d) =>
           d.status === "previousResearch" && (
-            <div className="my-4 border-b pb-2" key={d._id}>
-              <p className="text-sm text-gray-500">{d.duration}</p>
-              <p className="text-lg font-semibold">{d.title}</p>
-              <p className="whitespace-pre-line">{d.description}</p>
+            <div key={d._id} className="my-4">
+              <ResearchCard data={d} type="previous" />
               {isAuthenticated && (
                 <div className="flex gap-4 py-1">
                   <button
@@ -497,7 +418,7 @@ const Research = () => {
                         d.duration,
                         d.status,
                         d.title,
-                        d.description
+                        d.description,
                       )
                     }
                     className="fas fa-edit"
@@ -518,7 +439,7 @@ const Research = () => {
                 <button
                   onClick={() =>
                     setSelectedProjectId((prevId) =>
-                      prevId === d._id ? null : d._id
+                      prevId === d._id ? null : d._id,
                     )
                   }
                   className="border px-2 rounded my-2 bg-blue-200"
@@ -542,7 +463,7 @@ const Research = () => {
                       {p.authors.split(" ").map((word, index) => {
                         const isKeyword = p.keywords.some(
                           (keyword) =>
-                            keyword.toLowerCase() === word.toLowerCase()
+                            keyword.toLowerCase() === word.toLowerCase(),
                         );
                         return (
                           <span key={index}>
@@ -563,7 +484,7 @@ const Research = () => {
                   </div>
                 ))}
             </div>
-          )
+          ),
       )}
     </div>
   );
