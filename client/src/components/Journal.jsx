@@ -260,7 +260,6 @@ const Journal = () => {
             href={item.link}
             className="text-xl font-semibold hover:text-teal-500"
             target="_blank"
-            rel="noopener noreferrer"
           >
             {item.title}
           </a>

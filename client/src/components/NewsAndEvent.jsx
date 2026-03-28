@@ -64,7 +64,6 @@ const NewsAndEvent = () => {
         <a
           href={newsAndEvent?.link}
           target="_blank"
-          rel="noopener noreferrer"
           className="inline-block mt-6 text-blue-600 font-medium hover:underline"
         >
           Source →

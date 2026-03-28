@@ -370,7 +370,6 @@ const Research = () => {
                     <a
                       href={p.link}
                       target="_blank"
-                      rel="noopener noreferrer"
                       className="font-semibold hover:text-teal-500"
                     >
                       {p.title}
@@ -453,7 +452,6 @@ const Research = () => {
                     <a
                       href={p.link}
                       target="_blank"
-                      rel="noopener noreferrer"
                       className="font-semibold hover:text-teal-500"
                     >
                       {p.title}

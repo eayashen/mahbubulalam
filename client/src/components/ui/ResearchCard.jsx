@@ -38,7 +38,6 @@ export const ResearchCard = ({ data, type }) => {
           <a
             href={data.url}
             target="_blank"
-            rel="noopener noreferrer"
             className="flex items-center gap-1 text-blue-600 font-medium hover:underline text-sm cursor-pointer"
           >
             View Report <ArrowRight size={16} />
