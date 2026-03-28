@@ -534,6 +534,7 @@ const Home = () => {
           <Link
             to={item.link}
             target="_blank"
+            rel="noopener"
             className="text-lg text-slate-700 font-semibold hover:underline"
           >
             {item.title}

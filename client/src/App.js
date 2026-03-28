@@ -39,7 +39,7 @@ const App = () => {
     }
 
     dispatch(fetchVisitors());
-  }, []);
+  }, [dispatch]);
 
   if (isLoading) {
     return (

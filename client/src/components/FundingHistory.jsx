@@ -31,7 +31,7 @@ const FundingHistory = () => {
 
   useEffect(() => {
     dispatch(getFundings());
-  }, []);
+  }, [dispatch]);
 
   const handleUpdate = (d) => {
     setIsTableEditing(true);

@@ -117,7 +117,7 @@ const Consultancy = () => {
 
   useEffect(() => {
     dispatch(getConsultancies());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div className="mt-4 lg:mx-24 mx-4">
