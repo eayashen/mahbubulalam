@@ -17,7 +17,7 @@ const Contact = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { contact, isLoading } = useSelector((state) => state.contact);
-  const { socialLinks, isLinkLoading } = useSelector(
+  const { socialLinks } = useSelector(
     (state) => state.socialLinks
   );
   const [formData, setFormData] = useState(initialFormData);
@@ -55,7 +55,7 @@ const Contact = () => {
 
   useEffect(() => {
     dispatch(getContact());
-  }, []);
+  }, [dispatch]);
 
   if (isLoading)
     return (
@@ -183,6 +183,7 @@ const Contact = () => {
                   title="Google Scholer"
                   className="hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <img
                     className="h-5 w-5 -mt-0.5"
@@ -197,6 +198,7 @@ const Contact = () => {
                   title="Orcid"
                   className="fab fa-orcid hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <span className="sr-only">Orcid</span>
                 </a>
@@ -207,6 +209,7 @@ const Contact = () => {
                   title="Publons"
                   className="fa hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   <b>P</b>
                 </a>
@@ -217,6 +220,7 @@ const Contact = () => {
                   title="LInkedin"
                   className="fab fa-linkedin-in hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 ></a>
               )}
               {socialLinks?.twitterVisible && (
@@ -225,6 +229,7 @@ const Contact = () => {
                   title="Twitter"
                   className="fab fa-twitter hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 ></a>
               )}
               {socialLinks?.instagramVisible && (
@@ -233,6 +238,7 @@ const Contact = () => {
                   title="Instagram"
                   className="fab fa-instagram hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 ></a>
               )}
               {socialLinks?.facebookVisible && (
@@ -241,6 +247,7 @@ const Contact = () => {
                   title="Facebook"
                   className="fab fa-facebook-f hover:scale-125 ease duration-300"
                   target="_blank"
+                  rel="noreferrer"
                 ></a>
               )}
             </div>

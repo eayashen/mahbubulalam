@@ -36,11 +36,11 @@ const Journal = () => {
 
   useEffect(() => {
     dispatch(getPublications(location.pathname.slice(1)));
-  }, [location.pathname]);
+  }, [dispatch, location.pathname]);
 
-  const handleEdit = (id, research_id, title, published, authors, url) => {
-    setIsPublicationEditing(true);
-  };
+  // const handleEdit = (id, research_id, title, published, authors, url) => {
+  //   setIsPublicationEditing(true);
+  // };
 
   const handleSavePublication = async () => {
     if (!formData.title || !formData.category) {
@@ -260,6 +260,7 @@ const Journal = () => {
             href={item.link}
             className="text-xl font-semibold hover:text-teal-500"
             target="_blank"
+            rel="noreferrer"
           >
             {item.title}
           </a>

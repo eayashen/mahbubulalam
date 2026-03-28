@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import FileUpload from "./FileUpload";
 import AwardForm from "./AwardForm";
 import Gallery from "./Gallery";
-import DeleteModal from "./DeleteModal";
+// import DeleteModal from "./DeleteModal";
 import { Link, useNavigate } from "react-router-dom";
 import Membership from "./Membership";
 import MembershipForm from "./MembershipForm";
@@ -71,7 +71,7 @@ const Home = () => {
   const [awardId, setAwardId] = useState(null);
   const [openImageUpdateModal, setOpenImageUpdateModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  // const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isMembershipEditing, setIsMembershipEditing] = useState(false);
   const [membershipData, setMembershipData] = useState({ hoverText: "", imageLink: "" });
   const [membershipId, setMembershipId] = useState(null);
@@ -93,7 +93,7 @@ const Home = () => {
     dispatch(getDesignation());
     dispatch(getAwards());
     dispatch(getHomePageData());
-  }, []);
+  }, [dispatch]);
 
   const [imageEditing, setImageEditing] = useState(false);
 

@@ -13,7 +13,7 @@ const NewsAndEvent = () => {
 
   useEffect(() => {
     dispatch(getNewsAndEventById(id));
-  }, []);
+  }, [dispatch, id]);
 
   if (isLoading)
     return (
@@ -64,6 +64,7 @@ const NewsAndEvent = () => {
         <a
           href={newsAndEvent?.link}
           target="_blank"
+          rel="noreferrer"
           className="inline-block mt-6 text-blue-600 font-medium hover:underline"
         >
           Source →
