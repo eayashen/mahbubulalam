@@ -27,20 +27,43 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
+// app.use(
+//   cors({
+//     origin: process.env.CLIENT_URL,
+//     methods: ["POST", "PUT", "GET", "OPTIONS", "DELETE"],
+//     allowedHeaders: [
+//       "Content-Type",
+//       "Authorization",
+//       "Cache-Control",
+//       "Expires",
+//       "Pragma",
+//     ],
+//     credentials: true,
+//   })
+// );
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://019d3565-9abc-73d0-8c9a-a70da580680d.arena.site",
+];
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
-    methods: ["POST", "PUT", "GET", "OPTIONS", "DELETE"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Cache-Control",
-      "Expires",
-      "Pragma",
-    ],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+app.options("*", cors());
 
 // Routes
 app.use(express.json());

@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
 const newsAndEventsSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["news", "photo", "video", "event"], // ✅ allowed values
+    default: "news",
+    required: true,
+  },
   title: {
     type: String,
     required: true,
@@ -22,6 +28,11 @@ const newsAndEventsSchema = new mongoose.Schema({
   link: {
     type: String,
     trim: true,
+  },
+  videoLink: {
+    type: String,
+    trim: true,
+    default: "",
   },
 });
 

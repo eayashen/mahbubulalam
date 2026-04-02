@@ -23,6 +23,8 @@ const NewsAndEvents = () => {
   const [newsAndEventId, setNewsAndEventId] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false); // ✅ modal control
   const [deleteId, setDeleteId] = useState(null); // ✅ store which ID to delete
+  const [selectedTypes, setSelectedTypes] = useState(["all"]);
+  const typeOptions = ["all", "news", "event", "photo", "video"];
 
   const initialNewsAndEvent = {
     title: "",
@@ -30,7 +32,38 @@ const NewsAndEvents = () => {
     date: "",
     image: "",
     link: "",
+    type: "news",
+    videoLink: "",
   };
+
+  const handleTypeChange = (type) => {
+    if (type === "all") {
+      setSelectedTypes(["all"]);
+      return;
+    }
+
+    let updated = [...selectedTypes];
+
+    // remove "all" if selecting specific
+    updated = updated.filter((t) => t !== "all");
+
+    if (updated.includes(type)) {
+      updated = updated.filter((t) => t !== type);
+    } else {
+      updated.push(type);
+    }
+
+    // if none selected → fallback to all
+    if (updated.length === 0) {
+      updated = ["all"];
+    }
+
+    setSelectedTypes(updated);
+  };
+
+  const filteredNewsAndEvents = selectedTypes.includes("all")
+    ? newsAndEvents
+    : newsAndEvents.filter((item) => selectedTypes.includes(item.type));
 
   // ✅ handle save (add or update)
   const handleSaveNewsAndEvent = (uploadedImageUrl) => {
@@ -43,11 +76,16 @@ const NewsAndEvents = () => {
       return;
     }
 
+    if (newsAndEventData.type === "video" && !newsAndEventData.videoLink) {
+      alert("Video link is required for video type");
+      return;
+    }
+
     const payload = { ...newsAndEventData, image: uploadedImageUrl };
 
     if (newsAndEventId) {
       dispatch(
-        updateNewsAndEvents({ formData: payload, id: newsAndEventId })
+        updateNewsAndEvents({ formData: payload, id: newsAndEventId }),
       ).then((res) => {
         if (res.payload?.success) {
           dispatch(getNewsAndEvents());
@@ -119,7 +157,6 @@ const NewsAndEvents = () => {
       {/* Header */}
       <div className="flex items-center justify-between relative">
         <h1 className="text-2xl font-bold py-4 sm:mx-auto">News and Events</h1>
-
         {isAuthenticated && (
           <button
             onClick={() => setIsNewsAndEventEditing(true)}
@@ -130,13 +167,34 @@ const NewsAndEvents = () => {
         )}
       </div>
 
+      <div className="flex flex-wrap gap-2 ml-4">
+        {typeOptions.map((type) => {
+          const isActive = selectedTypes.includes(type);
+
+          return (
+            <button
+              key={type}
+              onClick={() => handleTypeChange(type)}
+              className={`px-3 py-1 text-sm rounded-full border transition font-semibold
+          ${
+            isActive
+              ? "bg-sky-600 text-white border-sky-600"
+              : "bg-white text-gray-600 border-gray-300 hover:bg-gray-100"
+          }`}
+            >
+              {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          );
+        })}
+      </div>
+
       {/* List */}
       <div className="my-12 px-4">
         {newsAndEvents.length === 0 ? (
           <p className="text-center text-gray-500">No news or events found</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {newsAndEvents.map((newsAndEvent) => (
+            {filteredNewsAndEvents.map((newsAndEvent) => (
               <div
                 key={newsAndEvent._id}
                 className="relative group rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
@@ -155,7 +213,13 @@ const NewsAndEvents = () => {
 
                   <div className="absolute bottom-4 left-4 right-4 text-white z-10">
                     <span className="text-xs bg-sky-600 px-2 py-1 rounded-sm uppercase font-semibold tracking-wide">
-                      NEWS
+                      {newsAndEvent.type === "news"
+                        ? "News"
+                        : newsAndEvent.type === "photo"
+                          ? "Photo"
+                          : newsAndEvent.type === "video"
+                            ? "Video"
+                            : "Event"}
                     </span>
 
                     <h3 className="text-lg font-semibold mt-2 line-clamp-2">
@@ -166,7 +230,7 @@ const NewsAndEvents = () => {
                       <p className="text-sm text-gray-200">
                         {new Date(newsAndEvent.date).toLocaleDateString(
                           "en-GB",
-                          { day: "numeric", month: "long", year: "numeric" }
+                          { day: "numeric", month: "long", year: "numeric" },
                         )}
                       </p>
                     )}

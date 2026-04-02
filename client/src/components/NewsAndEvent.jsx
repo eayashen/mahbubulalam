@@ -7,9 +7,7 @@ import { Triangle } from "react-loader-spinner";
 const NewsAndEvent = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const { newsAndEvent, isLoading } = useSelector(
-    (state) => state.newsEvent
-  );
+  const { newsAndEvent, isLoading } = useSelector((state) => state.newsEvent);
 
   useEffect(() => {
     dispatch(getNewsAndEventById(id));
@@ -33,11 +31,23 @@ const NewsAndEvent = () => {
   return (
     <div className="py-10 xl:px-60 md:px-28 px-4  lg:mx-24 mx-4 bg-white">
       {/* Image */}
-      <img
-        src={newsAndEvent?.image}
-        alt={newsAndEvent?.title}
-        className="w-full rounded-lg shadow-md object-cover max-h-[500px]"
-      />
+      {newsAndEvent?.type === "video" && newsAndEvent?.videoLink ? (
+        <div className="w-full aspect-video rounded-lg overflow-hidden shadow-md">
+          <iframe
+            className="w-full h-full"
+            src={newsAndEvent.videoLink.replace("watch?v=", "embed/")}
+            title="YouTube video"
+            frameBorder="0"
+            allowFullScreen
+          ></iframe>
+        </div>
+      ) : (
+        <img
+          src={newsAndEvent?.image}
+          alt={newsAndEvent?.title}
+          className="w-full rounded-lg shadow-md object-cover max-h-[500px]"
+        />
+      )}
 
       {/* Date */}
       <p className="text-gray-500 mt-4 text-sm">

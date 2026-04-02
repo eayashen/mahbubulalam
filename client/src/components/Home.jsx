@@ -26,7 +26,10 @@ import Gallery from "./Gallery";
 import { Link, useNavigate } from "react-router-dom";
 import Membership from "./Membership";
 import MembershipForm from "./MembershipForm";
-import { addMembership, updateMembership } from "../redux/admin/membership-slice";
+import {
+  addMembership,
+  updateMembership,
+} from "../redux/admin/membership-slice";
 import TitleText from "./ui/TitleText";
 
 const types = {
@@ -57,7 +60,7 @@ const Home = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { about, homePageData, isLoading } = useSelector(
-    (state) => state.about
+    (state) => state.about,
   );
   const { designation } = useSelector((state) => state.designation);
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -73,9 +76,11 @@ const Home = () => {
   const [isEditing, setIsEditing] = useState(false);
   // const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [isMembershipEditing, setIsMembershipEditing] = useState(false);
-  const [membershipData, setMembershipData] = useState({ hoverText: "", imageLink: "" });
+  const [membershipData, setMembershipData] = useState({
+    hoverText: "",
+    imageLink: "",
+  });
   const [membershipId, setMembershipId] = useState(null);
-
 
   const settings = {
     dots: true,
@@ -108,7 +113,7 @@ const Home = () => {
           if (res.payload?.success) {
             dispatch(getDesignation());
           }
-        }
+        },
       );
     } else {
       dispatch(addDesignation(formData)).then((res) => {
@@ -195,11 +200,13 @@ const Home = () => {
     }
     const payload = { ...membershipData, imageLink: uploadedImageUrl };
     if (membershipId) {
-      dispatch(updateMembership({ formData: payload, id: membershipId })).then((res) => {
-        if (res.payload?.success) {
-          dispatch(getHomePageData());
-        }
-      });
+      dispatch(updateMembership({ formData: payload, id: membershipId })).then(
+        (res) => {
+          if (res.payload?.success) {
+            dispatch(getHomePageData());
+          }
+        },
+      );
     } else {
       dispatch(addMembership(payload)).then((res) => {
         if (res.payload?.success) {
@@ -492,8 +499,14 @@ const Home = () => {
 
               {/* Content */}
               <div className="absolute bottom-4 left-4 right-4 text-white z-10">
-                <span className="text-[10px] sm:text-xs bg-sky-600 px-2 py-1 rounded-sm uppercase font-semibold tracking-wide">
-                  NEWS
+                <span className="text-xs bg-sky-600 px-2 py-1 rounded-sm uppercase font-semibold tracking-wide">
+                  {newsAndEvent.type === "news"
+                    ? "News"
+                    : newsAndEvent.type === "photo"
+                      ? "Photo"
+                      : newsAndEvent.type === "video"
+                        ? "Video"
+                        : "Event"}
                 </span>
 
                 <h3 className="text-base sm:text-lg font-semibold mt-2 line-clamp-2">
@@ -545,7 +558,7 @@ const Home = () => {
               const trimmedAuthor = author.trim();
               const isKeyword = item.keywords.some(
                 (keyword) =>
-                  keyword.toLowerCase() === trimmedAuthor.toLowerCase()
+                  keyword.toLowerCase() === trimmedAuthor.toLowerCase(),
               );
 
               return (

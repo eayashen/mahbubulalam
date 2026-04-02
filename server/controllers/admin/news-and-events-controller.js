@@ -24,18 +24,37 @@ const handleImageUpload = async (req, res) => {
 
 const addNewsOrEvent = async (req, res) => {
   try {
-    const { title, description, date, image, link } = req.body;
+    const { title, description, date, image, link, type, videoLink } = req.body;
+
+    // ✅ validation
+    if (!title || !description || !date) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Required fields missing" });
+    }
+
+    if (type === "video" && !videoLink) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Video link is required" });
+    }
+
     const newNewsOrEvent = new NewsAndEvents({
-        title,
-        description,
-        date,
-        image,
-        link,
+      title,
+      description,
+      date,
+      image, // ✅ keep image as-is
+      link,
+      type,
+      videoLink,
     });
+
     await newNewsOrEvent.save();
-    res
-      .status(201)
-      .json({ success: true, message: "News/Event added successfully" });
+
+    res.status(201).json({
+      success: true,
+      message: "News/Event added successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -57,7 +76,9 @@ const getNewsAndEventById = async (req, res) => {
     const { id } = req.params;
     const newsAndEvent = await NewsAndEvents.findById(id);
     if (!newsAndEvent) {
-      return res.status(404).json({ success: false, message: "News/Event not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "News/Event not found" });
     }
     res.status(200).json({ success: true, data: newsAndEvent });
   } catch (error) {
@@ -69,22 +90,37 @@ const getNewsAndEventById = async (req, res) => {
 const updateNewsOrEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, date, image, link } = req.body;
+    const { title, description, date, image, link, type, videoLink } = req.body;
+
     const findNewsOrEvent = await NewsAndEvents.findById(id);
+
     if (!findNewsOrEvent) {
       return res
         .status(404)
         .json({ success: false, message: "News/Event not found" });
     }
-    findNewsOrEvent.title = title || findNewsOrEvent.title;
-    findNewsOrEvent.description = description || findNewsOrEvent.description;
-    findNewsOrEvent.date = date || findNewsOrEvent.date;
-    findNewsOrEvent.image = image || findNewsOrEvent.image;
-    findNewsOrEvent.link = link || findNewsOrEvent.link;
+
+    if (type === "video" && !videoLink) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Video link is required" });
+    }
+
+    // ✅ update fields safely
+    findNewsOrEvent.title = title ?? findNewsOrEvent.title;
+    findNewsOrEvent.description = description ?? findNewsOrEvent.description;
+    findNewsOrEvent.date = date ?? findNewsOrEvent.date;
+    findNewsOrEvent.image = image ?? findNewsOrEvent.image;
+    findNewsOrEvent.link = link ?? findNewsOrEvent.link;
+    findNewsOrEvent.type = type ?? findNewsOrEvent.type;
+    findNewsOrEvent.videoLink = videoLink ?? findNewsOrEvent.videoLink;
+
     await findNewsOrEvent.save();
-    res
-      .status(200)
-      .json({ success: true, message: "News/Event updated successfully" });
+
+    res.status(200).json({
+      success: true,
+      message: "News/Event updated successfully",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

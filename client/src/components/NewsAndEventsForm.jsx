@@ -50,7 +50,7 @@ const NewsAndEventsForm = ({
 
       const response = await axios.post(
         `${process.env.REACT_APP_SERVER_API_URL}/api/news-event/upload-image`,
-        data
+        data,
       );
       if (response?.data?.success) {
         const imageUrl = response?.data?.result?.secure_url;
@@ -115,6 +115,42 @@ const NewsAndEventsForm = ({
               </div>
             )}
           </div>
+
+          <div className="flex pt-2">
+            <p className="w-20">Type</p>
+            <select
+              className="px-2 border rounded flex-1"
+              value={newsAndEventData?.type || "news"}
+              onChange={(e) =>
+                setNewsAndEventData({
+                  ...newsAndEventData,
+                  type: e.target.value,
+                })
+              }
+            >
+              <option value="news">News</option>
+              <option value="photo">Photo</option>
+              <option value="video">Video</option>
+              <option value="event">Event</option>
+            </select>
+          </div>
+          {newsAndEventData?.type === "video" && (
+            <div className="flex">
+              <p className="w-20">Video</p>
+              <input
+                className="px-2 border rounded flex-1"
+                type="text"
+                placeholder="Paste YouTube link"
+                value={newsAndEventData?.videoLink || ""}
+                onChange={(e) =>
+                  setNewsAndEventData({
+                    ...newsAndEventData,
+                    videoLink: e.target.value,
+                  })
+                }
+              />
+            </div>
+          )}
           <div className="flex pt-2">
             <p className="w-20">Title</p>
             <input
