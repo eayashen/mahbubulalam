@@ -3,6 +3,7 @@ const Membership = require("../../models/Membership");
 const NewsAndEvents = require("../../models/NewsAndEvents");
 const Publication = require("../../models/Publication");
 const User = require("../../models/User");
+const Funding = require("../../models/Funding");
 
 const handleProPicUpload = async (req, res) => {
   try {
@@ -190,17 +191,59 @@ const getHomePageData = async (req, res) => {
       })
       .limit(3);
 
-    const newsAndEvents = await NewsAndEvents.find()
-      .sort({ date: -1 })
-      .limit(3);
+    const allNewsItems = await NewsAndEvents.find({ type: "news" })
+      .sort({ date: -1 });
+
+    // ✅ Then get all non-news items
+    const allOtherItems = await NewsAndEvents.find({ 
+      type: { $ne: "news" }
+    }).sort({ date: -1 });
+
+    // ✅ Combine: all news first, then others, then limit to 3
+    let newsAndEvents = [...allNewsItems, ...allOtherItems].slice(0, 3);
 
     const memberships = await Membership.find();
+
+    const centerName = "Mahbub-Ul Alam";
+
+    // 1️⃣ Group by donor & count frequency
+    const donorCounts = await Funding.aggregate([
+      {
+        $match: {
+          donor: { $ne: null, $ne: "" },
+        },
+      },
+      {
+        $group: {
+          _id: "$donor",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // 2️⃣ Create nodes
+    const nodes = [
+      { id: centerName, group: "center" },
+      ...donorCounts.map((d) => ({
+        id: d._id,
+        group: "donor",
+      })),
+    ];
+
+    // 3️⃣ Create links (edges)
+    const links = donorCounts.map((d) => ({
+      source: centerName,
+      target: d._id,
+      value: d.count, // 🔥 thickness
+    }));
+
+    const networkData = { nodes, links };
 
     res
       .status(200)
       .json({
         success: true,
-        data: { publications, newsAndEvents, memberships },
+        data: { publications, newsAndEvents, memberships, networkData },
       });
   } catch (error) {}
 };

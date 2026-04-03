@@ -31,6 +31,7 @@ import {
   updateMembership,
 } from "../redux/admin/membership-slice";
 import TitleText from "./ui/TitleText";
+import Connections from "./Connections";
 
 const types = {
   journal: "JOURNAL ARTICLE",
@@ -591,7 +592,7 @@ const Home = () => {
       <Membership handleUpdateMembership={handleUpdateMembership} />
 
       {/* ----------------------- Award Section --------------------- */}
-      <div className="my-4 pt-12">
+      <div className="my-4 py-8">
         <TitleText title="Awards" />
         <div className="py-4"></div>
         {isAuthenticated && (
@@ -629,6 +630,14 @@ const Home = () => {
             )}
           </div>
         ))}
+      </div>
+
+      {/* ------------------------ Connections Section --------------------- */}
+      <TitleText title="Networks" />
+      <div className="w-full flex justify-center bg-gray-100 pb-10">
+        <div className="w-[950px] h-[400px] flex items-center justify-center">
+          <Connections graphData={homePageData?.networkData} />
+        </div>
       </div>
     </div>
   );

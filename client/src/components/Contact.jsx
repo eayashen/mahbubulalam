@@ -3,6 +3,9 @@ import scholar from "../images/scholar.png";
 import { useDispatch, useSelector } from "react-redux";
 import { getContact, updateContact } from "../redux/admin/contact-slice";
 import { Triangle } from "react-loader-spinner";
+import Connections from "./Connections";
+import { getHomePageData } from "../redux/admin/about-slice";
+import TitleText from "./ui/TitleText";
 
 const initialFormData = {
   phone: "",
@@ -17,9 +20,8 @@ const Contact = () => {
   const dispatch = useDispatch();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const { contact, isLoading } = useSelector((state) => state.contact);
-  const { socialLinks } = useSelector(
-    (state) => state.socialLinks
-  );
+  const { socialLinks } = useSelector((state) => state.socialLinks);
+  const { homePageData } = useSelector((state) => state.about);
   const [formData, setFormData] = useState(initialFormData);
   const [openModal, setOpenModal] = useState(false);
 
@@ -55,6 +57,7 @@ const Contact = () => {
 
   useEffect(() => {
     dispatch(getContact());
+    dispatch(getHomePageData());
   }, [dispatch]);
 
   if (isLoading)
@@ -279,6 +282,14 @@ const Contact = () => {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="py-4"></div>
+      <TitleText title="Networks" />
+      <div className="w-full flex justify-center pb-10">
+        <div className="w-[950px] h-[400px] flex items-center justify-center">
+          <Connections graphData={homePageData?.networkData} />
+        </div>
       </div>
     </div>
   );

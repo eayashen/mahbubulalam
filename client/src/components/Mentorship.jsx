@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Triangle } from "react-loader-spinner";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -84,6 +84,21 @@ const Mentorship = () => {
   useEffect(() => {
     dispatch(getMentorships());
   }, [dispatch]);
+
+  if (isLoading)
+      return (
+        <div className="fixed top-0 left-0 flex justify-center items-center h-full w-screen">
+          <Triangle
+            height="60"
+            width="60"
+            color="#4fa94d"
+            ariaLabel="triangle-loading"
+            wrapperStyle={{}}
+            wrapperClassName=""
+            visible={true}
+          />
+        </div>
+      );
 
   return (
     <div className="mt-4 lg:mx-24 mx-4">

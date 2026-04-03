@@ -10,7 +10,6 @@ import {
   deleteNewsAndEvents,
 } from "../redux/admin/news-event-slice";
 import DeleteModal from "../components/DeleteModal"; // ✅ import your modal
-import { Link } from "react-router-dom";
 
 const NewsAndEvents = () => {
   const navigate = useNavigate();
@@ -76,7 +75,7 @@ const NewsAndEvents = () => {
       return;
     }
 
-    if (newsAndEventData.type === "video" && !newsAndEventData.videoLink) {
+    if (newsAndEventData.type === "videos" && !newsAndEventData.videoLink) {
       alert("Video link is required for video type");
       return;
     }
