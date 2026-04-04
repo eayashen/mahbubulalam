@@ -45,7 +45,7 @@ mongoose
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://019d3565-9abc-73d0-8c9a-a70da580680d.arena.site",
+  process.env.CLIENT_URL,
 ];
 
 app.use(
