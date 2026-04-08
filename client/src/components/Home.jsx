@@ -635,7 +635,7 @@ const Home = () => {
       {/* ------------------------ Connections Section --------------------- */}
       <TitleText title="Networks" />
       <div className="w-full flex justify-center bg-gray-100 pb-10">
-        <div className="w-[950px] h-[400px] flex items-center justify-center">
+        <div className="lg:w-[950px] w-full h-[400px] flex items-center justify-center">
           <Connections graphData={homePageData?.networkData} />
         </div>
       </div>

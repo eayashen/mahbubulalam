@@ -4,6 +4,21 @@ import ForceGraph2D from "react-force-graph-2d";
 const Connections = ({ graphData }) => {
   const fgRef = useRef();
   const [isInitialized, setIsInitialized] = useState(false);
+  const containerRef = useRef();
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0].contentRect;
+      setSize({ width, height });
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   // ✅ clone data
   const safeData = useMemo(
@@ -37,7 +52,7 @@ const Connections = ({ graphData }) => {
 
   // ✅ Method 1: Use onEngineStop with a delay to ensure final positions
   const handleEngineStop = () => {
-    if (fgRef.current && typeof fgRef.current.zoomToFit === 'function') {
+    if (fgRef.current && typeof fgRef.current.zoomToFit === "function") {
       // Small delay to ensure all nodes have settled
       setTimeout(() => {
         fgRef.current.zoomToFit(500, 80);
@@ -51,11 +66,11 @@ const Connections = ({ graphData }) => {
     if (!isInitialized && fgRef.current && safeData.nodes.length) {
       // Initial positioning to center
       const timer = setTimeout(() => {
-        if (fgRef.current && typeof fgRef.current.centerAt === 'function') {
+        if (fgRef.current && typeof fgRef.current.centerAt === "function") {
           fgRef.current.centerAt(0, 0, 500);
         }
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [safeData, isInitialized]);
@@ -63,7 +78,7 @@ const Connections = ({ graphData }) => {
   // ✅ Method 3: Force initial node positions to avoid top-left issue
   const initializedData = useMemo(() => {
     if (!safeData.nodes.length) return safeData;
-    
+
     // Pre-position nodes to avoid initial clustering at (0,0)
     const nodesWithPositions = safeData.nodes.map((node, index) => {
       // If nodes don't have positions, give them random initial positions
@@ -79,7 +94,7 @@ const Connections = ({ graphData }) => {
       }
       return node;
     });
-    
+
     return {
       ...safeData,
       nodes: nodesWithPositions,
@@ -87,24 +102,18 @@ const Connections = ({ graphData }) => {
   }, [safeData]);
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div ref={containerRef} className="w-full h-[500px]">
       <ForceGraph2D
         ref={fgRef}
-        width={900}
-        height={500}
+        width={size.width}
+        height={size.height}
         graphData={initializedData}
-        enableZoomInteraction={false} // Enable zoom for better UX
-        enablePanInteraction={false}  // Enable pan for better UX
+        enableZoomInteraction={false}
+        enablePanInteraction={false}
         d3Force="charge"
         d3ForceStrength={-250}
         nodeLabel="id"
         onEngineStop={handleEngineStop}
-        onEngineTick={() => {
-          // Optional: Smoothly adjust zoom during simulation
-          if (!isInitialized && fgRef.current && fgRef.current.zoom) {
-            // Only center once to avoid jitter
-          }
-        }}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const label = node.id;
           const fontSize = 11 / globalScale;
@@ -112,7 +121,6 @@ const Connections = ({ graphData }) => {
           const size = node.group === "center" ? 8 : 4;
           const img = node.group === "center" ? centerImg : donorImg;
 
-          // ✅ draw icon
           if (img.complete) {
             ctx.drawImage(
               img,
@@ -123,7 +131,6 @@ const Connections = ({ graphData }) => {
             );
           }
 
-          // ✅ label
           ctx.font = `${fontSize}px Sans-Serif`;
           ctx.fillStyle = "#333";
           ctx.fillText(label, node.x + size / 2, node.y + 4);
@@ -131,7 +138,7 @@ const Connections = ({ graphData }) => {
         linkWidth={(link) => Math.log(link.value + 1) * 2}
         linkColor={() => "#ccc"}
         cooldownTicks={120}
-        cooldownTime={300} // Give more time for simulation
+        cooldownTime={300}
       />
     </div>
   );
