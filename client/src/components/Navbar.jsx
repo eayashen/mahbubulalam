@@ -503,7 +503,7 @@ const Navbar = () => {
                 }
               }}
             >
-              CV
+            // CV
             </p>
             {isAuthenticated && (
               <button
